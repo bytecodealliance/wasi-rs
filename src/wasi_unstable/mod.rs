@@ -9,6 +9,7 @@
 
 pub mod raw;
 
+use core::ffi::c_void;
 use core::mem::MaybeUninit;
 use raw::*;
 
@@ -270,6 +271,10 @@ pub fn fd_pread(fd: fd_t, iovs: &[iovec_t], offset: filesize_t) -> (errno_t, usi
             nread.assume_init(),
         )
     }
+}
+
+pub fn random_get(buf: &mut [u8]) -> errno_t {
+    unsafe { __wasi_random_get(buf.as_mut_ptr() as *mut c_void, buf.len()) }
 }
 
 // TODO: Implement more functions

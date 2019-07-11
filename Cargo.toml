@@ -1,6 +1,6 @@
 [package]
 name = "wasi-core"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["The Cranelift Project Developers"]
 license = "Apache-2.0 WITH LLVM-exception"
 description = "Experimental WASI API bindings for Rust"
