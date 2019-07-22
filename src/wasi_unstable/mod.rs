@@ -15,38 +15,38 @@ use core::mem::MaybeUninit;
 use raw::*;
 
 pub type Advice = __wasi_advice_t;
-pub type Clockid = __wasi_clockid_t;
+pub type ClockId = __wasi_clockid_t;
 pub type Device = __wasi_device_t;
-pub type Dircookie = __wasi_dircookie_t;
+pub type DirCookie = __wasi_dircookie_t;
 pub type Errno = __wasi_errno_t;
-pub type Eventrwflags = __wasi_eventrwflags_t;
-pub type Eventtype = __wasi_eventtype_t;
-pub type Exitcode = __wasi_exitcode_t;
+pub type EventRwFlags = __wasi_eventrwflags_t;
+pub type EventType = __wasi_eventtype_t;
+pub type ExitCode = __wasi_exitcode_t;
 pub type Fd = __wasi_fd_t;
-pub type Fdflags = __wasi_fdflags_t;
-pub type Filedelta = __wasi_filedelta_t;
-pub type Filesize = __wasi_filesize_t;
-pub type Filetype = __wasi_filetype_t;
-pub type Fstflags = __wasi_fstflags_t;
+pub type FdFlags = __wasi_fdflags_t;
+pub type FileDelta = __wasi_filedelta_t;
+pub type FileSize = __wasi_filesize_t;
+pub type FileType = __wasi_filetype_t;
+pub type FstFlags = __wasi_fstflags_t;
 pub type Inode = __wasi_inode_t;
 pub type Linkcount = __wasi_linkcount_t;
-pub type Lookupflags = __wasi_lookupflags_t;
-pub type Oflags = __wasi_oflags_t;
-pub type Preopentype = __wasi_preopentype_t;
-pub type Riflags = __wasi_riflags_t;
+pub type LookupFlags = __wasi_lookupflags_t;
+pub type OFlags = __wasi_oflags_t;
+pub type PreopenType = __wasi_preopentype_t;
+pub type RiFlags = __wasi_riflags_t;
 pub type Rights = __wasi_rights_t;
-pub type Roflags = __wasi_roflags_t;
-pub type Sdflags = __wasi_sdflags_t;
-pub type Siflags = __wasi_siflags_t;
+pub type RoFlags = __wasi_roflags_t;
+pub type SdFlags = __wasi_sdflags_t;
+pub type SiFlags = __wasi_siflags_t;
 pub type Signal = __wasi_signal_t;
-pub type Subclockflags = __wasi_subclockflags_t;
+pub type SubclockFlags = __wasi_subclockflags_t;
 pub type Timestamp = __wasi_timestamp_t;
 pub type Userdata = __wasi_userdata_t;
 pub type Whence = __wasi_whence_t;
 pub type Dirent = __wasi_dirent_t;
-pub type Fdstat = __wasi_fdstat_t;
-pub type Filestat = __wasi_filestat_t;
-pub type Ciovec = __wasi_ciovec_t;
+pub type FdStat = __wasi_fdstat_t;
+pub type FileStat = __wasi_filestat_t;
+pub type CIovec = __wasi_ciovec_t;
 pub type Iovec = __wasi_iovec_t;
 pub type Subscription = __wasi_subscription_t;
 pub type Event = __wasi_event_t;
@@ -58,11 +58,11 @@ pub const ADVICE_RANDOM: Advice = __WASI_ADVICE_RANDOM;
 pub const ADVICE_WILLNEED: Advice = __WASI_ADVICE_WILLNEED;
 pub const ADVICE_DONTNEED: Advice = __WASI_ADVICE_DONTNEED;
 pub const ADVICE_NOREUSE: Advice = __WASI_ADVICE_NOREUSE;
-pub const CLOCK_REALTIME: Clockid = __WASI_CLOCK_REALTIME;
-pub const CLOCK_MONOTONIC: Clockid = __WASI_CLOCK_MONOTONIC;
-pub const CLOCK_PROCESS_CPUTIME_ID: Clockid = __WASI_CLOCK_PROCESS_CPUTIME_ID;
-pub const CLOCK_THREAD_CPUTIME_ID: Clockid = __WASI_CLOCK_THREAD_CPUTIME_ID;
-pub const DIRCOOKIE_START: Dircookie = __WASI_DIRCOOKIE_START;
+pub const CLOCK_REALTIME: ClockId = __WASI_CLOCK_REALTIME;
+pub const CLOCK_MONOTONIC: ClockId = __WASI_CLOCK_MONOTONIC;
+pub const CLOCK_PROCESS_CPUTIME_ID: ClockId = __WASI_CLOCK_PROCESS_CPUTIME_ID;
+pub const CLOCK_THREAD_CPUTIME_ID: ClockId = __WASI_CLOCK_THREAD_CPUTIME_ID;
+pub const DIRCOOKIE_START: DirCookie = __WASI_DIRCOOKIE_START;
 pub const ESUCCESS: Errno = __WASI_ESUCCESS;
 pub const E2BIG: Errno = __WASI_E2BIG;
 pub const EACCES: Errno = __WASI_EACCES;
@@ -140,35 +140,35 @@ pub const ETIMEDOUT: Errno = __WASI_ETIMEDOUT;
 pub const ETXTBSY: Errno = __WASI_ETXTBSY;
 pub const EXDEV: Errno = __WASI_EXDEV;
 pub const ENOTCAPABLE: Errno = __WASI_ENOTCAPABLE;
-pub const EVENT_FD_READWRITE_HANGUP: Eventrwflags = __WASI_EVENT_FD_READWRITE_HANGUP;
-pub const EVENTTYPE_CLOCK: Eventtype = __WASI_EVENTTYPE_CLOCK;
-pub const EVENTTYPE_FD_READ: Eventtype = __WASI_EVENTTYPE_FD_READ;
-pub const EVENTTYPE_FD_WRITE: Eventtype = __WASI_EVENTTYPE_FD_WRITE;
-pub const FDFLAG_APPEND: Fdflags = __WASI_FDFLAG_APPEND;
-pub const FDFLAG_DSYNC: Fdflags = __WASI_FDFLAG_DSYNC;
-pub const FDFLAG_NONBLOCK: Fdflags = __WASI_FDFLAG_NONBLOCK;
-pub const FDFLAG_RSYNC: Fdflags = __WASI_FDFLAG_RSYNC;
-pub const FDFLAG_SYNC: Fdflags = __WASI_FDFLAG_SYNC;
-pub const FILETYPE_UNKNOWN: Filetype = __WASI_FILETYPE_UNKNOWN;
-pub const FILETYPE_BLOCK_DEVICE: Filetype = __WASI_FILETYPE_BLOCK_DEVICE;
-pub const FILETYPE_CHARACTER_DEVICE: Filetype = __WASI_FILETYPE_CHARACTER_DEVICE;
-pub const FILETYPE_DIRECTORY: Filetype = __WASI_FILETYPE_DIRECTORY;
-pub const FILETYPE_REGULAR_FILE: Filetype = __WASI_FILETYPE_REGULAR_FILE;
-pub const FILETYPE_SOCKET_DGRAM: Filetype = __WASI_FILETYPE_SOCKET_DGRAM;
-pub const FILETYPE_SOCKET_STREAM: Filetype = __WASI_FILETYPE_SOCKET_STREAM;
-pub const FILETYPE_SYMBOLIC_LINK: Filetype = __WASI_FILETYPE_SYMBOLIC_LINK;
-pub const FILESTAT_SET_ATIM: Fstflags = __WASI_FILESTAT_SET_ATIM;
-pub const FILESTAT_SET_ATIM_NOW: Fstflags = __WASI_FILESTAT_SET_ATIM_NOW;
-pub const FILESTAT_SET_MTIM: Fstflags = __WASI_FILESTAT_SET_MTIM;
-pub const FILESTAT_SET_MTIM_NOW: Fstflags = __WASI_FILESTAT_SET_MTIM_NOW;
-pub const LOOKUP_SYMLINK_FOLLOW: Lookupflags = __WASI_LOOKUP_SYMLINK_FOLLOW;
-pub const O_CREAT: Oflags = __WASI_O_CREAT;
-pub const O_DIRECTORY: Oflags = __WASI_O_DIRECTORY;
-pub const O_EXCL: Oflags = __WASI_O_EXCL;
-pub const O_TRUNC: Oflags = __WASI_O_TRUNC;
-pub const PREOPENTYPE_DIR: Preopentype = __WASI_PREOPENTYPE_DIR;
-pub const SOCK_RECV_PEEK: Riflags = __WASI_SOCK_RECV_PEEK;
-pub const SOCK_RECV_WAITALL: Riflags = __WASI_SOCK_RECV_WAITALL;
+pub const EVENT_FD_READWRITE_HANGUP: EventRwFlags = __WASI_EVENT_FD_READWRITE_HANGUP;
+pub const EVENTTYPE_CLOCK: EventType = __WASI_EVENTTYPE_CLOCK;
+pub const EVENTTYPE_FD_READ: EventType = __WASI_EVENTTYPE_FD_READ;
+pub const EVENTTYPE_FD_WRITE: EventType = __WASI_EVENTTYPE_FD_WRITE;
+pub const FDFLAG_APPEND: FdFlags = __WASI_FDFLAG_APPEND;
+pub const FDFLAG_DSYNC: FdFlags = __WASI_FDFLAG_DSYNC;
+pub const FDFLAG_NONBLOCK: FdFlags = __WASI_FDFLAG_NONBLOCK;
+pub const FDFLAG_RSYNC: FdFlags = __WASI_FDFLAG_RSYNC;
+pub const FDFLAG_SYNC: FdFlags = __WASI_FDFLAG_SYNC;
+pub const FILETYPE_UNKNOWN: FileType = __WASI_FILETYPE_UNKNOWN;
+pub const FILETYPE_BLOCK_DEVICE: FileType = __WASI_FILETYPE_BLOCK_DEVICE;
+pub const FILETYPE_CHARACTER_DEVICE: FileType = __WASI_FILETYPE_CHARACTER_DEVICE;
+pub const FILETYPE_DIRECTORY: FileType = __WASI_FILETYPE_DIRECTORY;
+pub const FILETYPE_REGULAR_FILE: FileType = __WASI_FILETYPE_REGULAR_FILE;
+pub const FILETYPE_SOCKET_DGRAM: FileType = __WASI_FILETYPE_SOCKET_DGRAM;
+pub const FILETYPE_SOCKET_STREAM: FileType = __WASI_FILETYPE_SOCKET_STREAM;
+pub const FILETYPE_SYMBOLIC_LINK: FileType = __WASI_FILETYPE_SYMBOLIC_LINK;
+pub const FILESTAT_SET_ATIM: FstFlags = __WASI_FILESTAT_SET_ATIM;
+pub const FILESTAT_SET_ATIM_NOW: FstFlags = __WASI_FILESTAT_SET_ATIM_NOW;
+pub const FILESTAT_SET_MTIM: FstFlags = __WASI_FILESTAT_SET_MTIM;
+pub const FILESTAT_SET_MTIM_NOW: FstFlags = __WASI_FILESTAT_SET_MTIM_NOW;
+pub const LOOKUP_SYMLINK_FOLLOW: LookupFlags = __WASI_LOOKUP_SYMLINK_FOLLOW;
+pub const O_CREAT: OFlags = __WASI_O_CREAT;
+pub const O_DIRECTORY: OFlags = __WASI_O_DIRECTORY;
+pub const O_EXCL: OFlags = __WASI_O_EXCL;
+pub const O_TRUNC: OFlags = __WASI_O_TRUNC;
+pub const PREOPENTYPE_DIR: PreopenType = __WASI_PREOPENTYPE_DIR;
+pub const SOCK_RECV_PEEK: RiFlags = __WASI_SOCK_RECV_PEEK;
+pub const SOCK_RECV_WAITALL: RiFlags = __WASI_SOCK_RECV_WAITALL;
 pub const RIGHT_FD_DATASYNC: Rights = __WASI_RIGHT_FD_DATASYNC;
 pub const RIGHT_FD_READ: Rights = __WASI_RIGHT_FD_READ;
 pub const RIGHT_FD_SEEK: Rights = __WASI_RIGHT_FD_SEEK;
@@ -198,9 +198,9 @@ pub const RIGHT_PATH_REMOVE_DIRECTORY: Rights = __WASI_RIGHT_PATH_REMOVE_DIRECTO
 pub const RIGHT_PATH_UNLINK_FILE: Rights = __WASI_RIGHT_PATH_UNLINK_FILE;
 pub const RIGHT_POLL_FD_READWRITE: Rights = __WASI_RIGHT_POLL_FD_READWRITE;
 pub const RIGHT_SOCK_SHUTDOWN: Rights = __WASI_RIGHT_SOCK_SHUTDOWN;
-pub const SOCK_RECV_DATA_TRUNCATED: Roflags = __WASI_SOCK_RECV_DATA_TRUNCATED;
-pub const SHUT_RD: Sdflags = __WASI_SHUT_RD;
-pub const SHUT_WR: Sdflags = __WASI_SHUT_WR;
+pub const SOCK_RECV_DATA_TRUNCATED: RoFlags = __WASI_SOCK_RECV_DATA_TRUNCATED;
+pub const SHUT_RD: SdFlags = __WASI_SHUT_RD;
+pub const SHUT_WR: SdFlags = __WASI_SHUT_WR;
 pub const SIGHUP: Signal = __WASI_SIGHUP;
 pub const SIGINT: Signal = __WASI_SIGINT;
 pub const SIGQUIT: Signal = __WASI_SIGQUIT;
@@ -231,12 +231,12 @@ pub const SIGWINCH: Signal = __WASI_SIGWINCH;
 pub const SIGPOLL: Signal = __WASI_SIGPOLL;
 pub const SIGPWR: Signal = __WASI_SIGPWR;
 pub const SIGSYS: Signal = __WASI_SIGSYS;
-pub const SUBSCRIPTION_CLOCK_ABSTIME: Subclockflags = __WASI_SUBSCRIPTION_CLOCK_ABSTIME;
+pub const SUBSCRIPTION_CLOCK_ABSTIME: SubclockFlags = __WASI_SUBSCRIPTION_CLOCK_ABSTIME;
 pub const WHENCE_CUR: Whence = __WASI_WHENCE_CUR;
 pub const WHENCE_END: Whence = __WASI_WHENCE_END;
 pub const WHENCE_SET: Whence = __WASI_WHENCE_SET;
 
-pub fn clock_res_get(clock_id: Clockid) -> (Errno, Timestamp) {
+pub fn clock_res_get(clock_id: ClockId) -> (Errno, Timestamp) {
     let mut resolution = MaybeUninit::<Timestamp>::uninit();
     unsafe {
         (
@@ -246,7 +246,7 @@ pub fn clock_res_get(clock_id: Clockid) -> (Errno, Timestamp) {
     }
 }
 
-pub fn clock_time_get(clock_id: Clockid, precision: Timestamp) -> (Errno, Timestamp) {
+pub fn clock_time_get(clock_id: ClockId, precision: Timestamp) -> (Errno, Timestamp) {
     let mut time = MaybeUninit::<Timestamp>::uninit();
     unsafe {
         (
@@ -256,7 +256,7 @@ pub fn clock_time_get(clock_id: Clockid, precision: Timestamp) -> (Errno, Timest
     }
 }
 
-pub fn fd_pread(fd: Fd, iovs: &[Iovec], offset: Filesize) -> (Errno, usize) {
+pub fn fd_pread(fd: Fd, iovs: &[Iovec], offset: FileSize) -> (Errno, usize) {
     let mut nread = MaybeUninit::<usize>::uninit();
     unsafe {
         (
@@ -266,7 +266,7 @@ pub fn fd_pread(fd: Fd, iovs: &[Iovec], offset: Filesize) -> (Errno, usize) {
     }
 }
 
-pub fn fd_pwrite(fd: Fd, iovs: &[Ciovec], offset: Filesize) -> (Errno, usize) {
+pub fn fd_pwrite(fd: Fd, iovs: &[CIovec], offset: FileSize) -> (Errno, usize) {
     let mut nwritten = MaybeUninit::<usize>::uninit();
     unsafe {
         (
@@ -302,8 +302,8 @@ pub fn fd_renumber(from: Fd, to: Fd) -> Errno {
     unsafe { __wasi_fd_renumber(from, to) }
 }
 
-pub fn fd_seek(fd: Fd, offset: Filedelta, whence: Whence) -> (Errno, Filesize) {
-    let mut newoffset = MaybeUninit::<Filesize>::uninit();
+pub fn fd_seek(fd: Fd, offset: FileDelta, whence: Whence) -> (Errno, FileSize) {
+    let mut newoffset = MaybeUninit::<FileSize>::uninit();
     unsafe {
         (
             __wasi_fd_seek(fd, offset, whence, newoffset.as_mut_ptr()),
@@ -312,8 +312,8 @@ pub fn fd_seek(fd: Fd, offset: Filedelta, whence: Whence) -> (Errno, Filesize) {
     }
 }
 
-pub fn fd_tell(fd: Fd) -> (Errno, Filesize) {
-    let mut newoffset = MaybeUninit::<Filesize>::uninit();
+pub fn fd_tell(fd: Fd) -> (Errno, FileSize) {
+    let mut newoffset = MaybeUninit::<FileSize>::uninit();
     unsafe {
         (
             __wasi_fd_tell(fd, newoffset.as_mut_ptr()),
@@ -322,8 +322,8 @@ pub fn fd_tell(fd: Fd) -> (Errno, Filesize) {
     }
 }
 
-pub fn fd_fdstat_get(fd: Fd) -> (Errno, Fdstat) {
-    let mut buf = MaybeUninit::<Fdstat>::uninit();
+pub fn fd_fdstat_get(fd: Fd) -> (Errno, FdStat) {
+    let mut buf = MaybeUninit::<FdStat>::uninit();
     unsafe {
         (
             __wasi_fd_fdstat_get(fd, buf.as_mut_ptr()),
@@ -332,7 +332,7 @@ pub fn fd_fdstat_get(fd: Fd) -> (Errno, Fdstat) {
     }
 }
 
-pub fn fd_fdstat_set_flags(fd: Fd, flags: Fdflags) -> Errno {
+pub fn fd_fdstat_set_flags(fd: Fd, flags: FdFlags) -> Errno {
     unsafe { __wasi_fd_fdstat_set_flags(fd, flags) }
 }
 
@@ -344,7 +344,7 @@ pub fn fd_sync(fd: Fd) -> Errno {
     unsafe { __wasi_fd_sync(fd) }
 }
 
-pub fn fd_write(fd: Fd, iovs: &[Ciovec]) -> (Errno, usize) {
+pub fn fd_write(fd: Fd, iovs: &[CIovec]) -> (Errno, usize) {
     let mut nwritten = MaybeUninit::<usize>::uninit();
     unsafe {
         (
@@ -354,11 +354,11 @@ pub fn fd_write(fd: Fd, iovs: &[Ciovec]) -> (Errno, usize) {
     }
 }
 
-pub fn fd_advise(fd: Fd, offset: Filesize, len: Filesize, advice: Advice) -> Errno {
+pub fn fd_advise(fd: Fd, offset: FileSize, len: FileSize, advice: Advice) -> Errno {
     unsafe { __wasi_fd_advise(fd, offset, len, advice) }
 }
 
-pub fn fd_allocate(fd: Fd, offset: Filesize, len: Filesize) -> Errno {
+pub fn fd_allocate(fd: Fd, offset: FileSize, len: FileSize) -> Errno {
     unsafe { __wasi_fd_allocate(fd, offset, len) }
 }
 
@@ -368,7 +368,7 @@ pub fn path_create_directory(fd: Fd, path: &[u8]) -> Errno {
 
 pub fn path_link(
     old_fd: Fd,
-    old_flags: Lookupflags,
+    old_flags: LookupFlags,
     old_path: &[u8],
     new_fd: Fd,
     new_path: &[u8],
@@ -388,12 +388,12 @@ pub fn path_link(
 
 pub fn path_open(
     dirfd: Fd,
-    dirflags: Lookupflags,
+    dirflags: LookupFlags,
     path: &[u8],
-    oflags: Oflags,
+    oflags: OFlags,
     fs_rights_base: Rights,
     fs_rights_inheriting: Rights,
-    fs_flags: Fdflags,
+    fs_flags: FdFlags,
 ) -> (Errno, Fd) {
     let mut fd = MaybeUninit::<Fd>::uninit();
     unsafe {
@@ -414,7 +414,7 @@ pub fn path_open(
     }
 }
 
-pub fn fd_readdir(fd: Fd, buf: &mut [u8], cookie: Dircookie) -> (Errno, usize) {
+pub fn fd_readdir(fd: Fd, buf: &mut [u8], cookie: DirCookie) -> (Errno, usize) {
     let mut bufused = MaybeUninit::<usize>::uninit();
     unsafe {
         (
@@ -460,8 +460,8 @@ pub fn path_rename(old_fd: Fd, old_path: &[u8], new_fd: Fd, new_path: &[u8]) -> 
     }
 }
 
-pub fn fd_filestat_get(fd: Fd) -> (Errno, Filestat) {
-    let mut buf = MaybeUninit::<Filestat>::uninit();
+pub fn fd_filestat_get(fd: Fd) -> (Errno, FileStat) {
+    let mut buf = MaybeUninit::<FileStat>::uninit();
     unsafe {
         (
             __wasi_fd_filestat_get(fd, buf.as_mut_ptr()),
@@ -474,17 +474,17 @@ pub fn fd_filestat_set_times(
     fd: Fd,
     st_atim: Timestamp,
     st_mtim: Timestamp,
-    fstflags: Fstflags,
+    fstflags: FstFlags,
 ) -> Errno {
     unsafe { __wasi_fd_filestat_set_times(fd, st_atim, st_mtim, fstflags) }
 }
 
-pub fn fd_filestat_set_size(fd: Fd, st_size: Filesize) -> Errno {
+pub fn fd_filestat_set_size(fd: Fd, st_size: FileSize) -> Errno {
     unsafe { __wasi_fd_filestat_set_size(fd, st_size) }
 }
 
-pub fn path_filestat_get(fd: Fd, flags: Lookupflags, path: &[u8]) -> (Errno, Filestat) {
-    let mut buf = MaybeUninit::<Filestat>::uninit();
+pub fn path_filestat_get(fd: Fd, flags: LookupFlags, path: &[u8]) -> (Errno, FileStat) {
+    let mut buf = MaybeUninit::<FileStat>::uninit();
     unsafe {
         (
             __wasi_path_filestat_get(fd, flags, path.as_ptr(), path.len(), buf.as_mut_ptr()),
@@ -495,11 +495,11 @@ pub fn path_filestat_get(fd: Fd, flags: Lookupflags, path: &[u8]) -> (Errno, Fil
 
 pub fn path_filestat_set_times(
     fd: Fd,
-    flags: Lookupflags,
+    flags: LookupFlags,
     path: &[u8],
     st_atim: Timestamp,
     st_mtim: Timestamp,
-    fstflags: Fstflags,
+    fstflags: FstFlags,
 ) -> Errno {
     unsafe {
         __wasi_path_filestat_set_times(
@@ -550,7 +550,7 @@ pub fn poll_oneoff(in_: &[Subscription], out: &mut [Event]) -> (Errno, usize) {
     }
 }
 
-pub fn proc_exit(rval: Exitcode) {
+pub fn proc_exit(rval: ExitCode) {
     unsafe { __wasi_proc_exit(rval) }
 }
 
@@ -558,9 +558,9 @@ pub fn proc_raise(sig: Signal) -> Errno {
     unsafe { __wasi_proc_raise(sig) }
 }
 
-pub fn sock_recv(sock: Fd, ri_data: &[Iovec], ri_flags: Riflags) -> (Errno, usize, Roflags) {
+pub fn sock_recv(sock: Fd, ri_data: &[Iovec], ri_flags: RiFlags) -> (Errno, usize, RoFlags) {
     let mut ro_datalen = MaybeUninit::<usize>::uninit();
-    let mut ro_flags = MaybeUninit::<Roflags>::uninit();
+    let mut ro_flags = MaybeUninit::<RoFlags>::uninit();
     unsafe {
         (
             __wasi_sock_recv(
@@ -577,7 +577,7 @@ pub fn sock_recv(sock: Fd, ri_data: &[Iovec], ri_flags: Riflags) -> (Errno, usiz
     }
 }
 
-pub fn sock_send(sock: Fd, si_data: &[Ciovec], si_flags: Siflags) -> (Errno, usize) {
+pub fn sock_send(sock: Fd, si_data: &[CIovec], si_flags: SiFlags) -> (Errno, usize) {
     let mut so_datalen = MaybeUninit::<usize>::uninit();
     unsafe {
         (
@@ -593,7 +593,7 @@ pub fn sock_send(sock: Fd, si_data: &[Ciovec], si_flags: Siflags) -> (Errno, usi
     }
 }
 
-pub fn sock_shutdown(sock: Fd, how: Sdflags) -> Errno {
+pub fn sock_shutdown(sock: Fd, how: SdFlags) -> Errno {
     unsafe { __wasi_sock_shutdown(sock, how) }
 }
 
