@@ -5,8 +5,11 @@ authors = ["The Cranelift Project Developers"]
 license = "Apache-2.0 WITH LLVM-exception"
 description = "Experimental WASI API bindings for Rust"
 edition = "2018"
+categories = ["no-std", "wasm"]
+keywords = ["webassembly", "wasm"]
 repository = "https://github.com/CraneStation/wasi-core"
 readme = "README.md"
+documentation = "https://docs.rs/wasi-core"
 
 [dependencies]
 
