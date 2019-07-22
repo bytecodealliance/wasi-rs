@@ -1,11 +1,12 @@
-//! This file defines slightly more idiomatic interfaces to WASI functions.
+//! This module declares the Rust bindings to the `wasi_unstable` API.
 //!
-//! Pointer-length pairs are replaced by slice types, output parameters are
-//! converted to normal return values, and safe interfaces are provided.
+//! The raw bindings are in the `raw` submodule. They use raw pointers and
+//! are unsafe. In the the top-level module, raw pointer-length pairs are
+//! replaced by Rust slice types, output parameters are converted to normal
+//! return values, names are translated to be more Rust-idiomatic, and the
+//! functions are safe.
 //!
 //! TODO: Not all functions are covered yet; implement the rest of the API.
-
-#![allow(non_camel_case_types)]
 
 pub mod raw;
 
@@ -13,51 +14,43 @@ use core::ffi::c_void;
 use core::mem::MaybeUninit;
 use raw::*;
 
-pub type advice_t = __wasi_advice_t;
-pub type clockid_t = __wasi_clockid_t;
-pub type device_t = __wasi_device_t;
-pub type dircookie_t = __wasi_dircookie_t;
-pub type errno_t = __wasi_errno_t;
-pub type eventrwflags_t = __wasi_eventrwflags_t;
-pub type eventtype_t = __wasi_eventtype_t;
-pub type exitcode_t = __wasi_exitcode_t;
-pub type fd_t = __wasi_fd_t;
-pub type fdflags_t = __wasi_fdflags_t;
-pub type filedelta_t = __wasi_filedelta_t;
-pub type filesize_t = __wasi_filesize_t;
-pub type filetype_t = __wasi_filetype_t;
-pub type fstflags_t = __wasi_fstflags_t;
-pub type inode_t = __wasi_inode_t;
-pub type linkcount_t = __wasi_linkcount_t;
-pub type lookupflags_t = __wasi_lookupflags_t;
-pub type oflags_t = __wasi_oflags_t;
-pub type preopentype_t = __wasi_preopentype_t;
-pub type riflags_t = __wasi_riflags_t;
-pub type rights_t = __wasi_rights_t;
-pub type roflags_t = __wasi_roflags_t;
-pub type sdflags_t = __wasi_sdflags_t;
-pub type siflags_t = __wasi_siflags_t;
-pub type signal_t = __wasi_signal_t;
-pub type subclockflags_t = __wasi_subclockflags_t;
-pub type timestamp_t = __wasi_timestamp_t;
-pub type userdata_t = __wasi_userdata_t;
-pub type whence_t = __wasi_whence_t;
-
-pub type dirent_t = __wasi_dirent_t;
-pub type event_u_fd_readwrite_t = __wasi_event_u_fd_readwrite_t;
-pub type fdstat_t = __wasi_fdstat_t;
-pub type filestat_t = __wasi_filestat_t;
-pub type ciovec_t = __wasi_ciovec_t;
-pub type iovec_t = __wasi_iovec_t;
-pub type subscription_u_clock_t = __wasi_subscription_u_clock_t;
-pub type subscription_u_fd_readwrite_t = __wasi_subscription_u_fd_readwrite_t;
-pub type prestat_u_dir_t = __wasi_prestat_u_dir_t;
-pub type subscription_t = __wasi_subscription_t;
-pub type event_t = __wasi_event_t;
-pub type event_u = __wasi_event_u;
-pub type subscription_u = __wasi_subscription_u;
-pub type prestat_t = __wasi_prestat_t;
-pub type prestat_u = __wasi_prestat_u;
+pub type Advice = __wasi_advice_t;
+pub type Clockid = __wasi_clockid_t;
+pub type Device = __wasi_device_t;
+pub type Dircookie = __wasi_dircookie_t;
+pub type Errno = __wasi_errno_t;
+pub type Eventrwflags = __wasi_eventrwflags_t;
+pub type Eventtype = __wasi_eventtype_t;
+pub type Exitcode = __wasi_exitcode_t;
+pub type Fd = __wasi_fd_t;
+pub type Fdflags = __wasi_fdflags_t;
+pub type Filedelta = __wasi_filedelta_t;
+pub type Filesize = __wasi_filesize_t;
+pub type Filetype = __wasi_filetype_t;
+pub type Fstflags = __wasi_fstflags_t;
+pub type Inode = __wasi_inode_t;
+pub type Linkcount = __wasi_linkcount_t;
+pub type Lookupflags = __wasi_lookupflags_t;
+pub type Oflags = __wasi_oflags_t;
+pub type Preopentype = __wasi_preopentype_t;
+pub type Riflags = __wasi_riflags_t;
+pub type Rights = __wasi_rights_t;
+pub type Roflags = __wasi_roflags_t;
+pub type Sdflags = __wasi_sdflags_t;
+pub type Siflags = __wasi_siflags_t;
+pub type Signal = __wasi_signal_t;
+pub type Subclockflags = __wasi_subclockflags_t;
+pub type Timestamp = __wasi_timestamp_t;
+pub type Userdata = __wasi_userdata_t;
+pub type Whence = __wasi_whence_t;
+pub type Dirent = __wasi_dirent_t;
+pub type Fdstat = __wasi_fdstat_t;
+pub type Filestat = __wasi_filestat_t;
+pub type Ciovec = __wasi_ciovec_t;
+pub type Iovec = __wasi_iovec_t;
+pub type Subscription = __wasi_subscription_t;
+pub type Event = __wasi_event_t;
+pub type Prestat = __wasi_prestat_t;
 
 pub const ADVICE_NORMAL: u8 = __WASI_ADVICE_NORMAL;
 pub const ADVICE_SEQUENTIAL: u8 = __WASI_ADVICE_SEQUENTIAL;
@@ -243,8 +236,8 @@ pub const WHENCE_CUR: u8 = __WASI_WHENCE_CUR;
 pub const WHENCE_END: u8 = __WASI_WHENCE_END;
 pub const WHENCE_SET: u8 = __WASI_WHENCE_SET;
 
-pub fn clock_res_get(clock_id: clockid_t) -> (errno_t, timestamp_t) {
-    let mut resolution = MaybeUninit::<timestamp_t>::uninit();
+pub fn clock_res_get(clock_id: Clockid) -> (Errno, Timestamp) {
+    let mut resolution = MaybeUninit::<Timestamp>::uninit();
     unsafe {
         (
             __wasi_clock_res_get(clock_id, resolution.as_mut_ptr()),
@@ -253,8 +246,8 @@ pub fn clock_res_get(clock_id: clockid_t) -> (errno_t, timestamp_t) {
     }
 }
 
-pub fn clock_time_get(clock_id: clockid_t, precision: timestamp_t) -> (errno_t, timestamp_t) {
-    let mut time = MaybeUninit::<timestamp_t>::uninit();
+pub fn clock_time_get(clock_id: Clockid, precision: Timestamp) -> (Errno, Timestamp) {
+    let mut time = MaybeUninit::<Timestamp>::uninit();
     unsafe {
         (
             __wasi_clock_time_get(clock_id, precision, time.as_mut_ptr()),
@@ -263,7 +256,7 @@ pub fn clock_time_get(clock_id: clockid_t, precision: timestamp_t) -> (errno_t, 
     }
 }
 
-pub fn fd_pread(fd: fd_t, iovs: &[iovec_t], offset: filesize_t) -> (errno_t, usize) {
+pub fn fd_pread(fd: Fd, iovs: &[Iovec], offset: Filesize) -> (Errno, usize) {
     let mut nread = MaybeUninit::<usize>::uninit();
     unsafe {
         (
@@ -273,7 +266,7 @@ pub fn fd_pread(fd: fd_t, iovs: &[iovec_t], offset: filesize_t) -> (errno_t, usi
     }
 }
 
-pub fn fd_pwrite(fd: fd_t, iovs: &[ciovec_t], offset: filesize_t) -> (__wasi_errno_t, usize) {
+pub fn fd_pwrite(fd: Fd, iovs: &[Ciovec], offset: Filesize) -> (Errno, usize) {
     let mut nwritten = MaybeUninit::<usize>::uninit();
     unsafe {
         (
@@ -283,19 +276,19 @@ pub fn fd_pwrite(fd: fd_t, iovs: &[ciovec_t], offset: filesize_t) -> (__wasi_err
     }
 }
 
-pub fn random_get(buf: &mut [u8]) -> errno_t {
+pub fn random_get(buf: &mut [u8]) -> Errno {
     unsafe { __wasi_random_get(buf.as_mut_ptr() as *mut c_void, buf.len()) }
 }
 
-pub fn fd_close(fd: fd_t) -> errno_t {
+pub fn fd_close(fd: Fd) -> Errno {
     unsafe { __wasi_fd_close(fd) }
 }
 
-pub fn fd_datasync(fd: fd_t) -> errno_t {
+pub fn fd_datasync(fd: Fd) -> Errno {
     unsafe { __wasi_fd_datasync(fd) }
 }
 
-pub fn fd_read(fd: fd_t, iovs: &[iovec_t]) -> (errno_t, usize) {
+pub fn fd_read(fd: Fd, iovs: &[Iovec]) -> (Errno, usize) {
     let mut nread = MaybeUninit::<usize>::uninit();
     unsafe {
         (
@@ -305,12 +298,12 @@ pub fn fd_read(fd: fd_t, iovs: &[iovec_t]) -> (errno_t, usize) {
     }
 }
 
-pub fn fd_renumber(from: fd_t, to: fd_t) -> errno_t {
+pub fn fd_renumber(from: Fd, to: Fd) -> Errno {
     unsafe { __wasi_fd_renumber(from, to) }
 }
 
-pub fn fd_seek(fd: fd_t, offset: filedelta_t, whence: whence_t) -> (errno_t, filesize_t) {
-    let mut newoffset = MaybeUninit::<filesize_t>::uninit();
+pub fn fd_seek(fd: Fd, offset: Filedelta, whence: Whence) -> (Errno, Filesize) {
+    let mut newoffset = MaybeUninit::<Filesize>::uninit();
     unsafe {
         (
             __wasi_fd_seek(fd, offset, whence, newoffset.as_mut_ptr()),
@@ -319,8 +312,8 @@ pub fn fd_seek(fd: fd_t, offset: filedelta_t, whence: whence_t) -> (errno_t, fil
     }
 }
 
-pub fn fd_tell(fd: fd_t) -> (errno_t, filesize_t) {
-    let mut newoffset = MaybeUninit::<filesize_t>::uninit();
+pub fn fd_tell(fd: Fd) -> (Errno, Filesize) {
+    let mut newoffset = MaybeUninit::<Filesize>::uninit();
     unsafe {
         (
             __wasi_fd_tell(fd, newoffset.as_mut_ptr()),
@@ -329,8 +322,8 @@ pub fn fd_tell(fd: fd_t) -> (errno_t, filesize_t) {
     }
 }
 
-pub fn fd_fdstat_get(fd: fd_t) -> (errno_t, fdstat_t) {
-    let mut buf = MaybeUninit::<fdstat_t>::uninit();
+pub fn fd_fdstat_get(fd: Fd) -> (Errno, Fdstat) {
+    let mut buf = MaybeUninit::<Fdstat>::uninit();
     unsafe {
         (
             __wasi_fd_fdstat_get(fd, buf.as_mut_ptr()),
@@ -339,23 +332,19 @@ pub fn fd_fdstat_get(fd: fd_t) -> (errno_t, fdstat_t) {
     }
 }
 
-pub fn fd_fdstat_set_flags(fd: fd_t, flags: fdflags_t) -> errno_t {
+pub fn fd_fdstat_set_flags(fd: Fd, flags: Fdflags) -> Errno {
     unsafe { __wasi_fd_fdstat_set_flags(fd, flags) }
 }
 
-pub fn fd_fdstat_set_rights(
-    fd: fd_t,
-    fs_rights_base: rights_t,
-    fs_rights_inheriting: rights_t,
-) -> errno_t {
+pub fn fd_fdstat_set_rights(fd: Fd, fs_rights_base: Rights, fs_rights_inheriting: Rights) -> Errno {
     unsafe { __wasi_fd_fdstat_set_rights(fd, fs_rights_base, fs_rights_inheriting) }
 }
 
-pub fn fd_sync(fd: fd_t) -> errno_t {
+pub fn fd_sync(fd: Fd) -> Errno {
     unsafe { __wasi_fd_sync(fd) }
 }
 
-pub fn fd_write(fd: fd_t, iovs: &[ciovec_t]) -> (errno_t, usize) {
+pub fn fd_write(fd: Fd, iovs: &[Ciovec]) -> (Errno, usize) {
     let mut nwritten = MaybeUninit::<usize>::uninit();
     unsafe {
         (
@@ -365,25 +354,25 @@ pub fn fd_write(fd: fd_t, iovs: &[ciovec_t]) -> (errno_t, usize) {
     }
 }
 
-pub fn fd_advise(fd: fd_t, offset: filesize_t, len: filesize_t, advice: advice_t) -> errno_t {
+pub fn fd_advise(fd: Fd, offset: Filesize, len: Filesize, advice: Advice) -> Errno {
     unsafe { __wasi_fd_advise(fd, offset, len, advice) }
 }
 
-pub fn fd_allocate(fd: fd_t, offset: filesize_t, len: filesize_t) -> errno_t {
+pub fn fd_allocate(fd: Fd, offset: Filesize, len: Filesize) -> Errno {
     unsafe { __wasi_fd_allocate(fd, offset, len) }
 }
 
-pub fn path_create_directory(fd: fd_t, path: &[u8]) -> errno_t {
+pub fn path_create_directory(fd: Fd, path: &[u8]) -> Errno {
     unsafe { __wasi_path_create_directory(fd, path.as_ptr(), path.len()) }
 }
 
 pub fn path_link(
-    old_fd: fd_t,
-    old_flags: lookupflags_t,
+    old_fd: Fd,
+    old_flags: Lookupflags,
     old_path: &[u8],
-    new_fd: fd_t,
+    new_fd: Fd,
     new_path: &[u8],
-) -> errno_t {
+) -> Errno {
     unsafe {
         __wasi_path_link(
             old_fd,
@@ -398,15 +387,15 @@ pub fn path_link(
 }
 
 pub fn path_open(
-    dirfd: fd_t,
-    dirflags: lookupflags_t,
+    dirfd: Fd,
+    dirflags: Lookupflags,
     path: &[u8],
-    oflags: oflags_t,
-    fs_rights_base: rights_t,
-    fs_rights_inheriting: rights_t,
-    fs_flags: fdflags_t,
-) -> (errno_t, fd_t) {
-    let mut fd = MaybeUninit::<fd_t>::uninit();
+    oflags: Oflags,
+    fs_rights_base: Rights,
+    fs_rights_inheriting: Rights,
+    fs_flags: Fdflags,
+) -> (Errno, Fd) {
+    let mut fd = MaybeUninit::<Fd>::uninit();
     unsafe {
         (
             __wasi_path_open(
@@ -425,7 +414,7 @@ pub fn path_open(
     }
 }
 
-pub fn fd_readdir(fd: fd_t, buf: &mut [u8], cookie: dircookie_t) -> (errno_t, usize) {
+pub fn fd_readdir(fd: Fd, buf: &mut [u8], cookie: Dircookie) -> (Errno, usize) {
     let mut bufused = MaybeUninit::<usize>::uninit();
     unsafe {
         (
@@ -441,7 +430,7 @@ pub fn fd_readdir(fd: fd_t, buf: &mut [u8], cookie: dircookie_t) -> (errno_t, us
     }
 }
 
-pub fn path_readlink(fd: fd_t, path: &[u8], buf: &mut [u8]) -> (errno_t, usize) {
+pub fn path_readlink(fd: Fd, path: &[u8], buf: &mut [u8]) -> (Errno, usize) {
     let mut bufused = MaybeUninit::<usize>::uninit();
     unsafe {
         (
@@ -458,7 +447,7 @@ pub fn path_readlink(fd: fd_t, path: &[u8], buf: &mut [u8]) -> (errno_t, usize) 
     }
 }
 
-pub fn path_rename(old_fd: fd_t, old_path: &[u8], new_fd: fd_t, new_path: &[u8]) -> errno_t {
+pub fn path_rename(old_fd: Fd, old_path: &[u8], new_fd: Fd, new_path: &[u8]) -> Errno {
     unsafe {
         __wasi_path_rename(
             old_fd,
@@ -471,8 +460,8 @@ pub fn path_rename(old_fd: fd_t, old_path: &[u8], new_fd: fd_t, new_path: &[u8])
     }
 }
 
-pub fn fd_filestat_get(fd: fd_t) -> (errno_t, filestat_t) {
-    let mut buf = MaybeUninit::<filestat_t>::uninit();
+pub fn fd_filestat_get(fd: Fd) -> (Errno, Filestat) {
+    let mut buf = MaybeUninit::<Filestat>::uninit();
     unsafe {
         (
             __wasi_fd_filestat_get(fd, buf.as_mut_ptr()),
@@ -482,20 +471,20 @@ pub fn fd_filestat_get(fd: fd_t) -> (errno_t, filestat_t) {
 }
 
 pub fn fd_filestat_set_times(
-    fd: fd_t,
-    st_atim: timestamp_t,
-    st_mtim: timestamp_t,
-    fstflags: fstflags_t,
-) -> errno_t {
+    fd: Fd,
+    st_atim: Timestamp,
+    st_mtim: Timestamp,
+    fstflags: Fstflags,
+) -> Errno {
     unsafe { __wasi_fd_filestat_set_times(fd, st_atim, st_mtim, fstflags) }
 }
 
-pub fn fd_filestat_set_size(fd: fd_t, st_size: filesize_t) -> errno_t {
+pub fn fd_filestat_set_size(fd: Fd, st_size: Filesize) -> Errno {
     unsafe { __wasi_fd_filestat_set_size(fd, st_size) }
 }
 
-pub fn path_filestat_get(fd: fd_t, flags: lookupflags_t, path: &[u8]) -> (errno_t, filestat_t) {
-    let mut buf = MaybeUninit::<filestat_t>::uninit();
+pub fn path_filestat_get(fd: Fd, flags: Lookupflags, path: &[u8]) -> (Errno, Filestat) {
+    let mut buf = MaybeUninit::<Filestat>::uninit();
     unsafe {
         (
             __wasi_path_filestat_get(fd, flags, path.as_ptr(), path.len(), buf.as_mut_ptr()),
@@ -505,13 +494,13 @@ pub fn path_filestat_get(fd: fd_t, flags: lookupflags_t, path: &[u8]) -> (errno_
 }
 
 pub fn path_filestat_set_times(
-    fd: fd_t,
-    flags: lookupflags_t,
+    fd: Fd,
+    flags: Lookupflags,
     path: &[u8],
-    st_atim: timestamp_t,
-    st_mtim: timestamp_t,
-    fstflags: fstflags_t,
-) -> errno_t {
+    st_atim: Timestamp,
+    st_mtim: Timestamp,
+    fstflags: Fstflags,
+) -> Errno {
     unsafe {
         __wasi_path_filestat_set_times(
             fd,
@@ -525,7 +514,7 @@ pub fn path_filestat_set_times(
     }
 }
 
-pub fn path_symlink(old_path: &[u8], fd: fd_t, new_path: &[u8]) -> errno_t {
+pub fn path_symlink(old_path: &[u8], fd: Fd, new_path: &[u8]) -> Errno {
     unsafe {
         __wasi_path_symlink(
             old_path.as_ptr(),
@@ -537,15 +526,15 @@ pub fn path_symlink(old_path: &[u8], fd: fd_t, new_path: &[u8]) -> errno_t {
     }
 }
 
-pub fn path_unlink_file(fd: fd_t, path: &[u8]) -> errno_t {
+pub fn path_unlink_file(fd: Fd, path: &[u8]) -> Errno {
     unsafe { __wasi_path_unlink_file(fd, path.as_ptr(), path.len()) }
 }
 
-pub fn path_remove_directory(fd: fd_t, path: &[u8]) -> errno_t {
+pub fn path_remove_directory(fd: Fd, path: &[u8]) -> Errno {
     unsafe { __wasi_path_remove_directory(fd, path.as_ptr(), path.len()) }
 }
 
-pub fn poll_oneoff(in_: &[subscription_t], out: &mut [event_t]) -> (errno_t, usize) {
+pub fn poll_oneoff(in_: &[Subscription], out: &mut [Event]) -> (Errno, usize) {
     assert!(out.len() >= in_.len());
     let mut nevents = MaybeUninit::<usize>::uninit();
     unsafe {
@@ -561,21 +550,17 @@ pub fn poll_oneoff(in_: &[subscription_t], out: &mut [event_t]) -> (errno_t, usi
     }
 }
 
-pub fn proc_exit(rval: exitcode_t) {
+pub fn proc_exit(rval: Exitcode) {
     unsafe { __wasi_proc_exit(rval) }
 }
 
-pub fn proc_raise(sig: signal_t) -> errno_t {
+pub fn proc_raise(sig: Signal) -> Errno {
     unsafe { __wasi_proc_raise(sig) }
 }
 
-pub fn sock_recv(
-    sock: fd_t,
-    ri_data: &[iovec_t],
-    ri_flags: riflags_t,
-) -> (errno_t, usize, roflags_t) {
+pub fn sock_recv(sock: Fd, ri_data: &[Iovec], ri_flags: Riflags) -> (Errno, usize, Roflags) {
     let mut ro_datalen = MaybeUninit::<usize>::uninit();
-    let mut ro_flags = MaybeUninit::<roflags_t>::uninit();
+    let mut ro_flags = MaybeUninit::<Roflags>::uninit();
     unsafe {
         (
             __wasi_sock_recv(
@@ -592,7 +577,7 @@ pub fn sock_recv(
     }
 }
 
-pub fn sock_send(sock: fd_t, si_data: &[ciovec_t], si_flags: siflags_t) -> (errno_t, usize) {
+pub fn sock_send(sock: Fd, si_data: &[Ciovec], si_flags: Siflags) -> (Errno, usize) {
     let mut so_datalen = MaybeUninit::<usize>::uninit();
     unsafe {
         (
@@ -608,16 +593,16 @@ pub fn sock_send(sock: fd_t, si_data: &[ciovec_t], si_flags: siflags_t) -> (errn
     }
 }
 
-pub fn sock_shutdown(sock: fd_t, how: sdflags_t) -> errno_t {
+pub fn sock_shutdown(sock: Fd, how: Sdflags) -> Errno {
     unsafe { __wasi_sock_shutdown(sock, how) }
 }
 
-pub fn sched_yield() -> errno_t {
+pub fn sched_yield() -> Errno {
     unsafe { __wasi_sched_yield() }
 }
 
-pub fn fd_prestat_get(fd: fd_t) -> (errno_t, prestat_t) {
-    let mut buf = MaybeUninit::<prestat_t>::uninit();
+pub fn fd_prestat_get(fd: Fd) -> (Errno, Prestat) {
+    let mut buf = MaybeUninit::<Prestat>::uninit();
     unsafe {
         (
             __wasi_fd_prestat_get(fd, buf.as_mut_ptr()),
@@ -626,14 +611,14 @@ pub fn fd_prestat_get(fd: fd_t) -> (errno_t, prestat_t) {
     }
 }
 
-pub fn fd_prestat_dir_name(fd: fd_t, path: &mut [u8]) -> errno_t {
+pub fn fd_prestat_dir_name(fd: Fd, path: &mut [u8]) -> Errno {
     unsafe { __wasi_fd_prestat_dir_name(fd, path.as_mut_ptr(), path.len()) }
 }
 
 // TODO: Safe interfaces to the args and environ functions
 /*
-pub fn args_get(argv: *mut *mut u8, argv_buf: *mut u8) -> errno_t {}
-pub fn args_sizes_get(argc: *mut usize, argv_buf_size: *mut usize) -> errno_t {}
-pub fn environ_get(environ: *mut *mut u8, environ_buf: *mut u8) -> errno_t {}
-pub fn environ_sizes_get(environ_count: *mut usize, environ_buf_size: *mut usize) -> errno_t {}
+pub fn args_get(argv: *mut *mut u8, argv_buf: *mut u8) -> Errno {}
+pub fn args_sizes_get(argc: *mut usize, argv_buf_size: *mut usize) -> Errno {}
+pub fn environ_get(environ: *mut *mut u8, environ_buf: *mut u8) -> Errno {}
+pub fn environ_sizes_get(environ_count: *mut usize, environ_buf_size: *mut usize) -> Errno {}
 */
