@@ -29,7 +29,7 @@ pub type FileSize = __wasi_filesize_t;
 pub type FileType = __wasi_filetype_t;
 pub type FstFlags = __wasi_fstflags_t;
 pub type Inode = __wasi_inode_t;
-pub type Linkcount = __wasi_linkcount_t;
+pub type LinkCount = __wasi_linkcount_t;
 pub type LookupFlags = __wasi_lookupflags_t;
 pub type OFlags = __wasi_oflags_t;
 pub type PreopenType = __wasi_preopentype_t;
@@ -46,8 +46,8 @@ pub type Whence = __wasi_whence_t;
 pub type Dirent = __wasi_dirent_t;
 pub type FdStat = __wasi_fdstat_t;
 pub type FileStat = __wasi_filestat_t;
-pub type CIovec = __wasi_ciovec_t;
-pub type Iovec = __wasi_iovec_t;
+pub type CIoVec = __wasi_ciovec_t;
+pub type IoVec = __wasi_iovec_t;
 pub type Subscription = __wasi_subscription_t;
 pub type Event = __wasi_event_t;
 pub type Prestat = __wasi_prestat_t;
@@ -256,7 +256,7 @@ pub fn clock_time_get(clock_id: ClockId, precision: Timestamp) -> (Errno, Timest
     }
 }
 
-pub fn fd_pread(fd: Fd, iovs: &[Iovec], offset: FileSize) -> (Errno, usize) {
+pub fn fd_pread(fd: Fd, iovs: &[IoVec], offset: FileSize) -> (Errno, usize) {
     let mut nread = MaybeUninit::<usize>::uninit();
     unsafe {
         (
@@ -266,7 +266,7 @@ pub fn fd_pread(fd: Fd, iovs: &[Iovec], offset: FileSize) -> (Errno, usize) {
     }
 }
 
-pub fn fd_pwrite(fd: Fd, iovs: &[CIovec], offset: FileSize) -> (Errno, usize) {
+pub fn fd_pwrite(fd: Fd, iovs: &[CIoVec], offset: FileSize) -> (Errno, usize) {
     let mut nwritten = MaybeUninit::<usize>::uninit();
     unsafe {
         (
@@ -288,7 +288,7 @@ pub fn fd_datasync(fd: Fd) -> Errno {
     unsafe { __wasi_fd_datasync(fd) }
 }
 
-pub fn fd_read(fd: Fd, iovs: &[Iovec]) -> (Errno, usize) {
+pub fn fd_read(fd: Fd, iovs: &[IoVec]) -> (Errno, usize) {
     let mut nread = MaybeUninit::<usize>::uninit();
     unsafe {
         (
@@ -344,7 +344,7 @@ pub fn fd_sync(fd: Fd) -> Errno {
     unsafe { __wasi_fd_sync(fd) }
 }
 
-pub fn fd_write(fd: Fd, iovs: &[CIovec]) -> (Errno, usize) {
+pub fn fd_write(fd: Fd, iovs: &[CIoVec]) -> (Errno, usize) {
     let mut nwritten = MaybeUninit::<usize>::uninit();
     unsafe {
         (
@@ -558,7 +558,7 @@ pub fn proc_raise(sig: Signal) -> Errno {
     unsafe { __wasi_proc_raise(sig) }
 }
 
-pub fn sock_recv(sock: Fd, ri_data: &[Iovec], ri_flags: RiFlags) -> (Errno, usize, RoFlags) {
+pub fn sock_recv(sock: Fd, ri_data: &[IoVec], ri_flags: RiFlags) -> (Errno, usize, RoFlags) {
     let mut ro_datalen = MaybeUninit::<usize>::uninit();
     let mut ro_flags = MaybeUninit::<RoFlags>::uninit();
     unsafe {
@@ -577,7 +577,7 @@ pub fn sock_recv(sock: Fd, ri_data: &[Iovec], ri_flags: RiFlags) -> (Errno, usiz
     }
 }
 
-pub fn sock_send(sock: Fd, si_data: &[CIovec], si_flags: SiFlags) -> (Errno, usize) {
+pub fn sock_send(sock: Fd, si_data: &[CIoVec], si_flags: SiFlags) -> (Errno, usize) {
     let mut so_datalen = MaybeUninit::<usize>::uninit();
     unsafe {
         (
