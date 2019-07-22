@@ -273,8 +273,367 @@ pub fn fd_pread(fd: fd_t, iovs: &[iovec_t], offset: filesize_t) -> (errno_t, usi
     }
 }
 
+pub fn fd_pwrite(fd: fd_t, iovs: &[ciovec_t], offset: filesize_t) -> (__wasi_errno_t, usize) {
+    let mut nwritten = MaybeUninit::<usize>::uninit();
+    unsafe {
+        (
+            __wasi_fd_pwrite(fd, iovs.as_ptr(), iovs.len(), offset, nwritten.as_mut_ptr()),
+            nwritten.assume_init(),
+        )
+    }
+}
+
 pub fn random_get(buf: &mut [u8]) -> errno_t {
     unsafe { __wasi_random_get(buf.as_mut_ptr() as *mut c_void, buf.len()) }
 }
 
-// TODO: Implement more functions
+pub fn fd_close(fd: fd_t) -> errno_t {
+    unsafe { __wasi_fd_close(fd) }
+}
+
+pub fn fd_datasync(fd: fd_t) -> errno_t {
+    unsafe { __wasi_fd_datasync(fd) }
+}
+
+pub fn fd_read(fd: fd_t, iovs: &[iovec_t]) -> (errno_t, usize) {
+    let mut nread = MaybeUninit::<usize>::uninit();
+    unsafe {
+        (
+            __wasi_fd_read(fd, iovs.as_ptr(), iovs.len(), nread.as_mut_ptr()),
+            nread.assume_init(),
+        )
+    }
+}
+
+pub fn fd_renumber(from: fd_t, to: fd_t) -> errno_t {
+    unsafe { __wasi_fd_renumber(from, to) }
+}
+
+pub fn fd_seek(fd: fd_t, offset: filedelta_t, whence: whence_t) -> (errno_t, filesize_t) {
+    let mut newoffset = MaybeUninit::<filesize_t>::uninit();
+    unsafe {
+        (
+            __wasi_fd_seek(fd, offset, whence, newoffset.as_mut_ptr()),
+            newoffset.assume_init(),
+        )
+    }
+}
+
+pub fn fd_tell(fd: fd_t) -> (errno_t, filesize_t) {
+    let mut newoffset = MaybeUninit::<filesize_t>::uninit();
+    unsafe {
+        (
+            __wasi_fd_tell(fd, newoffset.as_mut_ptr()),
+            newoffset.assume_init(),
+        )
+    }
+}
+
+pub fn fd_fdstat_get(fd: fd_t) -> (errno_t, fdstat_t) {
+    let mut buf = MaybeUninit::<fdstat_t>::uninit();
+    unsafe {
+        (
+            __wasi_fd_fdstat_get(fd, buf.as_mut_ptr()),
+            buf.assume_init(),
+        )
+    }
+}
+
+pub fn fd_fdstat_set_flags(fd: fd_t, flags: fdflags_t) -> errno_t {
+    unsafe { __wasi_fd_fdstat_set_flags(fd, flags) }
+}
+
+pub fn fd_fdstat_set_rights(
+    fd: fd_t,
+    fs_rights_base: rights_t,
+    fs_rights_inheriting: rights_t,
+) -> errno_t {
+    unsafe { __wasi_fd_fdstat_set_rights(fd, fs_rights_base, fs_rights_inheriting) }
+}
+
+pub fn fd_sync(fd: fd_t) -> errno_t {
+    unsafe { __wasi_fd_sync(fd) }
+}
+
+pub fn fd_write(fd: fd_t, iovs: &[ciovec_t]) -> (errno_t, usize) {
+    let mut nwritten = MaybeUninit::<usize>::uninit();
+    unsafe {
+        (
+            __wasi_fd_write(fd, iovs.as_ptr(), iovs.len(), nwritten.as_mut_ptr()),
+            nwritten.assume_init(),
+        )
+    }
+}
+
+pub fn fd_advise(fd: fd_t, offset: filesize_t, len: filesize_t, advice: advice_t) -> errno_t {
+    unsafe { __wasi_fd_advise(fd, offset, len, advice) }
+}
+
+pub fn fd_allocate(fd: fd_t, offset: filesize_t, len: filesize_t) -> errno_t {
+    unsafe { __wasi_fd_allocate(fd, offset, len) }
+}
+
+pub fn path_create_directory(fd: fd_t, path: &[u8]) -> errno_t {
+    unsafe { __wasi_path_create_directory(fd, path.as_ptr(), path.len()) }
+}
+
+pub fn path_link(
+    old_fd: fd_t,
+    old_flags: lookupflags_t,
+    old_path: &[u8],
+    new_fd: fd_t,
+    new_path: &[u8],
+) -> errno_t {
+    unsafe {
+        __wasi_path_link(
+            old_fd,
+            old_flags,
+            old_path.as_ptr(),
+            old_path.len(),
+            new_fd,
+            new_path.as_ptr(),
+            new_path.len(),
+        )
+    }
+}
+
+pub fn path_open(
+    dirfd: fd_t,
+    dirflags: lookupflags_t,
+    path: &[u8],
+    oflags: oflags_t,
+    fs_rights_base: rights_t,
+    fs_rights_inheriting: rights_t,
+    fs_flags: fdflags_t,
+) -> (errno_t, fd_t) {
+    let mut fd = MaybeUninit::<fd_t>::uninit();
+    unsafe {
+        (
+            __wasi_path_open(
+                dirfd,
+                dirflags,
+                path.as_ptr(),
+                path.len(),
+                oflags,
+                fs_rights_base,
+                fs_rights_inheriting,
+                fs_flags,
+                fd.as_mut_ptr(),
+            ),
+            fd.assume_init(),
+        )
+    }
+}
+
+pub fn fd_readdir(fd: fd_t, buf: &mut [u8], cookie: dircookie_t) -> (errno_t, usize) {
+    let mut bufused = MaybeUninit::<usize>::uninit();
+    unsafe {
+        (
+            __wasi_fd_readdir(
+                fd,
+                buf.as_mut_ptr() as *mut c_void,
+                buf.len(),
+                cookie,
+                bufused.as_mut_ptr(),
+            ),
+            bufused.assume_init(),
+        )
+    }
+}
+
+pub fn path_readlink(fd: fd_t, path: &[u8], buf: &mut [u8]) -> (errno_t, usize) {
+    let mut bufused = MaybeUninit::<usize>::uninit();
+    unsafe {
+        (
+            __wasi_path_readlink(
+                fd,
+                path.as_ptr(),
+                path.len(),
+                buf.as_mut_ptr(),
+                buf.len(),
+                bufused.as_mut_ptr(),
+            ),
+            bufused.assume_init(),
+        )
+    }
+}
+
+pub fn path_rename(old_fd: fd_t, old_path: &[u8], new_fd: fd_t, new_path: &[u8]) -> errno_t {
+    unsafe {
+        __wasi_path_rename(
+            old_fd,
+            old_path.as_ptr(),
+            old_path.len(),
+            new_fd,
+            new_path.as_ptr(),
+            new_path.len(),
+        )
+    }
+}
+
+pub fn fd_filestat_get(fd: fd_t) -> (errno_t, filestat_t) {
+    let mut buf = MaybeUninit::<filestat_t>::uninit();
+    unsafe {
+        (
+            __wasi_fd_filestat_get(fd, buf.as_mut_ptr()),
+            buf.assume_init(),
+        )
+    }
+}
+
+pub fn fd_filestat_set_times(
+    fd: fd_t,
+    st_atim: timestamp_t,
+    st_mtim: timestamp_t,
+    fstflags: fstflags_t,
+) -> errno_t {
+    unsafe { __wasi_fd_filestat_set_times(fd, st_atim, st_mtim, fstflags) }
+}
+
+pub fn fd_filestat_set_size(fd: fd_t, st_size: filesize_t) -> errno_t {
+    unsafe { __wasi_fd_filestat_set_size(fd, st_size) }
+}
+
+pub fn path_filestat_get(fd: fd_t, flags: lookupflags_t, path: &[u8]) -> (errno_t, filestat_t) {
+    let mut buf = MaybeUninit::<filestat_t>::uninit();
+    unsafe {
+        (
+            __wasi_path_filestat_get(fd, flags, path.as_ptr(), path.len(), buf.as_mut_ptr()),
+            buf.assume_init(),
+        )
+    }
+}
+
+pub fn path_filestat_set_times(
+    fd: fd_t,
+    flags: lookupflags_t,
+    path: &[u8],
+    st_atim: timestamp_t,
+    st_mtim: timestamp_t,
+    fstflags: fstflags_t,
+) -> errno_t {
+    unsafe {
+        __wasi_path_filestat_set_times(
+            fd,
+            flags,
+            path.as_ptr(),
+            path.len(),
+            st_atim,
+            st_mtim,
+            fstflags,
+        )
+    }
+}
+
+pub fn path_symlink(old_path: &[u8], fd: fd_t, new_path: &[u8]) -> errno_t {
+    unsafe {
+        __wasi_path_symlink(
+            old_path.as_ptr(),
+            old_path.len(),
+            fd,
+            new_path.as_ptr(),
+            new_path.len(),
+        )
+    }
+}
+
+pub fn path_unlink_file(fd: fd_t, path: &[u8]) -> errno_t {
+    unsafe { __wasi_path_unlink_file(fd, path.as_ptr(), path.len()) }
+}
+
+pub fn path_remove_directory(fd: fd_t, path: &[u8]) -> errno_t {
+    unsafe { __wasi_path_remove_directory(fd, path.as_ptr(), path.len()) }
+}
+
+pub fn poll_oneoff(in_: &[subscription_t], out: &mut [event_t]) -> (errno_t, usize) {
+    assert!(out.len() >= in_.len());
+    let mut nevents = MaybeUninit::<usize>::uninit();
+    unsafe {
+        (
+            __wasi_poll_oneoff(
+                in_.as_ptr(),
+                out.as_mut_ptr(),
+                in_.len(),
+                nevents.as_mut_ptr(),
+            ),
+            nevents.assume_init(),
+        )
+    }
+}
+
+pub fn proc_exit(rval: exitcode_t) {
+    unsafe { __wasi_proc_exit(rval) }
+}
+
+pub fn proc_raise(sig: signal_t) -> errno_t {
+    unsafe { __wasi_proc_raise(sig) }
+}
+
+pub fn sock_recv(
+    sock: fd_t,
+    ri_data: &[iovec_t],
+    ri_flags: riflags_t,
+) -> (errno_t, usize, roflags_t) {
+    let mut ro_datalen = MaybeUninit::<usize>::uninit();
+    let mut ro_flags = MaybeUninit::<roflags_t>::uninit();
+    unsafe {
+        (
+            __wasi_sock_recv(
+                sock,
+                ri_data.as_ptr(),
+                ri_data.len(),
+                ri_flags,
+                ro_datalen.as_mut_ptr(),
+                ro_flags.as_mut_ptr(),
+            ),
+            ro_datalen.assume_init(),
+            ro_flags.assume_init(),
+        )
+    }
+}
+
+pub fn sock_send(sock: fd_t, si_data: &[ciovec_t], si_flags: siflags_t) -> (errno_t, usize) {
+    let mut so_datalen = MaybeUninit::<usize>::uninit();
+    unsafe {
+        (
+            __wasi_sock_send(
+                sock,
+                si_data.as_ptr(),
+                si_data.len(),
+                si_flags,
+                so_datalen.as_mut_ptr(),
+            ),
+            so_datalen.assume_init(),
+        )
+    }
+}
+
+pub fn sock_shutdown(sock: fd_t, how: sdflags_t) -> errno_t {
+    unsafe { __wasi_sock_shutdown(sock, how) }
+}
+
+pub fn sched_yield() -> errno_t {
+    unsafe { __wasi_sched_yield() }
+}
+
+pub fn fd_prestat_get(fd: fd_t) -> (errno_t, prestat_t) {
+    let mut buf = MaybeUninit::<prestat_t>::uninit();
+    unsafe {
+        (
+            __wasi_fd_prestat_get(fd, buf.as_mut_ptr()),
+            buf.assume_init(),
+        )
+    }
+}
+
+pub fn fd_prestat_dir_name(fd: fd_t, path: &mut [u8]) -> errno_t {
+    unsafe { __wasi_fd_prestat_dir_name(fd, path.as_mut_ptr(), path.len()) }
+}
+
+// TODO: Safe interfaces to the args and environ functions
+/*
+pub fn args_get(argv: *mut *mut u8, argv_buf: *mut u8) -> errno_t {}
+pub fn args_sizes_get(argc: *mut usize, argv_buf_size: *mut usize) -> errno_t {}
+pub fn environ_get(environ: *mut *mut u8, environ_buf: *mut u8) -> errno_t {}
+pub fn environ_sizes_get(environ_count: *mut usize, environ_buf_size: *mut usize) -> errno_t {}
+*/
