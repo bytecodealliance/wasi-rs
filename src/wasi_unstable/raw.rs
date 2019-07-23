@@ -350,16 +350,20 @@ extern "C" {
         clock_id: __wasi_clockid_t,
         resolution: *mut __wasi_timestamp_t,
     ) -> __wasi_errno_t;
+
     #[link_name = "clock_time_get"]
     pub fn __wasi_clock_time_get(
         clock_id: __wasi_clockid_t,
         precision: __wasi_timestamp_t,
         time: *mut __wasi_timestamp_t,
     ) -> __wasi_errno_t;
+
     #[link_name = "fd_close"]
     pub fn __wasi_fd_close(fd: __wasi_fd_t) -> __wasi_errno_t;
+
     #[link_name = "fd_datasync"]
     pub fn __wasi_fd_datasync(fd: __wasi_fd_t) -> __wasi_errno_t;
+
     #[link_name = "fd_pread"]
     pub fn __wasi_fd_pread(
         fd: __wasi_fd_t,
@@ -368,6 +372,7 @@ extern "C" {
         offset: __wasi_filesize_t,
         nread: *mut usize,
     ) -> __wasi_errno_t;
+
     #[link_name = "fd_pwrite"]
     pub fn __wasi_fd_pwrite(
         fd: __wasi_fd_t,
@@ -376,6 +381,7 @@ extern "C" {
         offset: __wasi_filesize_t,
         nwritten: *mut usize,
     ) -> __wasi_errno_t;
+
     #[link_name = "fd_read"]
     pub fn __wasi_fd_read(
         fd: __wasi_fd_t,
@@ -383,8 +389,10 @@ extern "C" {
         iovs_len: usize,
         nread: *mut usize,
     ) -> __wasi_errno_t;
+
     #[link_name = "fd_renumber"]
     pub fn __wasi_fd_renumber(from: __wasi_fd_t, to: __wasi_fd_t) -> __wasi_errno_t;
+
     #[link_name = "fd_seek"]
     pub fn __wasi_fd_seek(
         fd: __wasi_fd_t,
@@ -392,20 +400,26 @@ extern "C" {
         whence: __wasi_whence_t,
         newoffset: *mut __wasi_filesize_t,
     ) -> __wasi_errno_t;
+
     #[link_name = "fd_tell"]
     pub fn __wasi_fd_tell(fd: __wasi_fd_t, newoffset: *mut __wasi_filesize_t) -> __wasi_errno_t;
+
     #[link_name = "fd_fdstat_get"]
     pub fn __wasi_fd_fdstat_get(fd: __wasi_fd_t, buf: *mut __wasi_fdstat_t) -> __wasi_errno_t;
+
     #[link_name = "fd_fdstat_set_flags"]
     pub fn __wasi_fd_fdstat_set_flags(fd: __wasi_fd_t, flags: __wasi_fdflags_t) -> __wasi_errno_t;
+
     #[link_name = "fd_fdstat_set_rights"]
     pub fn __wasi_fd_fdstat_set_rights(
         fd: __wasi_fd_t,
         fs_rights_base: __wasi_rights_t,
         fs_rights_inheriting: __wasi_rights_t,
     ) -> __wasi_errno_t;
+
     #[link_name = "fd_sync"]
     pub fn __wasi_fd_sync(fd: __wasi_fd_t) -> __wasi_errno_t;
+
     #[link_name = "fd_write"]
     pub fn __wasi_fd_write(
         fd: __wasi_fd_t,
@@ -413,6 +427,7 @@ extern "C" {
         iovs_len: usize,
         nwritten: *mut usize,
     ) -> __wasi_errno_t;
+
     #[link_name = "fd_advise"]
     pub fn __wasi_fd_advise(
         fd: __wasi_fd_t,
@@ -420,18 +435,21 @@ extern "C" {
         len: __wasi_filesize_t,
         advice: __wasi_advice_t,
     ) -> __wasi_errno_t;
+
     #[link_name = "fd_allocate"]
     pub fn __wasi_fd_allocate(
         fd: __wasi_fd_t,
         offset: __wasi_filesize_t,
         len: __wasi_filesize_t,
     ) -> __wasi_errno_t;
+
     #[link_name = "path_create_directory"]
     pub fn __wasi_path_create_directory(
         fd: __wasi_fd_t,
         path: *const u8,
         path_len: usize,
     ) -> __wasi_errno_t;
+
     #[link_name = "path_link"]
     pub fn __wasi_path_link(
         old_fd: __wasi_fd_t,
@@ -442,6 +460,7 @@ extern "C" {
         new_path: *const u8,
         new_path_len: usize,
     ) -> __wasi_errno_t;
+
     #[link_name = "path_open"]
     pub fn __wasi_path_open(
         dirfd: __wasi_fd_t,
@@ -454,6 +473,7 @@ extern "C" {
         fs_flags: __wasi_fdflags_t,
         fd: *mut __wasi_fd_t,
     ) -> __wasi_errno_t;
+
     #[link_name = "fd_readdir"]
     pub fn __wasi_fd_readdir(
         fd: __wasi_fd_t,
@@ -462,6 +482,7 @@ extern "C" {
         cookie: __wasi_dircookie_t,
         bufused: *mut usize,
     ) -> __wasi_errno_t;
+
     #[link_name = "path_readlink"]
     pub fn __wasi_path_readlink(
         fd: __wasi_fd_t,
@@ -471,6 +492,7 @@ extern "C" {
         buf_len: usize,
         bufused: *mut usize,
     ) -> __wasi_errno_t;
+
     #[link_name = "path_rename"]
     pub fn __wasi_path_rename(
         old_fd: __wasi_fd_t,
@@ -480,8 +502,10 @@ extern "C" {
         new_path: *const u8,
         new_path_len: usize,
     ) -> __wasi_errno_t;
+
     #[link_name = "fd_filestat_get"]
     pub fn __wasi_fd_filestat_get(fd: __wasi_fd_t, buf: *mut __wasi_filestat_t) -> __wasi_errno_t;
+
     #[link_name = "fd_filestat_set_times"]
     pub fn __wasi_fd_filestat_set_times(
         fd: __wasi_fd_t,
@@ -489,11 +513,13 @@ extern "C" {
         st_mtim: __wasi_timestamp_t,
         fstflags: __wasi_fstflags_t,
     ) -> __wasi_errno_t;
+
     #[link_name = "fd_filestat_set_size"]
     pub fn __wasi_fd_filestat_set_size(
         fd: __wasi_fd_t,
         st_size: __wasi_filesize_t,
     ) -> __wasi_errno_t;
+
     #[link_name = "path_filestat_get"]
     pub fn __wasi_path_filestat_get(
         fd: __wasi_fd_t,
@@ -502,6 +528,7 @@ extern "C" {
         path_len: usize,
         buf: *mut __wasi_filestat_t,
     ) -> __wasi_errno_t;
+
     #[link_name = "path_filestat_set_times"]
     pub fn __wasi_path_filestat_set_times(
         fd: __wasi_fd_t,
@@ -512,6 +539,7 @@ extern "C" {
         st_mtim: __wasi_timestamp_t,
         fstflags: __wasi_fstflags_t,
     ) -> __wasi_errno_t;
+
     #[link_name = "path_symlink"]
     pub fn __wasi_path_symlink(
         old_path: *const u8,
@@ -520,18 +548,21 @@ extern "C" {
         new_path: *const u8,
         new_path_len: usize,
     ) -> __wasi_errno_t;
+
     #[link_name = "path_unlink_file"]
     pub fn __wasi_path_unlink_file(
         fd: __wasi_fd_t,
         path: *const u8,
         path_len: usize,
     ) -> __wasi_errno_t;
+
     #[link_name = "path_remove_directory"]
     pub fn __wasi_path_remove_directory(
         fd: __wasi_fd_t,
         path: *const u8,
         path_len: usize,
     ) -> __wasi_errno_t;
+
     #[link_name = "poll_oneoff"]
     pub fn __wasi_poll_oneoff(
         in_: *const __wasi_subscription_t,
@@ -539,12 +570,16 @@ extern "C" {
         nsubscriptions: usize,
         nevents: *mut usize,
     ) -> __wasi_errno_t;
+
     #[link_name = "proc_exit"]
     pub fn __wasi_proc_exit(rval: __wasi_exitcode_t);
+
     #[link_name = "proc_raise"]
     pub fn __wasi_proc_raise(sig: __wasi_signal_t) -> __wasi_errno_t;
+
     #[link_name = "random_get"]
     pub fn __wasi_random_get(buf: *mut c_void, buf_len: usize) -> __wasi_errno_t;
+
     #[link_name = "sock_recv"]
     pub fn __wasi_sock_recv(
         sock: __wasi_fd_t,
@@ -554,6 +589,7 @@ extern "C" {
         ro_datalen: *mut usize,
         ro_flags: *mut __wasi_roflags_t,
     ) -> __wasi_errno_t;
+
     #[link_name = "sock_send"]
     pub fn __wasi_sock_send(
         sock: __wasi_fd_t,
@@ -562,23 +598,31 @@ extern "C" {
         si_flags: __wasi_siflags_t,
         so_datalen: *mut usize,
     ) -> __wasi_errno_t;
+
     #[link_name = "sock_shutdown"]
     pub fn __wasi_sock_shutdown(sock: __wasi_fd_t, how: __wasi_sdflags_t) -> __wasi_errno_t;
+
     #[link_name = "sched_yield"]
     pub fn __wasi_sched_yield() -> __wasi_errno_t;
+
     #[link_name = "args_get"]
     pub fn __wasi_args_get(argv: *mut *mut u8, argv_buf: *mut u8) -> __wasi_errno_t;
+
     #[link_name = "args_sizes_get"]
     pub fn __wasi_args_sizes_get(argc: *mut usize, argv_buf_size: *mut usize) -> __wasi_errno_t;
+
     #[link_name = "environ_get"]
     pub fn __wasi_environ_get(environ: *mut *mut u8, environ_buf: *mut u8) -> __wasi_errno_t;
+
     #[link_name = "environ_sizes_get"]
     pub fn __wasi_environ_sizes_get(
         environ_count: *mut usize,
         environ_buf_size: *mut usize,
     ) -> __wasi_errno_t;
+
     #[link_name = "fd_prestat_get"]
     pub fn __wasi_fd_prestat_get(fd: __wasi_fd_t, buf: *mut __wasi_prestat_t) -> __wasi_errno_t;
+
     #[link_name = "fd_prestat_dir_name"]
     pub fn __wasi_fd_prestat_dir_name(
         fd: __wasi_fd_t,
