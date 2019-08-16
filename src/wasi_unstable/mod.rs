@@ -66,6 +66,8 @@ pub struct Event {
 // Assert that `Event` and `__wasi_event_t` have the same size
 const _ASSERT1: [(); 32] = [(); core::mem::size_of::<__wasi_event_t>()];
 const _ASSERT2: [(); 32] = [(); core::mem::size_of::<Event>()];
+// Aassert that `__WASI_ESUCCESS` equals to 0
+const _ASSERT3: [(); 0] =  [(); __WASI_ESUCCESS as usize];
 
 pub const ADVICE_NORMAL: Advice = __WASI_ADVICE_NORMAL;
 pub const ADVICE_SEQUENTIAL: Advice = __WASI_ADVICE_SEQUENTIAL;
@@ -79,11 +81,8 @@ pub const CLOCK_PROCESS_CPUTIME_ID: ClockId = __WASI_CLOCK_PROCESS_CPUTIME_ID;
 pub const CLOCK_THREAD_CPUTIME_ID: ClockId = __WASI_CLOCK_THREAD_CPUTIME_ID;
 pub const DIRCOOKIE_START: DirCookie = __WASI_DIRCOOKIE_START;
 
-// Aassert that `__WASI_ESUCCESS` equals to 0
-const _ASSERT3: [(); 0] =  [(); __WASI_ESUCCESS as usize];
-
 macro_rules! errno_set {
-    ($($safe_const:ident => $raw_const:ident,)*) => {
+    {$($safe_const:ident = $raw_const:ident;)*} => {
         $(
             pub const $safe_const: Error = unsafe {
                 NonZeroU16::new_unchecked($raw_const)
@@ -92,84 +91,84 @@ macro_rules! errno_set {
     };
 }
 
-errno_set!(
-    E2BIG => __WASI_E2BIG,
-    EACCES => __WASI_EACCES,
-    EADDRINUSE => __WASI_EADDRINUSE,
-    EADDRNOTAVAIL => __WASI_EADDRNOTAVAIL,
-    EAFNOSUPPORT => __WASI_EAFNOSUPPORT,
-    EAGAIN => __WASI_EAGAIN,
-    EALREADY => __WASI_EALREADY,
-    EBADF => __WASI_EBADF,
-    EBADMSG => __WASI_EBADMSG,
-    EBUSY => __WASI_EBUSY,
-    ECANCELED => __WASI_ECANCELED,
-    ECHILD => __WASI_ECHILD,
-    ECONNABORTED => __WASI_ECONNABORTED,
-    ECONNREFUSED => __WASI_ECONNREFUSED,
-    ECONNRESET => __WASI_ECONNRESET,
-    EDEADLK => __WASI_EDEADLK,
-    EDESTADDRREQ => __WASI_EDESTADDRREQ,
-    EDOM => __WASI_EDOM,
-    EDQUOT => __WASI_EDQUOT,
-    EEXIST => __WASI_EEXIST,
-    EFAULT => __WASI_EFAULT,
-    EFBIG => __WASI_EFBIG,
-    EHOSTUNREACH => __WASI_EHOSTUNREACH,
-    EIDRM => __WASI_EIDRM,
-    EILSEQ => __WASI_EILSEQ,
-    EINPROGRESS => __WASI_EINPROGRESS,
-    EINTR => __WASI_EINTR,
-    EINVAL => __WASI_EINVAL,
-    EIO => __WASI_EIO,
-    EISCONN => __WASI_EISCONN,
-    EISDIR => __WASI_EISDIR,
-    ELOOP => __WASI_ELOOP,
-    EMFILE => __WASI_EMFILE,
-    EMLINK => __WASI_EMLINK,
-    EMSGSIZE => __WASI_EMSGSIZE,
-    EMULTIHOP => __WASI_EMULTIHOP,
-    ENAMETOOLONG => __WASI_ENAMETOOLONG,
-    ENETDOWN => __WASI_ENETDOWN,
-    ENETRESET => __WASI_ENETRESET,
-    ENETUNREACH => __WASI_ENETUNREACH,
-    ENFILE => __WASI_ENFILE,
-    ENOBUFS => __WASI_ENOBUFS,
-    ENODEV => __WASI_ENODEV,
-    ENOENT => __WASI_ENOENT,
-    ENOEXEC => __WASI_ENOEXEC,
-    ENOLCK => __WASI_ENOLCK,
-    ENOLINK => __WASI_ENOLINK,
-    ENOMEM => __WASI_ENOMEM,
-    ENOMSG => __WASI_ENOMSG,
-    ENOPROTOOPT => __WASI_ENOPROTOOPT,
-    ENOSPC => __WASI_ENOSPC,
-    ENOSYS => __WASI_ENOSYS,
-    ENOTCONN => __WASI_ENOTCONN,
-    ENOTDIR => __WASI_ENOTDIR,
-    ENOTEMPTY => __WASI_ENOTEMPTY,
-    ENOTRECOVERABLE => __WASI_ENOTRECOVERABLE,
-    ENOTSOCK => __WASI_ENOTSOCK,
-    ENOTSUP => __WASI_ENOTSUP,
-    ENOTTY => __WASI_ENOTTY,
-    ENXIO => __WASI_ENXIO,
-    EOVERFLOW => __WASI_EOVERFLOW,
-    EOWNERDEAD => __WASI_EOWNERDEAD,
-    EPERM => __WASI_EPERM,
-    EPIPE => __WASI_EPIPE,
-    EPROTO => __WASI_EPROTO,
-    EPROTONOSUPPORT => __WASI_EPROTONOSUPPORT,
-    EPROTOTYPE => __WASI_EPROTOTYPE,
-    ERANGE => __WASI_ERANGE,
-    EROFS => __WASI_EROFS,
-    ESPIPE => __WASI_ESPIPE,
-    ESRCH => __WASI_ESRCH,
-    ESTALE => __WASI_ESTALE,
-    ETIMEDOUT => __WASI_ETIMEDOUT,
-    ETXTBSY => __WASI_ETXTBSY,
-    EXDEV => __WASI_EXDEV,
-    ENOTCAPABLE => __WASI_ENOTCAPABLE,
-);
+errno_set!{
+    E2BIG = __WASI_E2BIG;
+    EACCES = __WASI_EACCES;
+    EADDRINUSE = __WASI_EADDRINUSE;
+    EADDRNOTAVAIL = __WASI_EADDRNOTAVAIL;
+    EAFNOSUPPORT = __WASI_EAFNOSUPPORT;
+    EAGAIN = __WASI_EAGAIN;
+    EALREADY = __WASI_EALREADY;
+    EBADF = __WASI_EBADF;
+    EBADMSG = __WASI_EBADMSG;
+    EBUSY = __WASI_EBUSY;
+    ECANCELED = __WASI_ECANCELED;
+    ECHILD = __WASI_ECHILD;
+    ECONNABORTED = __WASI_ECONNABORTED;
+    ECONNREFUSED = __WASI_ECONNREFUSED;
+    ECONNRESET = __WASI_ECONNRESET;
+    EDEADLK = __WASI_EDEADLK;
+    EDESTADDRREQ = __WASI_EDESTADDRREQ;
+    EDOM = __WASI_EDOM;
+    EDQUOT = __WASI_EDQUOT;
+    EEXIST = __WASI_EEXIST;
+    EFAULT = __WASI_EFAULT;
+    EFBIG = __WASI_EFBIG;
+    EHOSTUNREACH = __WASI_EHOSTUNREACH;
+    EIDRM = __WASI_EIDRM;
+    EILSEQ = __WASI_EILSEQ;
+    EINPROGRESS = __WASI_EINPROGRESS;
+    EINTR = __WASI_EINTR;
+    EINVAL = __WASI_EINVAL;
+    EIO = __WASI_EIO;
+    EISCONN = __WASI_EISCONN;
+    EISDIR = __WASI_EISDIR;
+    ELOOP = __WASI_ELOOP;
+    EMFILE = __WASI_EMFILE;
+    EMLINK = __WASI_EMLINK;
+    EMSGSIZE = __WASI_EMSGSIZE;
+    EMULTIHOP = __WASI_EMULTIHOP;
+    ENAMETOOLONG = __WASI_ENAMETOOLONG;
+    ENETDOWN = __WASI_ENETDOWN;
+    ENETRESET = __WASI_ENETRESET;
+    ENETUNREACH = __WASI_ENETUNREACH;
+    ENFILE = __WASI_ENFILE;
+    ENOBUFS = __WASI_ENOBUFS;
+    ENODEV = __WASI_ENODEV;
+    ENOENT = __WASI_ENOENT;
+    ENOEXEC = __WASI_ENOEXEC;
+    ENOLCK = __WASI_ENOLCK;
+    ENOLINK = __WASI_ENOLINK;
+    ENOMEM = __WASI_ENOMEM;
+    ENOMSG = __WASI_ENOMSG;
+    ENOPROTOOPT = __WASI_ENOPROTOOPT;
+    ENOSPC = __WASI_ENOSPC;
+    ENOSYS = __WASI_ENOSYS;
+    ENOTCONN = __WASI_ENOTCONN;
+    ENOTDIR = __WASI_ENOTDIR;
+    ENOTEMPTY = __WASI_ENOTEMPTY;
+    ENOTRECOVERABLE = __WASI_ENOTRECOVERABLE;
+    ENOTSOCK = __WASI_ENOTSOCK;
+    ENOTSUP = __WASI_ENOTSUP;
+    ENOTTY = __WASI_ENOTTY;
+    ENXIO = __WASI_ENXIO;
+    EOVERFLOW = __WASI_EOVERFLOW;
+    EOWNERDEAD = __WASI_EOWNERDEAD;
+    EPERM = __WASI_EPERM;
+    EPIPE = __WASI_EPIPE;
+    EPROTO = __WASI_EPROTO;
+    EPROTONOSUPPORT = __WASI_EPROTONOSUPPORT;
+    EPROTOTYPE = __WASI_EPROTOTYPE;
+    ERANGE = __WASI_ERANGE;
+    EROFS = __WASI_EROFS;
+    ESPIPE = __WASI_ESPIPE;
+    ESRCH = __WASI_ESRCH;
+    ESTALE = __WASI_ESTALE;
+    ETIMEDOUT = __WASI_ETIMEDOUT;
+    ETXTBSY = __WASI_ETXTBSY;
+    EXDEV = __WASI_EXDEV;
+    ENOTCAPABLE = __WASI_ENOTCAPABLE;
+}
 
 pub const EVENT_FD_READWRITE_HANGUP: EventRwFlags = __WASI_EVENT_FD_READWRITE_HANGUP;
 pub const EVENTTYPE_CLOCK: EventType = __WASI_EVENTTYPE_CLOCK;
@@ -302,15 +301,11 @@ pub fn clock_time_get(clock_id: ClockId, precision: Timestamp) -> Result<Timesta
 }
 
 pub fn fd_pread(fd: Fd, iovs: &[IoVec], offset: FileSize) -> Result<usize, Error> {
-    unsafe_wrap!{
-        __wasi_fd_pread(fd, iovs.as_ptr(), iovs.len(), offset)
-    }
+    unsafe_wrap!{ __wasi_fd_pread(fd, iovs.as_ptr(), iovs.len(), offset) }
 }
 
 pub fn fd_pwrite(fd: Fd, iovs: &[CIoVec], offset: FileSize) -> Result<usize, Error> {
-    unsafe_wrap!{
-        __wasi_fd_pwrite(fd, iovs.as_ptr(), iovs.len(), offset)
-    }
+    unsafe_wrap!{ __wasi_fd_pwrite(fd, iovs.as_ptr(), iovs.len(), offset) }
 }
 
 pub fn random_get(buf: &mut [u8]) -> Result<(), Error> {
@@ -326,9 +321,7 @@ pub fn fd_datasync(fd: Fd) -> Result<(), Error> {
 }
 
 pub fn fd_read(fd: Fd, iovs: &[IoVec]) -> Result<usize, Error> {
-    unsafe_wrap!{
-        __wasi_fd_read(fd, iovs.as_ptr(), iovs.len())
-    }
+    unsafe_wrap!{ __wasi_fd_read(fd, iovs.as_ptr(), iovs.len()) }
 }
 
 pub fn fd_renumber(from: Fd, to: Fd) -> Result<(), Error> {
@@ -549,9 +542,7 @@ pub fn sock_recv(sock: Fd, ri_data: &[IoVec], ri_flags: RiFlags) -> Result<(usiz
 }
 
 pub fn sock_send(sock: Fd, si_data: &[CIoVec], si_flags: SiFlags) -> Result<usize, Error> {
-    unsafe_wrap!{
-        __wasi_sock_send(sock, si_data.as_ptr(), si_data.len(), si_flags)
-    }
+    unsafe_wrap!{ __wasi_sock_send(sock, si_data.as_ptr(), si_data.len(), si_flags) }
 }
 
 pub fn sock_shutdown(sock: Fd, how: SdFlags) -> Result<(), Error> {
