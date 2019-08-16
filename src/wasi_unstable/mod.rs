@@ -57,16 +57,16 @@ pub type Prestat = __wasi_prestat_t;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct Event {
-    pub userdata: __wasi_userdata_t,
+    pub userdata: Userdata,
     pub res: Result<(), Error>,
-    pub type_: __wasi_eventtype_t,
-    pub u: __wasi_event_u,
+    pub type_: EventType,
+    pub u: Event,
 }
 
 // Assert that `Event` and `__wasi_event_t` have the same size
 const _ASSERT1: [(); 32] = [(); core::mem::size_of::<__wasi_event_t>()];
 const _ASSERT2: [(); 32] = [(); core::mem::size_of::<Event>()];
-// Aassert that `__WASI_ESUCCESS` equals to 0
+// Assert that `__WASI_ESUCCESS` equals to 0
 const _ASSERT3: [(); 0] =  [(); __WASI_ESUCCESS as usize];
 
 pub const ADVICE_NORMAL: Advice = __WASI_ADVICE_NORMAL;
