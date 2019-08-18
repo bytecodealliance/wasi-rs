@@ -342,6 +342,9 @@ pub const __WASI_SUBSCRIPTION_CLOCK_ABSTIME: u16 = 0x0001;
 pub const __WASI_WHENCE_CUR: u8 = 0;
 pub const __WASI_WHENCE_END: u8 = 1;
 pub const __WASI_WHENCE_SET: u8 = 2;
+pub const __WASI_STDIN_FD: u32 = 0;
+pub const __WASI_STDOUT_FD: u32 = 1;
+pub const __WASI_STDERR_FD: u32 = 2;
 
 #[link(wasm_import_module = "wasi_unstable")]
 extern "C" {
