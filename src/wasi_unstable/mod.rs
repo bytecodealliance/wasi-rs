@@ -60,7 +60,7 @@ pub struct Event {
     pub userdata: Userdata,
     pub res: Result<(), Error>,
     pub type_: EventType,
-    pub u: Event,
+    pub u: __wasi_event_u,
 }
 
 // Assert that `Event` and `__wasi_event_t` have the same size
