@@ -550,7 +550,7 @@ pub fn poll_oneoff(in_: &[Subscription], out: &mut [Event]) -> Result<usize, Err
 }
 
 #[inline]
-pub fn proc_exit(rval: ExitCode) {
+pub fn proc_exit(rval: ExitCode) -> ! {
     unsafe { __wasi_proc_exit(rval) }
 }
 
