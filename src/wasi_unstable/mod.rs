@@ -596,16 +596,6 @@ pub fn fd_prestat_dir_name(fd: Fd, path: &mut [u8]) -> Result<(), Error> {
 #[cfg(feature = "alloc")]
 use alloc::{vec::Vec, string::String};
 
-// TODO: add descriptions
-#[cfg(feature = "alloc")]
-pub fn error_string(errno: __wasi_errno_t) -> String {
-    use alloc::{format, string::ToString};
-    match errno {
-        0 => "Success",
-        n => return format!("Unknown error {}", n),
-    }.to_string()
-}
-
 #[cfg(feature = "alloc")]
 pub fn get_args() -> Result<Vec<Vec<u8>>, Error> {
     use alloc::vec;
@@ -661,4 +651,94 @@ pub fn get_environ() -> Result<Vec<Vec<u8>>, Error> {
     }
 
     Ok(argc.into_iter().map(|p| cstr2vec(p as *const u8)).collect())
+}
+
+// TODO: improve descriptions
+#[cfg(feature = "alloc")]
+pub fn error_string(errno: __wasi_errno_t) -> String {
+    use alloc::{format, string::ToString};
+    let code = if let Some(code) = NonZeroU16::new(errno) {
+        code
+    } else {
+        return "Success".to_string();
+    };
+    match code {
+        E2BIG => "E2BIG",
+        EACCES => "EACCES",
+        EADDRINUSE => "EADDRINUSE",
+        EADDRNOTAVAIL => "EADDRNOTAVAIL",
+        EAFNOSUPPORT => "EAFNOSUPPORT",
+        EAGAIN => "EAGAIN",
+        EALREADY => "EALREADY",
+        EBADF => "EBADF",
+        EBADMSG => "EBADMSG",
+        EBUSY => "EBUSY",
+        ECANCELED => "ECANCELED",
+        ECHILD => "ECHILD",
+        ECONNABORTED => "ECONNABORTED",
+        ECONNREFUSED => "ECONNREFUSED",
+        ECONNRESET => "ECONNRESET",
+        EDEADLK => "EDEADLK",
+        EDESTADDRREQ => "EDESTADDRREQ",
+        EDOM => "EDOM",
+        EDQUOT => "EDQUOT",
+        EEXIST => "EEXIST",
+        EFAULT => "EFAULT",
+        EFBIG => "EFBIG",
+        EHOSTUNREACH => "EHOSTUNREACH",
+        EIDRM => "EIDRM",
+        EILSEQ => "EILSEQ",
+        EINPROGRESS => "EINPROGRESS",
+        EINTR => "EINTR",
+        EINVAL => "EINVAL",
+        EIO => "EIO",
+        EISCONN => "EISCONN",
+        EISDIR => "EISDIR",
+        ELOOP => "ELOOP",
+        EMFILE => "EMFILE",
+        EMLINK => "EMLINK",
+        EMSGSIZE => "EMSGSIZE",
+        EMULTIHOP => "EMULTIHOP",
+        ENAMETOOLONG => "ENAMETOOLONG",
+        ENETDOWN => "ENETDOWN",
+        ENETRESET => "ENETRESET",
+        ENETUNREACH => "ENETUNREACH",
+        ENFILE => "ENFILE",
+        ENOBUFS => "ENOBUFS",
+        ENODEV => "ENODEV",
+        ENOENT => "ENOENT",
+        ENOEXEC => "ENOEXEC",
+        ENOLCK => "ENOLCK",
+        ENOLINK => "ENOLINK",
+        ENOMEM => "ENOMEM",
+        ENOMSG => "ENOMSG",
+        ENOPROTOOPT => "ENOPROTOOPT",
+        ENOSPC => "ENOSPC",
+        ENOSYS => "ENOSYS",
+        ENOTCONN => "ENOTCONN",
+        ENOTDIR => "ENOTDIR",
+        ENOTEMPTY => "ENOTEMPTY",
+        ENOTRECOVERABLE => "ENOTRECOVERABLE",
+        ENOTSOCK => "ENOTSOCK",
+        ENOTSUP => "ENOTSUP",
+        ENOTTY => "ENOTTY",
+        ENXIO => "ENXIO",
+        EOVERFLOW => "EOVERFLOW",
+        EOWNERDEAD => "EOWNERDEAD",
+        EPERM => "EPERM",
+        EPIPE => "EPIPE",
+        EPROTO => "EPROTO",
+        EPROTONOSUPPORT => "EPROTONOSUPPORT",
+        EPROTOTYPE => "EPROTOTYPE",
+        ERANGE => "ERANGE",
+        EROFS => "EROFS",
+        ESPIPE => "ESPIPE",
+        ESRCH => "ESRCH",
+        ESTALE => "ESTALE",
+        ETIMEDOUT => "ETIMEDOUT",
+        ETXTBSY => "ETXTBSY",
+        EXDEV => "EXDEV",
+        ENOTCAPABLE => "ENOTCAPABLE",
+        n => return format!("Unknown error {}", n),
+    }.to_string()
 }
