@@ -623,6 +623,7 @@ pub fn get_args() -> Result<Vec<Vec<u8>>, Error> {
         let mut n: usize = 0;
         loop {
             unsafe {
+                // replace with memchr?
                 if *ptr.offset(n as isize) == 0 {
                     return core::slice::from_raw_parts(ptr, n).to_vec();
                 }
@@ -634,10 +635,30 @@ pub fn get_args() -> Result<Vec<Vec<u8>>, Error> {
     Ok(argc.into_iter().map(|p| cstr2vec(p as *const u8)).collect())
 }
 
-// TODO: Safe interfaces to the args and environ functions
-/*
-pub fn args_get(argv: *mut *mut u8, argv_buf: *mut u8) -> Errno {}
-pub fn args_sizes_get(argc: *mut usize, argv_buf_size: *mut usize) -> Errno {}
-pub fn environ_get(environ: *mut *mut u8, environ_buf: *mut u8) -> Errno {}
-pub fn environ_sizes_get(environ_count: *mut usize, environ_buf_size: *mut usize) -> Errno {}
-*/
+#[cfg(feature = "alloc")]
+pub fn get_environ() -> Result<Vec<Vec<u8>>, Error> {
+    use alloc::vec;
+
+    let (mut argc, mut argv) = (0, 0);
+    let ret = unsafe { __wasi_environ_sizes_get (&mut argc, &mut argv) };
+    if let Some(err) = NonZeroU16::new(ret) { return Err(err); }
+
+    let mut argc = vec![core::ptr::null_mut::<u8>(); argc];
+    let mut argv = vec![0u8; argv];
+    let ret = unsafe { __wasi_environ_get(argc.as_mut_ptr(), argv.as_mut_ptr()) };
+    if let Some(err) = NonZeroU16::new(ret) { return Err(err); }
+
+    fn cstr2vec(ptr: *const u8) -> Vec<u8> {
+        let mut n: usize = 0;
+        loop {
+            unsafe {
+                if *ptr.offset(n as isize) == 0 {
+                    return core::slice::from_raw_parts(ptr, n).to_vec();
+                }
+            }
+            n += 1;
+        }
+    }
+
+    Ok(argc.into_iter().map(|p| cstr2vec(p as *const u8)).collect())
+}
