@@ -13,5 +13,9 @@ documentation = "https://docs.rs/wasi"
 
 [dependencies]
 
+[features]
+default = ["alloc"]
+alloc = []
+
 [badges]
 maintenance = { status = "experimental" }
