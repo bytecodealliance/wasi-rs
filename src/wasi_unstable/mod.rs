@@ -50,24 +50,11 @@ pub type FileStat = __wasi_filestat_t;
 pub type CIoVec = __wasi_ciovec_t;
 pub type IoVec = __wasi_iovec_t;
 pub type Subscription = __wasi_subscription_t;
+pub type Event = __wasi_event_t;
 pub type Prestat = __wasi_prestat_t;
 
-// should have exactly the same layout as __wasi_event_t
-// TODO: add a more thorough test
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct Event {
-    pub userdata: Userdata,
-    pub res: Result<(), Error>,
-    pub type_: EventType,
-    pub u: __wasi_event_u,
-}
-
-// Assert that `Event` and `__wasi_event_t` have the same size
-const _ASSERT1: [(); 32] = [(); core::mem::size_of::<__wasi_event_t>()];
-const _ASSERT2: [(); 32] = [(); core::mem::size_of::<Event>()];
 // Assert that `__WASI_ESUCCESS` equals to 0
-const _ASSERT3: [(); 0] =  [(); __WASI_ESUCCESS as usize];
+const _ASSERT1: [(); 0] =  [(); __WASI_ESUCCESS as usize];
 
 pub const ADVICE_NORMAL: Advice = __WASI_ADVICE_NORMAL;
 pub const ADVICE_SEQUENTIAL: Advice = __WASI_ADVICE_SEQUENTIAL;
