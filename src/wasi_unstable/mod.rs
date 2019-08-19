@@ -593,6 +593,47 @@ pub fn fd_prestat_dir_name(fd: Fd, path: &mut [u8]) -> Result<(), Error> {
     unsafe_wrap0!{ __wasi_fd_prestat_dir_name(fd, path.as_mut_ptr(), path.len()) }
 }
 
+#[cfg(feature = "alloc")]
+use alloc::{vec::Vec, string::String};
+
+// TODO: add descriptions
+#[cfg(feature = "alloc")]
+pub fn error_string(errno: __wasi_errno_t) -> String {
+    use alloc::{format, string::ToString};
+    match errno {
+        0 => "Success",
+        n => return format!("Unknown error {}", n),
+    }.to_string()
+}
+
+#[cfg(feature = "alloc")]
+pub fn get_args() -> Result<Vec<Vec<u8>>, Error> {
+    use alloc::vec;
+
+    let (mut argc, mut argv) = (0, 0);
+    let ret = unsafe { __wasi_args_sizes_get (&mut argc, &mut argv) };
+    if let Some(err) = NonZeroU16::new(ret) { return Err(err); }
+
+    let mut argc = vec![core::ptr::null_mut::<u8>(); argc];
+    let mut argv = vec![0u8; argv];
+    let ret = unsafe { __wasi_args_get(argc.as_mut_ptr(), argv.as_mut_ptr()) };
+    if let Some(err) = NonZeroU16::new(ret) { return Err(err); }
+
+    fn cstr2vec(ptr: *const u8) -> Vec<u8> {
+        let mut n: usize = 0;
+        loop {
+            unsafe {
+                if *ptr.offset(n as isize) == 0 {
+                    return core::slice::from_raw_parts(ptr, n).to_vec();
+                }
+            }
+            n += 1;
+        }
+    }
+
+    Ok(argc.into_iter().map(|p| cstr2vec(p as *const u8)).collect())
+}
+
 // TODO: Safe interfaces to the args and environ functions
 /*
 pub fn args_get(argv: *mut *mut u8, argv_buf: *mut u8) -> Errno {}

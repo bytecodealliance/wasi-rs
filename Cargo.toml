@@ -20,5 +20,9 @@ core = { version = "1.0", optional = true, package = "rustc-std-workspace-core" 
 # Unstable feature to support being a libstd dependency
 rustc-dep-of-std = ["compiler_builtins", "core"]
 
+[features]
+default = ["alloc"]
+alloc = []
+
 [badges]
 maintenance = { status = "experimental" }
