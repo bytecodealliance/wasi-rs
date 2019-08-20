@@ -653,15 +653,8 @@ pub fn get_environ() -> Result<Vec<Vec<u8>>, Error> {
     Ok(argc.into_iter().map(|p| cstr2vec(p as *const u8)).collect())
 }
 
-#[cfg(feature = "alloc")]
-pub fn error_string(errno: __wasi_errno_t) -> String {
-    use alloc::{format, string::ToString};
-    let code = if let Some(code) = NonZeroU16::new(errno) {
-        code
-    } else {
-        return "Success".to_string();
-    };
-    match code {
+pub fn error_str(err: Error) -> Option<&'static str> {
+    let desc = match err {
         E2BIG => "Argument list too long",
         EACCES => "Permission denied",
         EADDRINUSE => "Address in use",
@@ -738,6 +731,7 @@ pub fn error_string(errno: __wasi_errno_t) -> String {
         ETXTBSY => "Text file busy",
         EXDEV => "Cross-device link",
         ENOTCAPABLE => "Capabilities insufficient",
-        n => return format!("Unknown error {}", n),
-    }.to_string()
+        _ => return None,
+    };
+    Some(desc)
 }
