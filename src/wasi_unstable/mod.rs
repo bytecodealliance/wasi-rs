@@ -601,6 +601,8 @@ pub fn get_args(mut process_arg: impl FnMut(&[u8])) -> Result<(), Error> {
     let ret = unsafe { __wasi_args_sizes_get (&mut argc, &mut argv) };
     if let Some(err) = NonZeroU16::new(ret) { return Err(err); }
 
+    // TODO: remove allocations after stabilization of unsized rvalues, see:
+    // https://github.com/rust-lang/rust/issues/48055
     let mut argc = vec![core::ptr::null_mut::<u8>(); argc];
     let mut argv = vec![0u8; argv];
     let ret = unsafe { __wasi_args_get(argc.as_mut_ptr(), argv.as_mut_ptr()) };
@@ -630,6 +632,8 @@ pub fn get_environ(mut process_env: impl FnMut(&[u8], &[u8])) -> Result<(), Erro
     let ret = unsafe { __wasi_environ_sizes_get (&mut argc, &mut argv) };
     if let Some(err) = NonZeroU16::new(ret) { return Err(err); }
 
+    // TODO: remove allocations after stabilization of unsized rvalues, see:
+    // https://github.com/rust-lang/rust/issues/48055
     let mut argc = vec![core::ptr::null_mut::<u8>(); argc];
     let mut argv = vec![0u8; argv];
     let ret = unsafe { __wasi_environ_get(argc.as_mut_ptr(), argv.as_mut_ptr()) };
