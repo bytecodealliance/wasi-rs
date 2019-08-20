@@ -594,10 +594,7 @@ pub fn fd_prestat_dir_name(fd: Fd, path: &mut [u8]) -> Result<(), Error> {
 }
 
 #[cfg(feature = "alloc")]
-use alloc::{vec::Vec, string::String};
-
-#[cfg(feature = "alloc")]
-pub fn get_args() -> Result<Vec<Vec<u8>>, Error> {
+pub fn get_args(mut process_arg: impl FnMut(&[u8])) -> Result<(), Error> {
     use alloc::vec;
 
     let (mut argc, mut argv) = (0, 0);
@@ -609,24 +606,24 @@ pub fn get_args() -> Result<Vec<Vec<u8>>, Error> {
     let ret = unsafe { __wasi_args_get(argc.as_mut_ptr(), argv.as_mut_ptr()) };
     if let Some(err) = NonZeroU16::new(ret) { return Err(err); }
 
-    fn cstr2vec(ptr: *const u8) -> Vec<u8> {
-        let mut n: usize = 0;
-        loop {
+    for ptr in argc {
+        for n in 0.. {
             unsafe {
                 // replace with memchr?
                 if *ptr.offset(n as isize) == 0 {
-                    return core::slice::from_raw_parts(ptr, n).to_vec();
+                    let slice = core::slice::from_raw_parts(ptr, n);
+                    process_arg(slice);
+                    break
                 }
             }
-            n += 1;
         }
     }
 
-    Ok(argc.into_iter().map(|p| cstr2vec(p as *const u8)).collect())
+    Ok(())
 }
 
 #[cfg(feature = "alloc")]
-pub fn get_environ() -> Result<Vec<Vec<u8>>, Error> {
+pub fn get_environ(mut process_env: impl FnMut(&[u8], &[u8])) -> Result<(), Error> {
     use alloc::vec;
 
     let (mut argc, mut argv) = (0, 0);
@@ -638,19 +635,27 @@ pub fn get_environ() -> Result<Vec<Vec<u8>>, Error> {
     let ret = unsafe { __wasi_environ_get(argc.as_mut_ptr(), argv.as_mut_ptr()) };
     if let Some(err) = NonZeroU16::new(ret) { return Err(err); }
 
-    fn cstr2vec(ptr: *const u8) -> Vec<u8> {
-        let mut n: usize = 0;
-        loop {
+    for ptr in argc {
+        let mut key: &[u8] = &[];
+        for n in 0.. {
             unsafe {
-                if *ptr.offset(n as isize) == 0 {
-                    return core::slice::from_raw_parts(ptr, n).to_vec();
+                // use memchr?
+                match *ptr.offset(n as isize) {
+                    0 => {
+                        let val = core::slice::from_raw_parts(ptr, n);
+                        process_env(key, val);
+                        break
+                    }
+                    b'=' if key.is_empty() => {
+                        key = core::slice::from_raw_parts(ptr, n);
+                    }
+                    _ => {}
                 }
             }
-            n += 1;
         }
     }
 
-    Ok(argc.into_iter().map(|p| cstr2vec(p as *const u8)).collect())
+    Ok(())
 }
 
 pub fn error_str(err: Error) -> Option<&'static str> {
