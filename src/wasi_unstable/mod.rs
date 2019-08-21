@@ -618,7 +618,7 @@ pub fn args_sizes_get() -> Result<ArgsSizes, Error> {
 
 #[cfg(feature = "alloc")]
 #[inline]
-pub fn get_args(
+pub fn args_get(
     ars: ArgsSizes, mut process_arg: impl FnMut(&[u8]),
 ) -> Result<(), Error> {
     use alloc::vec;
