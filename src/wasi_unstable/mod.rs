@@ -593,25 +593,46 @@ pub fn fd_prestat_dir_name(fd: Fd, path: &mut [u8]) -> Result<(), Error> {
     unsafe_wrap0!{ __wasi_fd_prestat_dir_name(fd, path.as_mut_ptr(), path.len()) }
 }
 
-#[cfg(feature = "alloc")]
-pub fn get_args(mut process_arg: impl FnMut(&[u8])) -> Result<(), Error> {
-    use alloc::vec;
+#[derive(Copy, Clone)]
+pub struct ArgsSizes {
+    count: usize,
+    buf_len: usize,
+}
 
-    let (mut argc, mut argv) = (0, 0);
-    let ret = unsafe { __wasi_args_sizes_get (&mut argc, &mut argv) };
-    if let Some(err) = NonZeroU16::new(ret) { return Err(err); }
+impl ArgsSizes {
+    #[inline]
+    pub fn get_count(&self) -> usize { self.count }
+    #[inline]
+    pub fn get_buf_len(&self) -> usize { self.buf_len }
+}
+
+#[inline]
+pub fn args_sizes_get() -> Result<ArgsSizes, Error> {
+    let mut res = ArgsSizes { count: 0, buf_len: 0 };
+    let code = unsafe {
+        __wasi_args_sizes_get(&mut res.count, &mut res.buf_len)
+    };
+    if let Some(err) = NonZeroU16::new(code) { return Err(err); }
+    Ok(res)
+}
+
+#[cfg(feature = "alloc")]
+#[inline]
+pub fn get_args(
+    ars: ArgsSizes, mut process_arg: impl FnMut(&[u8]),
+) -> Result<(), Error> {
+    use alloc::vec;
 
     // TODO: remove allocations after stabilization of unsized rvalues, see:
     // https://github.com/rust-lang/rust/issues/48055
-    let mut argc = vec![core::ptr::null_mut::<u8>(); argc];
-    let mut argv = vec![0u8; argv];
+    let mut argc = vec![core::ptr::null_mut::<u8>(); ars.count];
+    let mut argv = vec![0u8; ars.buf_len];
     let ret = unsafe { __wasi_args_get(argc.as_mut_ptr(), argv.as_mut_ptr()) };
     if let Some(err) = NonZeroU16::new(ret) { return Err(err); }
 
     for ptr in argc {
         for n in 0.. {
             unsafe {
-                // replace with memchr?
                 if *ptr.offset(n as isize) == 0 {
                     let slice = core::slice::from_raw_parts(ptr, n);
                     process_arg(slice);
@@ -624,18 +645,40 @@ pub fn get_args(mut process_arg: impl FnMut(&[u8])) -> Result<(), Error> {
     Ok(())
 }
 
-#[cfg(feature = "alloc")]
-pub fn get_environ(mut process_env: impl FnMut(&[u8], &[u8])) -> Result<(), Error> {
-    use alloc::vec;
+#[derive(Copy, Clone)]
+pub struct EnvironSizes {
+    count: usize,
+    buf_len: usize,
+}
 
-    let (mut argc, mut argv) = (0, 0);
-    let ret = unsafe { __wasi_environ_sizes_get (&mut argc, &mut argv) };
-    if let Some(err) = NonZeroU16::new(ret) { return Err(err); }
+impl EnvironSizes {
+    #[inline]
+    pub fn get_count(&self) -> usize { self.count }
+    #[inline]
+    pub fn get_buf_len(&self) -> usize { self.buf_len }
+}
+
+#[inline]
+pub fn environ_sizes_get() -> Result<EnvironSizes, Error> {
+    let mut res = EnvironSizes { count: 0, buf_len: 0 };
+    let code = unsafe {
+        __wasi_environ_sizes_get(&mut res.count, &mut res.buf_len)
+    };
+    if let Some(err) = NonZeroU16::new(code) { return Err(err); }
+    Ok(res)
+}
+
+#[cfg(feature = "alloc")]
+#[inline]
+pub fn environ_get(
+    es: EnvironSizes, mut process_env: impl FnMut(&[u8], &[u8]),
+) -> Result<(), Error> {
+    use alloc::vec;
 
     // TODO: remove allocations after stabilization of unsized rvalues, see:
     // https://github.com/rust-lang/rust/issues/48055
-    let mut argc = vec![core::ptr::null_mut::<u8>(); argc];
-    let mut argv = vec![0u8; argv];
+    let mut argc = vec![core::ptr::null_mut::<u8>(); es.count];
+    let mut argv = vec![0u8; es.buf_len];
     let ret = unsafe { __wasi_environ_get(argc.as_mut_ptr(), argv.as_mut_ptr()) };
     if let Some(err) = NonZeroU16::new(ret) { return Err(err); }
 
@@ -643,7 +686,6 @@ pub fn get_environ(mut process_env: impl FnMut(&[u8], &[u8])) -> Result<(), Erro
         let mut key: &[u8] = &[];
         for n in 0.. {
             unsafe {
-                // use memchr?
                 match *ptr.offset(n as isize) {
                     0 => {
                         let val = core::slice::from_raw_parts(ptr, n);
