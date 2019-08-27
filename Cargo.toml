@@ -2,7 +2,7 @@
 name = "wasi"
 version = "0.5.0"
 authors = ["The Cranelift Project Developers"]
-license = "Apache-2.0 WITH LLVM-exception"
+license = "(Apache-2.0 WITH LLVM-exception) OR Apache-2.0 OR MIT"
 description = "Experimental WASI API bindings for Rust"
 edition = "2018"
 categories = ["no-std", "wasm"]
