@@ -19,6 +19,7 @@ pub type Advice = __wasi_advice_t;
 pub type ClockId = __wasi_clockid_t;
 pub type Device = __wasi_device_t;
 pub type DirCookie = __wasi_dircookie_t;
+pub type Errno = __wasi_errno_t;
 pub type Error = NonZeroU16;
 pub type EventRwFlags = __wasi_eventrwflags_t;
 pub type EventType = __wasi_eventtype_t;
@@ -625,12 +626,14 @@ pub fn args_get(
 
     // TODO: remove allocations after stabilization of unsized rvalues, see:
     // https://github.com/rust-lang/rust/issues/48055
-    let mut argc = vec![core::ptr::null_mut::<u8>(); ars.count];
-    let mut argv = vec![0u8; ars.buf_len];
-    let ret = unsafe { __wasi_args_get(argc.as_mut_ptr(), argv.as_mut_ptr()) };
+    let mut arg_ptrs = vec![core::ptr::null_mut::<u8>(); ars.count];
+    let mut arg_buf = vec![0u8; ars.buf_len];
+    let ret = unsafe {
+        __wasi_args_get(arg_ptrs.as_mut_ptr(), arg_buf.as_mut_ptr())
+    };
     if let Some(err) = NonZeroU16::new(ret) { return Err(err); }
 
-    for ptr in argc {
+    for ptr in arg_ptrs {
         for n in 0.. {
             unsafe {
                 if *ptr.offset(n as isize) == 0 {
@@ -677,12 +680,14 @@ pub fn environ_get(
 
     // TODO: remove allocations after stabilization of unsized rvalues, see:
     // https://github.com/rust-lang/rust/issues/48055
-    let mut argc = vec![core::ptr::null_mut::<u8>(); es.count];
-    let mut argv = vec![0u8; es.buf_len];
-    let ret = unsafe { __wasi_environ_get(argc.as_mut_ptr(), argv.as_mut_ptr()) };
+    let mut env_ptrs = vec![core::ptr::null_mut::<u8>(); es.count];
+    let mut env_buf = vec![0u8; es.buf_len];
+    let ret = unsafe {
+        __wasi_environ_get(env_ptrs.as_mut_ptr(), env_buf.as_mut_ptr())
+    };
     if let Some(err) = NonZeroU16::new(ret) { return Err(err); }
 
-    for ptr in argc {
+    for ptr in env_ptrs {
         let mut key: &[u8] = &[];
         for n in 0.. {
             unsafe {
