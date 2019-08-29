@@ -659,7 +659,7 @@ pub fn args_get(ars: ArgsSizes, mut process_arg: impl FnMut(&[u8])) -> Result<()
     for ptr in arg_ptrs {
         for n in 0.. {
             unsafe {
-                if *ptr.offset(n as isize) == 0 {
+                if *ptr.add(n) == 0 {
                     let slice = core::slice::from_raw_parts(ptr, n);
                     process_arg(slice);
                     break;
@@ -722,7 +722,7 @@ pub fn environ_get(
         let mut key: &[u8] = &[];
         for n in 0.. {
             unsafe {
-                match *ptr.offset(n as isize) {
+                match *ptr.add(n) {
                     0 => {
                         let val = core::slice::from_raw_parts(ptr, n);
                         process_env(key, val);
