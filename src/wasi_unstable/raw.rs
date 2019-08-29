@@ -577,9 +577,6 @@ extern "C" {
     #[link_name = "proc_exit"]
     pub fn __wasi_proc_exit(rval: __wasi_exitcode_t) -> !;
 
-    #[link_name = "proc_raise"]
-    pub fn __wasi_proc_raise(sig: __wasi_signal_t) -> __wasi_errno_t;
-
     #[link_name = "random_get"]
     pub fn __wasi_random_get(buf: *mut c_void, buf_len: usize) -> __wasi_errno_t;
 
