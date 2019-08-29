@@ -55,7 +55,7 @@ pub type Event = __wasi_event_t;
 pub type Prestat = __wasi_prestat_t;
 
 // Assert that `__WASI_ESUCCESS` equals to 0
-const _ASSERT1: [(); 0] =  [(); __WASI_ESUCCESS as usize];
+const _ASSERT1: [(); 0] = [(); __WASI_ESUCCESS as usize];
 
 pub const ADVICE_NORMAL: Advice = __WASI_ADVICE_NORMAL;
 pub const ADVICE_SEQUENTIAL: Advice = __WASI_ADVICE_SEQUENTIAL;
@@ -83,7 +83,7 @@ macro_rules! errno_set {
     };
 }
 
-errno_set!{
+errno_set! {
     E2BIG = __WASI_E2BIG;
     EACCES = __WASI_EACCES;
     EADDRINUSE = __WASI_EADDRINUSE;
@@ -282,99 +282,112 @@ macro_rules! wrap {
 
 #[inline]
 pub fn clock_res_get(clock_id: ClockId) -> Result<Timestamp, Error> {
-    unsafe { wrap!{ __wasi_clock_res_get(clock_id) } }
+    unsafe {
+        wrap! { __wasi_clock_res_get(clock_id) }
+    }
 }
 
 #[inline]
 pub fn clock_time_get(clock_id: ClockId, precision: Timestamp) -> Result<Timestamp, Error> {
-    unsafe { wrap!{ __wasi_clock_time_get(clock_id, precision) } }
+    unsafe {
+        wrap! { __wasi_clock_time_get(clock_id, precision) }
+    }
 }
 
 #[inline]
 pub unsafe fn fd_pread(fd: Fd, iovs: &[IoVec], offset: FileSize) -> Result<usize, Error> {
-    wrap!{ __wasi_fd_pread(fd, iovs.as_ptr(), iovs.len(), offset) }
+    wrap! { __wasi_fd_pread(fd, iovs.as_ptr(), iovs.len(), offset) }
 }
 
 #[inline]
 pub unsafe fn fd_pwrite(fd: Fd, iovs: &[CIoVec], offset: FileSize) -> Result<usize, Error> {
-    wrap!{ __wasi_fd_pwrite(fd, iovs.as_ptr(), iovs.len(), offset) }
+    wrap! { __wasi_fd_pwrite(fd, iovs.as_ptr(), iovs.len(), offset) }
 }
 
 #[inline]
 pub fn random_get(buf: &mut [u8]) -> Result<(), Error> {
     unsafe {
-        wrap0!{ __wasi_random_get(buf.as_mut_ptr() as *mut c_void, buf.len()) }
+        wrap0! { __wasi_random_get(buf.as_mut_ptr() as *mut c_void, buf.len()) }
     }
 }
 
 #[inline]
 pub unsafe fn fd_close(fd: Fd) -> Result<(), Error> {
-    wrap0!{ __wasi_fd_close(fd) }
+    wrap0! { __wasi_fd_close(fd) }
 }
 
 #[inline]
 pub unsafe fn fd_datasync(fd: Fd) -> Result<(), Error> {
-    wrap0!{ __wasi_fd_datasync(fd) }
+    wrap0! { __wasi_fd_datasync(fd) }
 }
 
 #[inline]
 pub unsafe fn fd_read(fd: Fd, iovs: &[IoVec]) -> Result<usize, Error> {
-    wrap!{ __wasi_fd_read(fd, iovs.as_ptr(), iovs.len()) }
+    wrap! { __wasi_fd_read(fd, iovs.as_ptr(), iovs.len()) }
 }
 
 #[inline]
 pub unsafe fn fd_renumber(from: Fd, to: Fd) -> Result<(), Error> {
-    wrap0!{ __wasi_fd_renumber(from, to) }
+    wrap0! { __wasi_fd_renumber(from, to) }
 }
 
 #[inline]
 pub unsafe fn fd_seek(fd: Fd, offset: FileDelta, whence: Whence) -> Result<FileSize, Error> {
-    wrap!{ __wasi_fd_seek(fd, offset, whence) }
+    wrap! { __wasi_fd_seek(fd, offset, whence) }
 }
 
 #[inline]
 pub unsafe fn fd_tell(fd: Fd) -> Result<FileSize, Error> {
-    wrap!{ __wasi_fd_tell(fd) }
+    wrap! { __wasi_fd_tell(fd) }
 }
 
 #[inline]
 pub unsafe fn fd_fdstat_get(fd: Fd) -> Result<FdStat, Error> {
-    wrap!{ __wasi_fd_fdstat_get(fd) }
+    wrap! { __wasi_fd_fdstat_get(fd) }
 }
 
 #[inline]
 pub unsafe fn fd_fdstat_set_flags(fd: Fd, flags: FdFlags) -> Result<(), Error> {
-    wrap0!{ __wasi_fd_fdstat_set_flags(fd, flags) }
+    wrap0! { __wasi_fd_fdstat_set_flags(fd, flags) }
 }
 
 #[inline]
-pub unsafe fn fd_fdstat_set_rights(fd: Fd, fs_rights_base: Rights, fs_rights_inheriting: Rights) -> Result<(), Error> {
-    wrap0!{ __wasi_fd_fdstat_set_rights(fd, fs_rights_base, fs_rights_inheriting) }
+pub unsafe fn fd_fdstat_set_rights(
+    fd: Fd,
+    fs_rights_base: Rights,
+    fs_rights_inheriting: Rights,
+) -> Result<(), Error> {
+    wrap0! { __wasi_fd_fdstat_set_rights(fd, fs_rights_base, fs_rights_inheriting) }
 }
 
 #[inline]
 pub unsafe fn fd_sync(fd: Fd) -> Result<(), Error> {
-    wrap0!{ __wasi_fd_sync(fd) }
+    wrap0! { __wasi_fd_sync(fd) }
 }
 
 #[inline]
 pub unsafe fn fd_write(fd: Fd, iovs: &[CIoVec]) -> Result<usize, Error> {
-    wrap!{ __wasi_fd_write(fd, iovs.as_ptr(), iovs.len()) }
+    wrap! { __wasi_fd_write(fd, iovs.as_ptr(), iovs.len()) }
 }
 
 #[inline]
-pub unsafe fn fd_advise(fd: Fd, offset: FileSize, len: FileSize, advice: Advice) -> Result<(), Error> {
-    wrap0!{ __wasi_fd_advise(fd, offset, len, advice) }
+pub unsafe fn fd_advise(
+    fd: Fd,
+    offset: FileSize,
+    len: FileSize,
+    advice: Advice,
+) -> Result<(), Error> {
+    wrap0! { __wasi_fd_advise(fd, offset, len, advice) }
 }
 
 #[inline]
 pub unsafe fn fd_allocate(fd: Fd, offset: FileSize, len: FileSize) -> Result<(), Error> {
-    wrap0!{ __wasi_fd_allocate(fd, offset, len) }
+    wrap0! { __wasi_fd_allocate(fd, offset, len) }
 }
 
 #[inline]
 pub unsafe fn path_create_directory(fd: Fd, path: &[u8]) -> Result<(), Error> {
-    wrap0!{ __wasi_path_create_directory(fd, path.as_ptr(), path.len()) }
+    wrap0! { __wasi_path_create_directory(fd, path.as_ptr(), path.len()) }
 }
 
 #[inline]
@@ -385,7 +398,7 @@ pub unsafe fn path_link(
     new_fd: Fd,
     new_path: &[u8],
 ) -> Result<(), Error> {
-    wrap0!{
+    wrap0! {
         __wasi_path_link(
             old_fd,
             old_flags,
@@ -408,7 +421,7 @@ pub unsafe fn path_open(
     fs_rights_inheriting: Rights,
     fs_flags: FdFlags,
 ) -> Result<Fd, Error> {
-    wrap!{
+    wrap! {
         __wasi_path_open(
             dirfd,
             dirflags,
@@ -425,20 +438,25 @@ pub unsafe fn path_open(
 #[inline]
 pub unsafe fn fd_readdir(fd: Fd, buf: &mut [u8], cookie: DirCookie) -> Result<usize, Error> {
     let ptr = buf.as_mut_ptr() as *mut c_void;
-    wrap!{ __wasi_fd_readdir(fd, ptr, buf.len(), cookie) }
+    wrap! { __wasi_fd_readdir(fd, ptr, buf.len(), cookie) }
 }
 
 #[inline]
 pub unsafe fn path_readlink(fd: Fd, path: &[u8], buf: &mut [u8]) -> Result<usize, Error> {
     let ptr = buf.as_mut_ptr();
-    wrap!{
+    wrap! {
         __wasi_path_readlink(fd, path.as_ptr(), path.len(), ptr, buf.len())
     }
 }
 
 #[inline]
-pub unsafe fn path_rename(old_fd: Fd, old_path: &[u8], new_fd: Fd, new_path: &[u8]) -> Result<(), Error> {
-    wrap0!{
+pub unsafe fn path_rename(
+    old_fd: Fd,
+    old_path: &[u8],
+    new_fd: Fd,
+    new_path: &[u8],
+) -> Result<(), Error> {
+    wrap0! {
         __wasi_path_rename(
             old_fd,
             old_path.as_ptr(),
@@ -452,7 +470,7 @@ pub unsafe fn path_rename(old_fd: Fd, old_path: &[u8], new_fd: Fd, new_path: &[u
 
 #[inline]
 pub unsafe fn fd_filestat_get(fd: Fd) -> Result<FileStat, Error> {
-    wrap!{ __wasi_fd_filestat_get(fd) }
+    wrap! { __wasi_fd_filestat_get(fd) }
 }
 
 #[inline]
@@ -462,17 +480,21 @@ pub unsafe fn fd_filestat_set_times(
     st_mtim: Timestamp,
     fstflags: FstFlags,
 ) -> Result<(), Error> {
-    wrap0!{ __wasi_fd_filestat_set_times(fd, st_atim, st_mtim, fstflags) }
+    wrap0! { __wasi_fd_filestat_set_times(fd, st_atim, st_mtim, fstflags) }
 }
 
 #[inline]
 pub unsafe fn fd_filestat_set_size(fd: Fd, st_size: FileSize) -> Result<(), Error> {
-    wrap0!{ __wasi_fd_filestat_set_size(fd, st_size) }
+    wrap0! { __wasi_fd_filestat_set_size(fd, st_size) }
 }
 
 #[inline]
-pub unsafe fn path_filestat_get(fd: Fd, flags: LookupFlags, path: &[u8]) -> Result<FileStat, Error> {
-    wrap!{
+pub unsafe fn path_filestat_get(
+    fd: Fd,
+    flags: LookupFlags,
+    path: &[u8],
+) -> Result<FileStat, Error> {
+    wrap! {
         __wasi_path_filestat_get(fd, flags, path.as_ptr(), path.len())
     }
 }
@@ -486,7 +508,7 @@ pub unsafe fn path_filestat_set_times(
     st_mtim: Timestamp,
     fstflags: FstFlags,
 ) -> Result<(), Error> {
-    wrap0!{
+    wrap0! {
         __wasi_path_filestat_set_times(
             fd,
             flags,
@@ -501,7 +523,7 @@ pub unsafe fn path_filestat_set_times(
 
 #[inline]
 pub unsafe fn path_symlink(old_path: &[u8], fd: Fd, new_path: &[u8]) -> Result<(), Error> {
-    wrap0!{
+    wrap0! {
         __wasi_path_symlink(
             old_path.as_ptr(),
             old_path.len(),
@@ -514,19 +536,19 @@ pub unsafe fn path_symlink(old_path: &[u8], fd: Fd, new_path: &[u8]) -> Result<(
 
 #[inline]
 pub unsafe fn path_unlink_file(fd: Fd, path: &[u8]) -> Result<(), Error> {
-    wrap0!{ __wasi_path_unlink_file(fd, path.as_ptr(), path.len()) }
+    wrap0! { __wasi_path_unlink_file(fd, path.as_ptr(), path.len()) }
 }
 
 #[inline]
 pub unsafe fn path_remove_directory(fd: Fd, path: &[u8]) -> Result<(), Error> {
-    wrap0!{ __wasi_path_remove_directory(fd, path.as_ptr(), path.len()) }
+    wrap0! { __wasi_path_remove_directory(fd, path.as_ptr(), path.len()) }
 }
 
 #[inline]
 pub unsafe fn poll_oneoff(in_: &[Subscription], out: &mut [Event]) -> Result<usize, Error> {
     assert!(out.len() >= in_.len());
     let ptr = out.as_mut_ptr() as *mut __wasi_event_t;
-    wrap!{
+    wrap! {
         __wasi_poll_oneoff(
             in_.as_ptr(),
             ptr,
@@ -541,7 +563,11 @@ pub fn proc_exit(rval: ExitCode) -> ! {
 }
 
 #[inline]
-pub unsafe fn sock_recv(sock: Fd, ri_data: &[IoVec], ri_flags: RiFlags) -> Result<(usize, RoFlags), Error> {
+pub unsafe fn sock_recv(
+    sock: Fd,
+    ri_data: &[IoVec],
+    ri_flags: RiFlags,
+) -> Result<(usize, RoFlags), Error> {
     let mut ro_datalen = MaybeUninit::<usize>::uninit();
     let mut ro_flags = MaybeUninit::<RoFlags>::uninit();
     let r = __wasi_sock_recv(
@@ -561,27 +587,29 @@ pub unsafe fn sock_recv(sock: Fd, ri_data: &[IoVec], ri_flags: RiFlags) -> Resul
 
 #[inline]
 pub unsafe fn sock_send(sock: Fd, si_data: &[CIoVec], si_flags: SiFlags) -> Result<usize, Error> {
-    wrap!{ __wasi_sock_send(sock, si_data.as_ptr(), si_data.len(), si_flags) }
+    wrap! { __wasi_sock_send(sock, si_data.as_ptr(), si_data.len(), si_flags) }
 }
 
 #[inline]
 pub unsafe fn sock_shutdown(sock: Fd, how: SdFlags) -> Result<(), Error> {
-    wrap0!{ __wasi_sock_shutdown(sock, how) }
+    wrap0! { __wasi_sock_shutdown(sock, how) }
 }
 
 #[inline]
 pub fn sched_yield() -> Result<(), Error> {
-    unsafe { wrap0!{ __wasi_sched_yield() } }
+    unsafe {
+        wrap0! { __wasi_sched_yield() }
+    }
 }
 
 #[inline]
 pub unsafe fn fd_prestat_get(fd: Fd) -> Result<Prestat, Error> {
-    wrap!{ __wasi_fd_prestat_get(fd) }
+    wrap! { __wasi_fd_prestat_get(fd) }
 }
 
 #[inline]
 pub unsafe fn fd_prestat_dir_name(fd: Fd, path: &mut [u8]) -> Result<(), Error> {
-    wrap0!{ __wasi_fd_prestat_dir_name(fd, path.as_mut_ptr(), path.len()) }
+    wrap0! { __wasi_fd_prestat_dir_name(fd, path.as_mut_ptr(), path.len()) }
 }
 
 #[derive(Copy, Clone)]
@@ -592,36 +620,41 @@ pub struct ArgsSizes {
 
 impl ArgsSizes {
     #[inline]
-    pub fn get_count(&self) -> usize { self.count }
+    pub fn get_count(&self) -> usize {
+        self.count
+    }
     #[inline]
-    pub fn get_buf_len(&self) -> usize { self.buf_len }
+    pub fn get_buf_len(&self) -> usize {
+        self.buf_len
+    }
 }
 
 #[inline]
 pub fn args_sizes_get() -> Result<ArgsSizes, Error> {
-    let mut res = ArgsSizes { count: 0, buf_len: 0 };
-    let code = unsafe {
-        __wasi_args_sizes_get(&mut res.count, &mut res.buf_len)
+    let mut res = ArgsSizes {
+        count: 0,
+        buf_len: 0,
     };
-    if let Some(err) = NonZeroU16::new(code) { return Err(err); }
+    let code = unsafe { __wasi_args_sizes_get(&mut res.count, &mut res.buf_len) };
+    if let Some(err) = NonZeroU16::new(code) {
+        return Err(err);
+    }
     Ok(res)
 }
 
 #[cfg(feature = "alloc")]
 #[inline]
-pub fn args_get(
-    ars: ArgsSizes, mut process_arg: impl FnMut(&[u8]),
-) -> Result<(), Error> {
+pub fn args_get(ars: ArgsSizes, mut process_arg: impl FnMut(&[u8])) -> Result<(), Error> {
     use alloc::vec;
 
     // TODO: remove allocations after stabilization of unsized rvalues, see:
     // https://github.com/rust-lang/rust/issues/48055
     let mut arg_ptrs = vec![core::ptr::null_mut::<u8>(); ars.count];
     let mut arg_buf = vec![0u8; ars.buf_len];
-    let ret = unsafe {
-        __wasi_args_get(arg_ptrs.as_mut_ptr(), arg_buf.as_mut_ptr())
-    };
-    if let Some(err) = NonZeroU16::new(ret) { return Err(err); }
+    let ret = unsafe { __wasi_args_get(arg_ptrs.as_mut_ptr(), arg_buf.as_mut_ptr()) };
+    if let Some(err) = NonZeroU16::new(ret) {
+        return Err(err);
+    }
 
     for ptr in arg_ptrs {
         for n in 0.. {
@@ -629,7 +662,7 @@ pub fn args_get(
                 if *ptr.offset(n as isize) == 0 {
                     let slice = core::slice::from_raw_parts(ptr, n);
                     process_arg(slice);
-                    break
+                    break;
                 }
             }
         }
@@ -646,25 +679,33 @@ pub struct EnvironSizes {
 
 impl EnvironSizes {
     #[inline]
-    pub fn get_count(&self) -> usize { self.count }
+    pub fn get_count(&self) -> usize {
+        self.count
+    }
     #[inline]
-    pub fn get_buf_len(&self) -> usize { self.buf_len }
+    pub fn get_buf_len(&self) -> usize {
+        self.buf_len
+    }
 }
 
 #[inline]
 pub fn environ_sizes_get() -> Result<EnvironSizes, Error> {
-    let mut res = EnvironSizes { count: 0, buf_len: 0 };
-    let code = unsafe {
-        __wasi_environ_sizes_get(&mut res.count, &mut res.buf_len)
+    let mut res = EnvironSizes {
+        count: 0,
+        buf_len: 0,
     };
-    if let Some(err) = NonZeroU16::new(code) { return Err(err); }
+    let code = unsafe { __wasi_environ_sizes_get(&mut res.count, &mut res.buf_len) };
+    if let Some(err) = NonZeroU16::new(code) {
+        return Err(err);
+    }
     Ok(res)
 }
 
 #[cfg(feature = "alloc")]
 #[inline]
 pub fn environ_get(
-    es: EnvironSizes, mut process_env: impl FnMut(&[u8], &[u8]),
+    es: EnvironSizes,
+    mut process_env: impl FnMut(&[u8], &[u8]),
 ) -> Result<(), Error> {
     use alloc::vec;
 
@@ -672,10 +713,10 @@ pub fn environ_get(
     // https://github.com/rust-lang/rust/issues/48055
     let mut env_ptrs = vec![core::ptr::null_mut::<u8>(); es.count];
     let mut env_buf = vec![0u8; es.buf_len];
-    let ret = unsafe {
-        __wasi_environ_get(env_ptrs.as_mut_ptr(), env_buf.as_mut_ptr())
-    };
-    if let Some(err) = NonZeroU16::new(ret) { return Err(err); }
+    let ret = unsafe { __wasi_environ_get(env_ptrs.as_mut_ptr(), env_buf.as_mut_ptr()) };
+    if let Some(err) = NonZeroU16::new(ret) {
+        return Err(err);
+    }
 
     for ptr in env_ptrs {
         let mut key: &[u8] = &[];
@@ -685,7 +726,7 @@ pub fn environ_get(
                     0 => {
                         let val = core::slice::from_raw_parts(ptr, n);
                         process_env(key, val);
-                        break
+                        break;
                     }
                     b'=' if key.is_empty() => {
                         key = core::slice::from_raw_parts(ptr, n);
