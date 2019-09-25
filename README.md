@@ -3,13 +3,16 @@
 This package contains experimental [WASI](https://github.com/WebAssembly/WASI)
 API bindings in Rust.
 
-There are two modules:
+There are two top-level modules, `old` and `unstable`, which correspond to
+the `old` and `unstable` directories in
+[the phases directory](https://github.com/WebAssembly/WASI/tree/master/phases)
+in the official WASI repository.
 
- - `wasi_unstable::raw`, which provides raw access to the literal binding to
-   the API. These functions are unsafe and use raw pointers.
+Within each are submodules corresponding to the specified API modules.
 
- - `wasi_unstable`, which provides thin wrappers around the raw functions
-   which use idiomatic Rust types rather than raw pointers, and are safe.
+The top level of each of these submodules contains idiomatic Rust types and
+interfaces exposing the low-level WASI functionality. These submodules each
+contain a `raw` submodule which exposes the raw API functions.
 
 This crate is quite low-level and provides conceptually a "system call"
 interface. In most settings, it's better to use the Rust standard library,
