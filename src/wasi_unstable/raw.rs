@@ -33,6 +33,9 @@ pub type __wasi_timestamp_t = u64;
 pub type __wasi_userdata_t = u64;
 pub type __wasi_whence_t = u8;
 pub type __wasi_preopentype_t = u8;
+pub type __wasi_sock_domain_t = i32;
+pub type __wasi_sock_protocol_t = i32;
+
 
 #[repr(C)]
 #[derive(Copy, Clone, Debug, Hash, Eq, PartialEq)]
@@ -579,6 +582,22 @@ extern "C" {
 
     #[link_name = "random_get"]
     pub fn __wasi_random_get(buf: *mut c_void, buf_len: usize) -> __wasi_errno_t;
+
+    #[link_name = "sock_socket"]
+    pub fn __wasi_sock_socket(
+        sock_domain: __wasi_sock_domain_t,
+        sock_type: __wasi_filetype_t,
+        sock_protocol: __wasi_sock_protocol_t,
+        fd: *mut __wasi_fd_t,
+        rights: *mut __wasi_rights_t,
+    ) -> __wasi_errno_t;
+
+    #[link_name = "sock_connect"]
+    pub fn __wasi_sock_connect(
+        sock: __wasi_fd_t,
+        address: *const __wasi_iovec_t,
+        address_len: usize,
+    ) -> __wasi_errno_t;
 
     #[link_name = "sock_recv"]
     pub fn __wasi_sock_recv(

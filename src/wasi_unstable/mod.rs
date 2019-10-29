@@ -563,6 +563,45 @@ pub fn proc_exit(rval: ExitCode) -> ! {
 }
 
 #[inline]
+pub unsafe fn sock_socket(
+    sock_domain: __wasi_sock_domain_t,
+    sock_type: __wasi_filetype_t,
+    sock_protocol: __wasi_sock_protocol_t,
+) -> Result<(Fd, Rights), Error> {
+    let mut fd = MaybeUninit::<Fd>::uninit();
+    let mut rights = MaybeUninit::<Rights>::uninit();
+    let r = __wasi_sock_socket(
+        sock_domain,
+        sock_type,
+        sock_protocol,
+        fd,
+        rights,
+    );
+    if let Some(code) = NonZeroU16::new(r) {
+        Err(code)
+    } else {
+        Ok((fd.assume_init(), rights.assume_init()))
+    }
+}
+
+#[inline]
+pub unsafe fn sock_connect(
+    fd: Fd,
+    path: &[IoVec],
+) -> Result<(), Error> {
+    let r = __wasi_sock_connect(
+        fd,
+        path.as_ptr(),
+        path.len(),
+    );
+    if let Some(code) = r {
+        Err(code)
+    } else {
+        Ok(())
+    }
+}
+
+#[inline]
 pub unsafe fn sock_recv(
     sock: Fd,
     ri_data: &[IoVec],
