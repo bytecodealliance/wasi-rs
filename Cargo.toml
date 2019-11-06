@@ -11,6 +11,9 @@ repository = "https://github.com/CraneStation/rust-wasi"
 readme = "README.md"
 documentation = "https://docs.rs/wasi"
 
+[workspace]
+members = ['crates/generate-raw']
+
 [dependencies]
 # When built as part of libstd
 compiler_builtins = { version = "0.1", optional = true }

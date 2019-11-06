@@ -10,7 +10,6 @@
 
 pub mod raw;
 
-use core::ffi::c_void;
 use core::mem::MaybeUninit;
 use core::num::NonZeroU16;
 use raw::*;
@@ -67,11 +66,11 @@ pub const CLOCK_REALTIME: ClockId = __WASI_CLOCK_REALTIME;
 pub const CLOCK_MONOTONIC: ClockId = __WASI_CLOCK_MONOTONIC;
 pub const CLOCK_PROCESS_CPUTIME_ID: ClockId = __WASI_CLOCK_PROCESS_CPUTIME_ID;
 pub const CLOCK_THREAD_CPUTIME_ID: ClockId = __WASI_CLOCK_THREAD_CPUTIME_ID;
-pub const DIRCOOKIE_START: DirCookie = __WASI_DIRCOOKIE_START;
+pub const DIRCOOKIE_START: DirCookie = 0;
 
-pub const STDIN_FD: Fd = __WASI_STDIN_FD;
-pub const STDOUT_FD: Fd = __WASI_STDOUT_FD;
-pub const STDERR_FD: Fd = __WASI_STDERR_FD;
+pub const STDIN_FD: Fd = 0;
+pub const STDOUT_FD: Fd = 1;
+pub const STDERR_FD: Fd = 2;
 
 macro_rules! errno_set {
     {$($safe_const:ident = $raw_const:ident;)*} => {
@@ -307,7 +306,7 @@ pub unsafe fn fd_pwrite(fd: Fd, iovs: &[CIoVec], offset: FileSize) -> Result<usi
 #[inline]
 pub fn random_get(buf: &mut [u8]) -> Result<(), Error> {
     unsafe {
-        wrap0! { __wasi_random_get(buf.as_mut_ptr() as *mut c_void, buf.len()) }
+        wrap0! { __wasi_random_get(buf.as_mut_ptr(), buf.len()) }
     }
 }
 
@@ -437,8 +436,7 @@ pub unsafe fn path_open(
 
 #[inline]
 pub unsafe fn fd_readdir(fd: Fd, buf: &mut [u8], cookie: DirCookie) -> Result<usize, Error> {
-    let ptr = buf.as_mut_ptr() as *mut c_void;
-    wrap! { __wasi_fd_readdir(fd, ptr, buf.len(), cookie) }
+    wrap! { __wasi_fd_readdir(fd, buf.as_mut_ptr(), buf.len(), cookie) }
 }
 
 #[inline]
