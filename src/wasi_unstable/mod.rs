@@ -574,8 +574,8 @@ pub unsafe fn sock_socket(
         sock_domain,
         sock_type,
         sock_protocol,
-        fd,
-        rights,
+        fd.as_mut_ptr(),
+        rights.as_mut_ptr(),
     );
     if let Some(code) = NonZeroU16::new(r) {
         Err(code)
@@ -594,7 +594,7 @@ pub unsafe fn sock_connect(
         path.as_ptr(),
         path.len(),
     );
-    if let Some(code) = r {
+    if let Some(code) = NonZeroU16::new(r) {
         Err(code)
     } else {
         Ok(())
