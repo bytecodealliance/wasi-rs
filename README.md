@@ -1,5 +1,7 @@
 # WASI API Bindings for Rust
 
+**A [Bytecode Alliance](https://bytecodealliance.org/) project**
+
 This package contains experimental [WASI](https://github.com/WebAssembly/WASI)
 API bindings in Rust.
 
