@@ -1,6 +1,18 @@
-# WASI API Bindings for Rust
+<div align="center">
+  <h1><code>wasi</code></h1>
 
-**A [Bytecode Alliance](https://bytecodealliance.org/) project**
+<strong>A <a href="https://bytecodealliance.org/">Bytecode Alliance</a> project</strong>
+
+  <p>
+    <strong>WASI API Bindings for Rust</strong>
+  </p>
+
+  <p>
+    <a href="https://crates.io/crates/wasi"><img src="https://img.shields.io/crates/v/wasi.svg?style=flat-square" alt="Crates.io version" /></a>
+    <a href="https://crates.io/crates/wasi"><img src="https://img.shields.io/crates/d/wasi.svg?style=flat-square" alt="Download" /></a>
+    <a href="https://docs.rs/wasi/"><img src="https://img.shields.io/badge/docs-latest-blue.svg?style=flat-square" alt="docs.rs docs" /></a>
+  </p>
+</div>
 
 This package contains experimental [WASI](https://github.com/WebAssembly/WASI)
 API bindings in Rust.
