@@ -7,4 +7,5 @@ license = "Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT"
 edition = "2018"
 
 [dependencies]
-witx = "0.4"
+heck = "0.3"
+witx = { path = "WASI/tools/witx" }

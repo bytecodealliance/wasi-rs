@@ -1,6 +1,6 @@
 [package]
 name = "wasi"
-version = "0.7.0"
+version = "0.8.0+wasi-snapshot-preview1"
 authors = ["The Cranelift Project Developers"]
 license = "Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT"
 description = "Experimental WASI API bindings for Rust"
@@ -21,8 +21,8 @@ core = { version = "1.0", optional = true, package = "rustc-std-workspace-core" 
 rustc-std-workspace-alloc = { version = "1.0", optional = true }
 
 [features]
-default = ["alloc"]
-alloc = []
+default = ["std"]
+std = []
 # Unstable feature to support being a libstd dependency
 rustc-dep-of-std = ["compiler_builtins", "core", "rustc-std-workspace-alloc"]
 
