@@ -17,4 +17,4 @@ extern crate alloc;
 #[cfg(all(feature = "alloc", feature = "rustc-std-workspace-alloc"))]
 extern crate rustc_std_workspace_alloc as alloc;
 
-pub mod wasi_unstable;
+pub mod wasi_snapshot_preview1;

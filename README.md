@@ -19,10 +19,10 @@ API bindings in Rust.
 
 There are two modules:
 
- - `wasi_unstable::raw`, which provides raw access to the literal binding to
+ - `wasi_snapshot_preview1::raw`, which provides raw access to the literal binding to
    the API. These functions are unsafe and use raw pointers.
 
- - `wasi_unstable`, which provides thin wrappers around the raw functions
+ - `wasi_snapshot_preview1`, which provides thin wrappers around the raw functions
    which use idiomatic Rust types rather than raw pointers, and are safe.
 
 This crate is quite low-level and provides conceptually a "system call"

@@ -1,10 +1,11 @@
+use heck::ShoutySnakeCase;
 use std::io::{Read, Write};
 use std::path::Path;
 use std::process::{Command, Stdio};
 use witx::*;
 
 pub fn generate(wasi: &Path) -> String {
-    let doc = witx::load(wasi.join("phases/old/witx/wasi_unstable.witx")).unwrap();
+    let doc = witx::load(&[wasi.join("phases/snapshot/witx/wasi_snapshot_preview1.witx")]).unwrap();
 
     let mut raw = String::new();
     raw.push_str(
@@ -61,6 +62,7 @@ impl Render for Datatype {
             witx::DatatypeVariant::Flags(f) => f.render(src),
             witx::DatatypeVariant::Struct(s) => s.render(src),
             witx::DatatypeVariant::Union(s) => s.render(src),
+            witx::DatatypeVariant::Handle(s) => s.render(src),
         }
     }
 }
@@ -69,7 +71,7 @@ impl Render for UnionDatatype {
     fn render(&self, src: &mut String) {
         src.push_str("#[repr(C)]\n");
         src.push_str("#[derive(Copy, Clone)]\n");
-        src.push_str(&format!("pub union __wasi_{} {{\n", self.name.as_str()));
+        src.push_str(&format!("pub union __wasi_{}_t {{\n", self.name.as_str()));
         for variant in self.variants.iter() {
             src.push_str("pub ");
             variant.name.render(src);
@@ -85,7 +87,7 @@ impl Render for StructDatatype {
     fn render(&self, src: &mut String) {
         src.push_str("#[repr(C)]\n");
         src.push_str("#[derive(Copy, Clone)]\n");
-        src.push_str(&format!("pub struct __wasi_{} {{\n", self.name.as_str()));
+        src.push_str(&format!("pub struct __wasi_{}_t {{\n", self.name.as_str()));
         for member in self.members.iter() {
             src.push_str("pub ");
             member.name.render(src);
@@ -99,13 +101,14 @@ impl Render for StructDatatype {
 
 impl Render for FlagsDatatype {
     fn render(&self, src: &mut String) {
-        src.push_str(&format!("pub type __wasi_{} = ", self.name.as_str()));
+        src.push_str(&format!("pub type __wasi_{}_t = ", self.name.as_str()));
         self.repr.render(src);
         src.push_str(";\n");
         for (i, variant) in self.flags.iter().enumerate() {
             src.push_str(&format!(
-                "pub const __WASI_{}: __wasi_{} = 0x{:x};",
-                variant.as_str(),
+                "pub const __WASI_{}_{}: __wasi_{}_t = 0x{:x};",
+                self.name.as_str().to_shouty_snake_case(),
+                variant.name.as_str().to_shouty_snake_case(),
                 self.name.as_str(),
                 1 << i
             ));
@@ -115,13 +118,14 @@ impl Render for FlagsDatatype {
 
 impl Render for EnumDatatype {
     fn render(&self, src: &mut String) {
-        src.push_str(&format!("pub type __wasi_{} = ", self.name.as_str()));
+        src.push_str(&format!("pub type __wasi_{}_t = ", self.name.as_str()));
         self.repr.render(src);
         src.push_str(";\n");
         for (i, variant) in self.variants.iter().enumerate() {
             src.push_str(&format!(
-                "pub const __WASI_{}: __wasi_{} = {};",
-                variant.as_str(),
+                "pub const __WASI_{}_{}: __wasi_{}_t = {};",
+                self.name.as_str().to_shouty_snake_case(),
+                variant.name.as_str().to_shouty_snake_case(),
                 self.name.as_str(),
                 i
             ));
@@ -145,11 +149,11 @@ impl Render for AliasDatatype {
         if self.to.passed_by() == DatatypePassedBy::PointerLengthPair {
             return;
         }
-        src.push_str(&format!("pub type __wasi_{} = ", self.name.as_str()));
+        src.push_str(&format!("pub type __wasi_{}_t = ", self.name.as_str()));
 
-        // Give `size_t` special treatment to translate it to `usize` in Rust
+        // Give `size` special treatment to translate it to `usize` in Rust
         // instead of `u32`, makes things a bit nicer in Rust.
-        if self.name.as_str() == "size_t" {
+        if self.name.as_str() == "size" {
             src.push_str("usize");
         } else {
             self.to.render(src);
@@ -174,8 +178,15 @@ impl Render for DatatypeIdent {
             DatatypeIdent::Ident(t) => {
                 src.push_str("__wasi_");
                 src.push_str(t.name.as_str());
+                src.push_str("_t");
             }
         }
+    }
+}
+
+impl Render for HandleDatatype {
+    fn render(&self, src: &mut String) {
+        src.push_str(&format!("pub type __wasi_{}_t = u32;", self.name.as_str()));
     }
 }
 

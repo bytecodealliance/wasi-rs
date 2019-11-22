@@ -8,118 +8,118 @@ pub type __wasi_size_t = usize;
 pub type __wasi_filesize_t = u64;
 pub type __wasi_timestamp_t = u64;
 pub type __wasi_clockid_t = u32;
-pub const __WASI_CLOCK_REALTIME: __wasi_clockid_t = 0;
-pub const __WASI_CLOCK_MONOTONIC: __wasi_clockid_t = 1;
-pub const __WASI_CLOCK_PROCESS_CPUTIME_ID: __wasi_clockid_t = 2;
-pub const __WASI_CLOCK_THREAD_CPUTIME_ID: __wasi_clockid_t = 3;
+pub const __WASI_CLOCKID_REALTIME: __wasi_clockid_t = 0;
+pub const __WASI_CLOCKID_MONOTONIC: __wasi_clockid_t = 1;
+pub const __WASI_CLOCKID_PROCESS_CPUTIME_ID: __wasi_clockid_t = 2;
+pub const __WASI_CLOCKID_THREAD_CPUTIME_ID: __wasi_clockid_t = 3;
 pub type __wasi_errno_t = u16;
-pub const __WASI_ESUCCESS: __wasi_errno_t = 0;
-pub const __WASI_E2BIG: __wasi_errno_t = 1;
-pub const __WASI_EACCES: __wasi_errno_t = 2;
-pub const __WASI_EADDRINUSE: __wasi_errno_t = 3;
-pub const __WASI_EADDRNOTAVAIL: __wasi_errno_t = 4;
-pub const __WASI_EAFNOSUPPORT: __wasi_errno_t = 5;
-pub const __WASI_EAGAIN: __wasi_errno_t = 6;
-pub const __WASI_EALREADY: __wasi_errno_t = 7;
-pub const __WASI_EBADF: __wasi_errno_t = 8;
-pub const __WASI_EBADMSG: __wasi_errno_t = 9;
-pub const __WASI_EBUSY: __wasi_errno_t = 10;
-pub const __WASI_ECANCELED: __wasi_errno_t = 11;
-pub const __WASI_ECHILD: __wasi_errno_t = 12;
-pub const __WASI_ECONNABORTED: __wasi_errno_t = 13;
-pub const __WASI_ECONNREFUSED: __wasi_errno_t = 14;
-pub const __WASI_ECONNRESET: __wasi_errno_t = 15;
-pub const __WASI_EDEADLK: __wasi_errno_t = 16;
-pub const __WASI_EDESTADDRREQ: __wasi_errno_t = 17;
-pub const __WASI_EDOM: __wasi_errno_t = 18;
-pub const __WASI_EDQUOT: __wasi_errno_t = 19;
-pub const __WASI_EEXIST: __wasi_errno_t = 20;
-pub const __WASI_EFAULT: __wasi_errno_t = 21;
-pub const __WASI_EFBIG: __wasi_errno_t = 22;
-pub const __WASI_EHOSTUNREACH: __wasi_errno_t = 23;
-pub const __WASI_EIDRM: __wasi_errno_t = 24;
-pub const __WASI_EILSEQ: __wasi_errno_t = 25;
-pub const __WASI_EINPROGRESS: __wasi_errno_t = 26;
-pub const __WASI_EINTR: __wasi_errno_t = 27;
-pub const __WASI_EINVAL: __wasi_errno_t = 28;
-pub const __WASI_EIO: __wasi_errno_t = 29;
-pub const __WASI_EISCONN: __wasi_errno_t = 30;
-pub const __WASI_EISDIR: __wasi_errno_t = 31;
-pub const __WASI_ELOOP: __wasi_errno_t = 32;
-pub const __WASI_EMFILE: __wasi_errno_t = 33;
-pub const __WASI_EMLINK: __wasi_errno_t = 34;
-pub const __WASI_EMSGSIZE: __wasi_errno_t = 35;
-pub const __WASI_EMULTIHOP: __wasi_errno_t = 36;
-pub const __WASI_ENAMETOOLONG: __wasi_errno_t = 37;
-pub const __WASI_ENETDOWN: __wasi_errno_t = 38;
-pub const __WASI_ENETRESET: __wasi_errno_t = 39;
-pub const __WASI_ENETUNREACH: __wasi_errno_t = 40;
-pub const __WASI_ENFILE: __wasi_errno_t = 41;
-pub const __WASI_ENOBUFS: __wasi_errno_t = 42;
-pub const __WASI_ENODEV: __wasi_errno_t = 43;
-pub const __WASI_ENOENT: __wasi_errno_t = 44;
-pub const __WASI_ENOEXEC: __wasi_errno_t = 45;
-pub const __WASI_ENOLCK: __wasi_errno_t = 46;
-pub const __WASI_ENOLINK: __wasi_errno_t = 47;
-pub const __WASI_ENOMEM: __wasi_errno_t = 48;
-pub const __WASI_ENOMSG: __wasi_errno_t = 49;
-pub const __WASI_ENOPROTOOPT: __wasi_errno_t = 50;
-pub const __WASI_ENOSPC: __wasi_errno_t = 51;
-pub const __WASI_ENOSYS: __wasi_errno_t = 52;
-pub const __WASI_ENOTCONN: __wasi_errno_t = 53;
-pub const __WASI_ENOTDIR: __wasi_errno_t = 54;
-pub const __WASI_ENOTEMPTY: __wasi_errno_t = 55;
-pub const __WASI_ENOTRECOVERABLE: __wasi_errno_t = 56;
-pub const __WASI_ENOTSOCK: __wasi_errno_t = 57;
-pub const __WASI_ENOTSUP: __wasi_errno_t = 58;
-pub const __WASI_ENOTTY: __wasi_errno_t = 59;
-pub const __WASI_ENXIO: __wasi_errno_t = 60;
-pub const __WASI_EOVERFLOW: __wasi_errno_t = 61;
-pub const __WASI_EOWNERDEAD: __wasi_errno_t = 62;
-pub const __WASI_EPERM: __wasi_errno_t = 63;
-pub const __WASI_EPIPE: __wasi_errno_t = 64;
-pub const __WASI_EPROTO: __wasi_errno_t = 65;
-pub const __WASI_EPROTONOSUPPORT: __wasi_errno_t = 66;
-pub const __WASI_EPROTOTYPE: __wasi_errno_t = 67;
-pub const __WASI_ERANGE: __wasi_errno_t = 68;
-pub const __WASI_EROFS: __wasi_errno_t = 69;
-pub const __WASI_ESPIPE: __wasi_errno_t = 70;
-pub const __WASI_ESRCH: __wasi_errno_t = 71;
-pub const __WASI_ESTALE: __wasi_errno_t = 72;
-pub const __WASI_ETIMEDOUT: __wasi_errno_t = 73;
-pub const __WASI_ETXTBSY: __wasi_errno_t = 74;
-pub const __WASI_EXDEV: __wasi_errno_t = 75;
-pub const __WASI_ENOTCAPABLE: __wasi_errno_t = 76;
+pub const __WASI_ERRNO_SUCCESS: __wasi_errno_t = 0;
+pub const __WASI_ERRNO_2BIG: __wasi_errno_t = 1;
+pub const __WASI_ERRNO_ACCES: __wasi_errno_t = 2;
+pub const __WASI_ERRNO_ADDRINUSE: __wasi_errno_t = 3;
+pub const __WASI_ERRNO_ADDRNOTAVAIL: __wasi_errno_t = 4;
+pub const __WASI_ERRNO_AFNOSUPPORT: __wasi_errno_t = 5;
+pub const __WASI_ERRNO_AGAIN: __wasi_errno_t = 6;
+pub const __WASI_ERRNO_ALREADY: __wasi_errno_t = 7;
+pub const __WASI_ERRNO_BADF: __wasi_errno_t = 8;
+pub const __WASI_ERRNO_BADMSG: __wasi_errno_t = 9;
+pub const __WASI_ERRNO_BUSY: __wasi_errno_t = 10;
+pub const __WASI_ERRNO_CANCELED: __wasi_errno_t = 11;
+pub const __WASI_ERRNO_CHILD: __wasi_errno_t = 12;
+pub const __WASI_ERRNO_CONNABORTED: __wasi_errno_t = 13;
+pub const __WASI_ERRNO_CONNREFUSED: __wasi_errno_t = 14;
+pub const __WASI_ERRNO_CONNRESET: __wasi_errno_t = 15;
+pub const __WASI_ERRNO_DEADLK: __wasi_errno_t = 16;
+pub const __WASI_ERRNO_DESTADDRREQ: __wasi_errno_t = 17;
+pub const __WASI_ERRNO_DOM: __wasi_errno_t = 18;
+pub const __WASI_ERRNO_DQUOT: __wasi_errno_t = 19;
+pub const __WASI_ERRNO_EXIST: __wasi_errno_t = 20;
+pub const __WASI_ERRNO_FAULT: __wasi_errno_t = 21;
+pub const __WASI_ERRNO_FBIG: __wasi_errno_t = 22;
+pub const __WASI_ERRNO_HOSTUNREACH: __wasi_errno_t = 23;
+pub const __WASI_ERRNO_IDRM: __wasi_errno_t = 24;
+pub const __WASI_ERRNO_ILSEQ: __wasi_errno_t = 25;
+pub const __WASI_ERRNO_INPROGRESS: __wasi_errno_t = 26;
+pub const __WASI_ERRNO_INTR: __wasi_errno_t = 27;
+pub const __WASI_ERRNO_INVAL: __wasi_errno_t = 28;
+pub const __WASI_ERRNO_IO: __wasi_errno_t = 29;
+pub const __WASI_ERRNO_ISCONN: __wasi_errno_t = 30;
+pub const __WASI_ERRNO_ISDIR: __wasi_errno_t = 31;
+pub const __WASI_ERRNO_LOOP: __wasi_errno_t = 32;
+pub const __WASI_ERRNO_MFILE: __wasi_errno_t = 33;
+pub const __WASI_ERRNO_MLINK: __wasi_errno_t = 34;
+pub const __WASI_ERRNO_MSGSIZE: __wasi_errno_t = 35;
+pub const __WASI_ERRNO_MULTIHOP: __wasi_errno_t = 36;
+pub const __WASI_ERRNO_NAMETOOLONG: __wasi_errno_t = 37;
+pub const __WASI_ERRNO_NETDOWN: __wasi_errno_t = 38;
+pub const __WASI_ERRNO_NETRESET: __wasi_errno_t = 39;
+pub const __WASI_ERRNO_NETUNREACH: __wasi_errno_t = 40;
+pub const __WASI_ERRNO_NFILE: __wasi_errno_t = 41;
+pub const __WASI_ERRNO_NOBUFS: __wasi_errno_t = 42;
+pub const __WASI_ERRNO_NODEV: __wasi_errno_t = 43;
+pub const __WASI_ERRNO_NOENT: __wasi_errno_t = 44;
+pub const __WASI_ERRNO_NOEXEC: __wasi_errno_t = 45;
+pub const __WASI_ERRNO_NOLCK: __wasi_errno_t = 46;
+pub const __WASI_ERRNO_NOLINK: __wasi_errno_t = 47;
+pub const __WASI_ERRNO_NOMEM: __wasi_errno_t = 48;
+pub const __WASI_ERRNO_NOMSG: __wasi_errno_t = 49;
+pub const __WASI_ERRNO_NOPROTOOPT: __wasi_errno_t = 50;
+pub const __WASI_ERRNO_NOSPC: __wasi_errno_t = 51;
+pub const __WASI_ERRNO_NOSYS: __wasi_errno_t = 52;
+pub const __WASI_ERRNO_NOTCONN: __wasi_errno_t = 53;
+pub const __WASI_ERRNO_NOTDIR: __wasi_errno_t = 54;
+pub const __WASI_ERRNO_NOTEMPTY: __wasi_errno_t = 55;
+pub const __WASI_ERRNO_NOTRECOVERABLE: __wasi_errno_t = 56;
+pub const __WASI_ERRNO_NOTSOCK: __wasi_errno_t = 57;
+pub const __WASI_ERRNO_NOTSUP: __wasi_errno_t = 58;
+pub const __WASI_ERRNO_NOTTY: __wasi_errno_t = 59;
+pub const __WASI_ERRNO_NXIO: __wasi_errno_t = 60;
+pub const __WASI_ERRNO_OVERFLOW: __wasi_errno_t = 61;
+pub const __WASI_ERRNO_OWNERDEAD: __wasi_errno_t = 62;
+pub const __WASI_ERRNO_PERM: __wasi_errno_t = 63;
+pub const __WASI_ERRNO_PIPE: __wasi_errno_t = 64;
+pub const __WASI_ERRNO_PROTO: __wasi_errno_t = 65;
+pub const __WASI_ERRNO_PROTONOSUPPORT: __wasi_errno_t = 66;
+pub const __WASI_ERRNO_PROTOTYPE: __wasi_errno_t = 67;
+pub const __WASI_ERRNO_RANGE: __wasi_errno_t = 68;
+pub const __WASI_ERRNO_ROFS: __wasi_errno_t = 69;
+pub const __WASI_ERRNO_SPIPE: __wasi_errno_t = 70;
+pub const __WASI_ERRNO_SRCH: __wasi_errno_t = 71;
+pub const __WASI_ERRNO_STALE: __wasi_errno_t = 72;
+pub const __WASI_ERRNO_TIMEDOUT: __wasi_errno_t = 73;
+pub const __WASI_ERRNO_TXTBSY: __wasi_errno_t = 74;
+pub const __WASI_ERRNO_XDEV: __wasi_errno_t = 75;
+pub const __WASI_ERRNO_NOTCAPABLE: __wasi_errno_t = 76;
 pub type __wasi_rights_t = u64;
-pub const __WASI_RIGHT_FD_DATASYNC: __wasi_rights_t = 0x1;
-pub const __WASI_RIGHT_FD_READ: __wasi_rights_t = 0x2;
-pub const __WASI_RIGHT_FD_SEEK: __wasi_rights_t = 0x4;
-pub const __WASI_RIGHT_FD_FDSTAT_SET_FLAGS: __wasi_rights_t = 0x8;
-pub const __WASI_RIGHT_FD_SYNC: __wasi_rights_t = 0x10;
-pub const __WASI_RIGHT_FD_TELL: __wasi_rights_t = 0x20;
-pub const __WASI_RIGHT_FD_WRITE: __wasi_rights_t = 0x40;
-pub const __WASI_RIGHT_FD_ADVISE: __wasi_rights_t = 0x80;
-pub const __WASI_RIGHT_FD_ALLOCATE: __wasi_rights_t = 0x100;
-pub const __WASI_RIGHT_PATH_CREATE_DIRECTORY: __wasi_rights_t = 0x200;
-pub const __WASI_RIGHT_PATH_CREATE_FILE: __wasi_rights_t = 0x400;
-pub const __WASI_RIGHT_PATH_LINK_SOURCE: __wasi_rights_t = 0x800;
-pub const __WASI_RIGHT_PATH_LINK_TARGET: __wasi_rights_t = 0x1000;
-pub const __WASI_RIGHT_PATH_OPEN: __wasi_rights_t = 0x2000;
-pub const __WASI_RIGHT_FD_READDIR: __wasi_rights_t = 0x4000;
-pub const __WASI_RIGHT_PATH_READLINK: __wasi_rights_t = 0x8000;
-pub const __WASI_RIGHT_PATH_RENAME_SOURCE: __wasi_rights_t = 0x10000;
-pub const __WASI_RIGHT_PATH_RENAME_TARGET: __wasi_rights_t = 0x20000;
-pub const __WASI_RIGHT_PATH_FILESTAT_GET: __wasi_rights_t = 0x40000;
-pub const __WASI_RIGHT_PATH_FILESTAT_SET_SIZE: __wasi_rights_t = 0x80000;
-pub const __WASI_RIGHT_PATH_FILESTAT_SET_TIMES: __wasi_rights_t = 0x100000;
-pub const __WASI_RIGHT_FD_FILESTAT_GET: __wasi_rights_t = 0x200000;
-pub const __WASI_RIGHT_FD_FILESTAT_SET_SIZE: __wasi_rights_t = 0x400000;
-pub const __WASI_RIGHT_FD_FILESTAT_SET_TIMES: __wasi_rights_t = 0x800000;
-pub const __WASI_RIGHT_PATH_SYMLINK: __wasi_rights_t = 0x1000000;
-pub const __WASI_RIGHT_PATH_REMOVE_DIRECTORY: __wasi_rights_t = 0x2000000;
-pub const __WASI_RIGHT_PATH_UNLINK_FILE: __wasi_rights_t = 0x4000000;
-pub const __WASI_RIGHT_POLL_FD_READWRITE: __wasi_rights_t = 0x8000000;
-pub const __WASI_RIGHT_SOCK_SHUTDOWN: __wasi_rights_t = 0x10000000;
+pub const __WASI_RIGHTS_FD_DATASYNC: __wasi_rights_t = 0x1;
+pub const __WASI_RIGHTS_FD_READ: __wasi_rights_t = 0x2;
+pub const __WASI_RIGHTS_FD_SEEK: __wasi_rights_t = 0x4;
+pub const __WASI_RIGHTS_FD_FDSTAT_SET_FLAGS: __wasi_rights_t = 0x8;
+pub const __WASI_RIGHTS_FD_SYNC: __wasi_rights_t = 0x10;
+pub const __WASI_RIGHTS_FD_TELL: __wasi_rights_t = 0x20;
+pub const __WASI_RIGHTS_FD_WRITE: __wasi_rights_t = 0x40;
+pub const __WASI_RIGHTS_FD_ADVISE: __wasi_rights_t = 0x80;
+pub const __WASI_RIGHTS_FD_ALLOCATE: __wasi_rights_t = 0x100;
+pub const __WASI_RIGHTS_PATH_CREATE_DIRECTORY: __wasi_rights_t = 0x200;
+pub const __WASI_RIGHTS_PATH_CREATE_FILE: __wasi_rights_t = 0x400;
+pub const __WASI_RIGHTS_PATH_LINK_SOURCE: __wasi_rights_t = 0x800;
+pub const __WASI_RIGHTS_PATH_LINK_TARGET: __wasi_rights_t = 0x1000;
+pub const __WASI_RIGHTS_PATH_OPEN: __wasi_rights_t = 0x2000;
+pub const __WASI_RIGHTS_FD_READDIR: __wasi_rights_t = 0x4000;
+pub const __WASI_RIGHTS_PATH_READLINK: __wasi_rights_t = 0x8000;
+pub const __WASI_RIGHTS_PATH_RENAME_SOURCE: __wasi_rights_t = 0x10000;
+pub const __WASI_RIGHTS_PATH_RENAME_TARGET: __wasi_rights_t = 0x20000;
+pub const __WASI_RIGHTS_PATH_FILESTAT_GET: __wasi_rights_t = 0x40000;
+pub const __WASI_RIGHTS_PATH_FILESTAT_SET_SIZE: __wasi_rights_t = 0x80000;
+pub const __WASI_RIGHTS_PATH_FILESTAT_SET_TIMES: __wasi_rights_t = 0x100000;
+pub const __WASI_RIGHTS_FD_FILESTAT_GET: __wasi_rights_t = 0x200000;
+pub const __WASI_RIGHTS_FD_FILESTAT_SET_SIZE: __wasi_rights_t = 0x400000;
+pub const __WASI_RIGHTS_FD_FILESTAT_SET_TIMES: __wasi_rights_t = 0x800000;
+pub const __WASI_RIGHTS_PATH_SYMLINK: __wasi_rights_t = 0x1000000;
+pub const __WASI_RIGHTS_PATH_REMOVE_DIRECTORY: __wasi_rights_t = 0x2000000;
+pub const __WASI_RIGHTS_PATH_UNLINK_FILE: __wasi_rights_t = 0x4000000;
+pub const __WASI_RIGHTS_POLL_FD_READWRITE: __wasi_rights_t = 0x8000000;
+pub const __WASI_RIGHTS_SOCK_SHUTDOWN: __wasi_rights_t = 0x10000000;
 pub type __wasi_fd_t = u32;
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -136,9 +136,9 @@ pub struct __wasi_ciovec_t {
 
 pub type __wasi_filedelta_t = i64;
 pub type __wasi_whence_t = u8;
-pub const __WASI_WHENCE_CUR: __wasi_whence_t = 0;
-pub const __WASI_WHENCE_END: __wasi_whence_t = 1;
-pub const __WASI_WHENCE_SET: __wasi_whence_t = 2;
+pub const __WASI_WHENCE_SET: __wasi_whence_t = 0;
+pub const __WASI_WHENCE_CUR: __wasi_whence_t = 1;
+pub const __WASI_WHENCE_END: __wasi_whence_t = 2;
 pub type __wasi_dircookie_t = u64;
 pub type __wasi_dirnamlen_t = u32;
 pub type __wasi_inode_t = u64;
@@ -167,11 +167,11 @@ pub const __WASI_ADVICE_WILLNEED: __wasi_advice_t = 3;
 pub const __WASI_ADVICE_DONTNEED: __wasi_advice_t = 4;
 pub const __WASI_ADVICE_NOREUSE: __wasi_advice_t = 5;
 pub type __wasi_fdflags_t = u16;
-pub const __WASI_FDFLAG_APPEND: __wasi_fdflags_t = 0x1;
-pub const __WASI_FDFLAG_DSYNC: __wasi_fdflags_t = 0x2;
-pub const __WASI_FDFLAG_NONBLOCK: __wasi_fdflags_t = 0x4;
-pub const __WASI_FDFLAG_RSYNC: __wasi_fdflags_t = 0x8;
-pub const __WASI_FDFLAG_SYNC: __wasi_fdflags_t = 0x10;
+pub const __WASI_FDFLAGS_APPEND: __wasi_fdflags_t = 0x1;
+pub const __WASI_FDFLAGS_DSYNC: __wasi_fdflags_t = 0x2;
+pub const __WASI_FDFLAGS_NONBLOCK: __wasi_fdflags_t = 0x4;
+pub const __WASI_FDFLAGS_RSYNC: __wasi_fdflags_t = 0x8;
+pub const __WASI_FDFLAGS_SYNC: __wasi_fdflags_t = 0x10;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct __wasi_fdstat_t {
@@ -182,29 +182,29 @@ pub struct __wasi_fdstat_t {
 }
 pub type __wasi_device_t = u64;
 pub type __wasi_fstflags_t = u16;
-pub const __WASI_FILESTAT_SET_ATIM: __wasi_fstflags_t = 0x1;
-pub const __WASI_FILESTAT_SET_ATIM_NOW: __wasi_fstflags_t = 0x2;
-pub const __WASI_FILESTAT_SET_MTIM: __wasi_fstflags_t = 0x4;
-pub const __WASI_FILESTAT_SET_MTIM_NOW: __wasi_fstflags_t = 0x8;
+pub const __WASI_FSTFLAGS_ATIM: __wasi_fstflags_t = 0x1;
+pub const __WASI_FSTFLAGS_ATIM_NOW: __wasi_fstflags_t = 0x2;
+pub const __WASI_FSTFLAGS_MTIM: __wasi_fstflags_t = 0x4;
+pub const __WASI_FSTFLAGS_MTIM_NOW: __wasi_fstflags_t = 0x8;
 pub type __wasi_lookupflags_t = u32;
-pub const __WASI_LOOKUP_SYMLINK_FOLLOW: __wasi_lookupflags_t = 0x1;
+pub const __WASI_LOOKUPFLAGS_SYMLINK_FOLLOW: __wasi_lookupflags_t = 0x1;
 pub type __wasi_oflags_t = u16;
-pub const __WASI_O_CREAT: __wasi_oflags_t = 0x1;
-pub const __WASI_O_DIRECTORY: __wasi_oflags_t = 0x2;
-pub const __WASI_O_EXCL: __wasi_oflags_t = 0x4;
-pub const __WASI_O_TRUNC: __wasi_oflags_t = 0x8;
-pub type __wasi_linkcount_t = u32;
+pub const __WASI_OFLAGS_CREAT: __wasi_oflags_t = 0x1;
+pub const __WASI_OFLAGS_DIRECTORY: __wasi_oflags_t = 0x2;
+pub const __WASI_OFLAGS_EXCL: __wasi_oflags_t = 0x4;
+pub const __WASI_OFLAGS_TRUNC: __wasi_oflags_t = 0x8;
+pub type __wasi_linkcount_t = u64;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct __wasi_filestat_t {
-    pub st_dev: __wasi_device_t,
-    pub st_ino: __wasi_inode_t,
-    pub st_filetype: __wasi_filetype_t,
-    pub st_nlink: __wasi_linkcount_t,
-    pub st_size: __wasi_filesize_t,
-    pub st_atim: __wasi_timestamp_t,
-    pub st_mtim: __wasi_timestamp_t,
-    pub st_ctim: __wasi_timestamp_t,
+    pub dev: __wasi_device_t,
+    pub ino: __wasi_inode_t,
+    pub filetype: __wasi_filetype_t,
+    pub nlink: __wasi_linkcount_t,
+    pub size: __wasi_filesize_t,
+    pub atim: __wasi_timestamp_t,
+    pub mtim: __wasi_timestamp_t,
+    pub ctim: __wasi_timestamp_t,
 }
 pub type __wasi_userdata_t = u64;
 pub type __wasi_eventtype_t = u8;
@@ -212,7 +212,7 @@ pub const __WASI_EVENTTYPE_CLOCK: __wasi_eventtype_t = 0;
 pub const __WASI_EVENTTYPE_FD_READ: __wasi_eventtype_t = 1;
 pub const __WASI_EVENTTYPE_FD_WRITE: __wasi_eventtype_t = 2;
 pub type __wasi_eventrwflags_t = u16;
-pub const __WASI_EVENT_FD_READWRITE_HANGUP: __wasi_eventrwflags_t = 0x1;
+pub const __WASI_EVENTRWFLAGS_FD_READWRITE_HANGUP: __wasi_eventrwflags_t = 0x1;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct __wasi_event_fd_readwrite_t {
@@ -221,7 +221,7 @@ pub struct __wasi_event_fd_readwrite_t {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub union __wasi_event_u {
+pub union __wasi_event_u_t {
     pub fd_readwrite: __wasi_event_fd_readwrite_t,
 }
 #[repr(C)]
@@ -230,15 +230,14 @@ pub struct __wasi_event_t {
     pub userdata: __wasi_userdata_t,
     pub error: __wasi_errno_t,
     pub r#type: __wasi_eventtype_t,
-    pub u: __wasi_event_u,
+    pub u: __wasi_event_u_t,
 }
 pub type __wasi_subclockflags_t = u16;
-pub const __WASI_SUBSCRIPTION_CLOCK_ABSTIME: __wasi_subclockflags_t = 0x1;
+pub const __WASI_SUBCLOCKFLAGS_SUBSCRIPTION_CLOCK_ABSTIME: __wasi_subclockflags_t = 0x1;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct __wasi_subscription_clock_t {
-    pub identifier: __wasi_userdata_t,
-    pub clock_id: __wasi_clockid_t,
+    pub id: __wasi_clockid_t,
     pub timeout: __wasi_timestamp_t,
     pub precision: __wasi_timestamp_t,
     pub flags: __wasi_subclockflags_t,
@@ -250,7 +249,7 @@ pub struct __wasi_subscription_fd_readwrite_t {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub union __wasi_subscription_u {
+pub union __wasi_subscription_u_t {
     pub clock: __wasi_subscription_clock_t,
     pub fd_readwrite: __wasi_subscription_fd_readwrite_t,
 }
@@ -259,69 +258,69 @@ pub union __wasi_subscription_u {
 pub struct __wasi_subscription_t {
     pub userdata: __wasi_userdata_t,
     pub r#type: __wasi_eventtype_t,
-    pub u: __wasi_subscription_u,
+    pub u: __wasi_subscription_u_t,
 }
 pub type __wasi_exitcode_t = u32;
 pub type __wasi_signal_t = u8;
-pub const __WASI_SIGNONE: __wasi_signal_t = 0;
-pub const __WASI_SIGHUP: __wasi_signal_t = 1;
-pub const __WASI_SIGINT: __wasi_signal_t = 2;
-pub const __WASI_SIGQUIT: __wasi_signal_t = 3;
-pub const __WASI_SIGILL: __wasi_signal_t = 4;
-pub const __WASI_SIGTRAP: __wasi_signal_t = 5;
-pub const __WASI_SIGABRT: __wasi_signal_t = 6;
-pub const __WASI_SIGBUS: __wasi_signal_t = 7;
-pub const __WASI_SIGFPE: __wasi_signal_t = 8;
-pub const __WASI_SIGKILL: __wasi_signal_t = 9;
-pub const __WASI_SIGUSR1: __wasi_signal_t = 10;
-pub const __WASI_SIGSEGV: __wasi_signal_t = 11;
-pub const __WASI_SIGUSR2: __wasi_signal_t = 12;
-pub const __WASI_SIGPIPE: __wasi_signal_t = 13;
-pub const __WASI_SIGALRM: __wasi_signal_t = 14;
-pub const __WASI_SIGTERM: __wasi_signal_t = 15;
-pub const __WASI_SIGCHLD: __wasi_signal_t = 16;
-pub const __WASI_SIGCONT: __wasi_signal_t = 17;
-pub const __WASI_SIGSTOP: __wasi_signal_t = 18;
-pub const __WASI_SIGTSTP: __wasi_signal_t = 19;
-pub const __WASI_SIGTTIN: __wasi_signal_t = 20;
-pub const __WASI_SIGTTOU: __wasi_signal_t = 21;
-pub const __WASI_SIGURG: __wasi_signal_t = 22;
-pub const __WASI_SIGXCPU: __wasi_signal_t = 23;
-pub const __WASI_SIGXFSZ: __wasi_signal_t = 24;
-pub const __WASI_SIGVTALRM: __wasi_signal_t = 25;
-pub const __WASI_SIGPROF: __wasi_signal_t = 26;
-pub const __WASI_SIGWINCH: __wasi_signal_t = 27;
-pub const __WASI_SIGPOLL: __wasi_signal_t = 28;
-pub const __WASI_SIGPWR: __wasi_signal_t = 29;
-pub const __WASI_SIGSYS: __wasi_signal_t = 30;
+pub const __WASI_SIGNAL_NONE: __wasi_signal_t = 0;
+pub const __WASI_SIGNAL_HUP: __wasi_signal_t = 1;
+pub const __WASI_SIGNAL_INT: __wasi_signal_t = 2;
+pub const __WASI_SIGNAL_QUIT: __wasi_signal_t = 3;
+pub const __WASI_SIGNAL_ILL: __wasi_signal_t = 4;
+pub const __WASI_SIGNAL_TRAP: __wasi_signal_t = 5;
+pub const __WASI_SIGNAL_ABRT: __wasi_signal_t = 6;
+pub const __WASI_SIGNAL_BUS: __wasi_signal_t = 7;
+pub const __WASI_SIGNAL_FPE: __wasi_signal_t = 8;
+pub const __WASI_SIGNAL_KILL: __wasi_signal_t = 9;
+pub const __WASI_SIGNAL_USR1: __wasi_signal_t = 10;
+pub const __WASI_SIGNAL_SEGV: __wasi_signal_t = 11;
+pub const __WASI_SIGNAL_USR2: __wasi_signal_t = 12;
+pub const __WASI_SIGNAL_PIPE: __wasi_signal_t = 13;
+pub const __WASI_SIGNAL_ALRM: __wasi_signal_t = 14;
+pub const __WASI_SIGNAL_TERM: __wasi_signal_t = 15;
+pub const __WASI_SIGNAL_CHLD: __wasi_signal_t = 16;
+pub const __WASI_SIGNAL_CONT: __wasi_signal_t = 17;
+pub const __WASI_SIGNAL_STOP: __wasi_signal_t = 18;
+pub const __WASI_SIGNAL_TSTP: __wasi_signal_t = 19;
+pub const __WASI_SIGNAL_TTIN: __wasi_signal_t = 20;
+pub const __WASI_SIGNAL_TTOU: __wasi_signal_t = 21;
+pub const __WASI_SIGNAL_URG: __wasi_signal_t = 22;
+pub const __WASI_SIGNAL_XCPU: __wasi_signal_t = 23;
+pub const __WASI_SIGNAL_XFSZ: __wasi_signal_t = 24;
+pub const __WASI_SIGNAL_VTALRM: __wasi_signal_t = 25;
+pub const __WASI_SIGNAL_PROF: __wasi_signal_t = 26;
+pub const __WASI_SIGNAL_WINCH: __wasi_signal_t = 27;
+pub const __WASI_SIGNAL_POLL: __wasi_signal_t = 28;
+pub const __WASI_SIGNAL_PWR: __wasi_signal_t = 29;
+pub const __WASI_SIGNAL_SYS: __wasi_signal_t = 30;
 pub type __wasi_riflags_t = u16;
-pub const __WASI_SOCK_RECV_PEEK: __wasi_riflags_t = 0x1;
-pub const __WASI_SOCK_RECV_WAITALL: __wasi_riflags_t = 0x2;
+pub const __WASI_RIFLAGS_RECV_PEEK: __wasi_riflags_t = 0x1;
+pub const __WASI_RIFLAGS_RECV_WAITALL: __wasi_riflags_t = 0x2;
 pub type __wasi_roflags_t = u16;
-pub const __WASI_SOCK_RECV_DATA_TRUNCATED: __wasi_roflags_t = 0x1;
+pub const __WASI_ROFLAGS_RECV_DATA_TRUNCATED: __wasi_roflags_t = 0x1;
 pub type __wasi_siflags_t = u16;
 pub type __wasi_sdflags_t = u8;
-pub const __WASI_SHUT_RD: __wasi_sdflags_t = 0x1;
-pub const __WASI_SHUT_WR: __wasi_sdflags_t = 0x2;
+pub const __WASI_SDFLAGS_RD: __wasi_sdflags_t = 0x1;
+pub const __WASI_SDFLAGS_WR: __wasi_sdflags_t = 0x2;
 pub type __wasi_preopentype_t = u8;
 pub const __WASI_PREOPENTYPE_DIR: __wasi_preopentype_t = 0;
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub struct __wasi_prestat_dir {
+pub struct __wasi_prestat_dir_t {
     pub pr_name_len: __wasi_size_t,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub union __wasi_prestat_u {
-    pub dir: __wasi_prestat_dir,
+pub union __wasi_prestat_u_t {
+    pub dir: __wasi_prestat_dir_t,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct __wasi_prestat_t {
     pub pr_type: __wasi_preopentype_t,
-    pub u: __wasi_prestat_u,
+    pub u: __wasi_prestat_u_t,
 }
-#[link(wasm_import_module = "wasi_unstable")]
+#[link(wasm_import_module = "wasi_snapshot_preview1")]
 extern "C" {
     #[link_name = "args_get"]
     pub fn __wasi_args_get(argv: *mut *mut u8, argv_buf: *mut u8) -> __wasi_errno_t;
@@ -339,12 +338,12 @@ extern "C" {
     ) -> __wasi_errno_t;
     #[link_name = "clock_res_get"]
     pub fn __wasi_clock_res_get(
-        clock_id: __wasi_clockid_t,
+        id: __wasi_clockid_t,
         resolution: *mut __wasi_timestamp_t,
     ) -> __wasi_errno_t;
     #[link_name = "clock_time_get"]
     pub fn __wasi_clock_time_get(
-        clock_id: __wasi_clockid_t,
+        id: __wasi_clockid_t,
         precision: __wasi_timestamp_t,
         time: *mut __wasi_timestamp_t,
     ) -> __wasi_errno_t;
@@ -378,15 +377,12 @@ extern "C" {
     #[link_name = "fd_filestat_get"]
     pub fn __wasi_fd_filestat_get(fd: __wasi_fd_t, buf: *mut __wasi_filestat_t) -> __wasi_errno_t;
     #[link_name = "fd_filestat_set_size"]
-    pub fn __wasi_fd_filestat_set_size(
-        fd: __wasi_fd_t,
-        st_size: __wasi_filesize_t,
-    ) -> __wasi_errno_t;
+    pub fn __wasi_fd_filestat_set_size(fd: __wasi_fd_t, size: __wasi_filesize_t) -> __wasi_errno_t;
     #[link_name = "fd_filestat_set_times"]
     pub fn __wasi_fd_filestat_set_times(
         fd: __wasi_fd_t,
-        st_atim: __wasi_timestamp_t,
-        st_mtim: __wasi_timestamp_t,
+        atim: __wasi_timestamp_t,
+        mtim: __wasi_timestamp_t,
         fst_flags: __wasi_fstflags_t,
     ) -> __wasi_errno_t;
     #[link_name = "fd_pread"]
@@ -468,8 +464,8 @@ extern "C" {
         flags: __wasi_lookupflags_t,
         path_ptr: *const u8,
         path_len: usize,
-        st_atim: __wasi_timestamp_t,
-        st_mtim: __wasi_timestamp_t,
+        atim: __wasi_timestamp_t,
+        mtim: __wasi_timestamp_t,
         fst_flags: __wasi_fstflags_t,
     ) -> __wasi_errno_t;
     #[link_name = "path_link"]
@@ -488,10 +484,10 @@ extern "C" {
         dirflags: __wasi_lookupflags_t,
         path_ptr: *const u8,
         path_len: usize,
-        o_flags: __wasi_oflags_t,
+        oflags: __wasi_oflags_t,
         fs_rights_base: __wasi_rights_t,
         fs_rights_inherting: __wasi_rights_t,
-        flags: __wasi_fdflags_t,
+        fdflags: __wasi_fdflags_t,
         opened_fd: *mut __wasi_fd_t,
     ) -> __wasi_errno_t;
     #[link_name = "path_readlink"]
