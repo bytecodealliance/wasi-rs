@@ -691,14 +691,12 @@ pub struct Prestat {
 }
 /// Read command-line argument data.
 /// The size of the array should match that returned by `wasi_args_sizes_get()`
-pub fn args_get(argv: *mut *mut u8, argv_buf: *mut u8) -> Result<()> {
-    unsafe {
-        let rc = wasi_snapshot_preview1::args_get(argv, argv_buf);
-        if let Some(err) = Error::from_raw_error(rc) {
-            Err(err)
-        } else {
-            Ok(())
-        }
+pub unsafe fn args_get(argv: *mut *mut u8, argv_buf: *mut u8) -> Result<()> {
+    let rc = wasi_snapshot_preview1::args_get(argv, argv_buf);
+    if let Some(err) = Error::from_raw_error(rc) {
+        Err(err)
+    } else {
+        Ok(())
     }
 }
 
@@ -708,30 +706,25 @@ pub fn args_get(argv: *mut *mut u8, argv_buf: *mut u8) -> Result<()> {
 ///
 /// * `argc` - The number of arguments.
 /// * `argv_buf_size` - The size of the argument string data.
-pub fn args_sizes_get() -> Result<(Size, Size)> {
-    unsafe {
-        let mut argc = MaybeUninit::uninit();
-        let mut argv_buf_size = MaybeUninit::uninit();
-        let rc =
-            wasi_snapshot_preview1::args_sizes_get(argc.as_mut_ptr(), argv_buf_size.as_mut_ptr());
-        if let Some(err) = Error::from_raw_error(rc) {
-            Err(err)
-        } else {
-            Ok((argc.assume_init(), argv_buf_size.assume_init()))
-        }
+pub unsafe fn args_sizes_get() -> Result<(Size, Size)> {
+    let mut argc = MaybeUninit::uninit();
+    let mut argv_buf_size = MaybeUninit::uninit();
+    let rc = wasi_snapshot_preview1::args_sizes_get(argc.as_mut_ptr(), argv_buf_size.as_mut_ptr());
+    if let Some(err) = Error::from_raw_error(rc) {
+        Err(err)
+    } else {
+        Ok((argc.assume_init(), argv_buf_size.assume_init()))
     }
 }
 
 /// Read environment variable data.
 /// The sizes of the buffers should match that returned by `environ.sizes_get()`.
-pub fn environ_get(environ: *mut *mut u8, environ_buf: *mut u8) -> Result<()> {
-    unsafe {
-        let rc = wasi_snapshot_preview1::environ_get(environ, environ_buf);
-        if let Some(err) = Error::from_raw_error(rc) {
-            Err(err)
-        } else {
-            Ok(())
-        }
+pub unsafe fn environ_get(environ: *mut *mut u8, environ_buf: *mut u8) -> Result<()> {
+    let rc = wasi_snapshot_preview1::environ_get(environ, environ_buf);
+    if let Some(err) = Error::from_raw_error(rc) {
+        Err(err)
+    } else {
+        Ok(())
     }
 }
 
@@ -741,19 +734,15 @@ pub fn environ_get(environ: *mut *mut u8, environ_buf: *mut u8) -> Result<()> {
 ///
 /// * `argc` - The number of arguments.
 /// * `argv_buf_size` - The size of the argument string data.
-pub fn environ_sizes_get() -> Result<(Size, Size)> {
-    unsafe {
-        let mut argc = MaybeUninit::uninit();
-        let mut argv_buf_size = MaybeUninit::uninit();
-        let rc = wasi_snapshot_preview1::environ_sizes_get(
-            argc.as_mut_ptr(),
-            argv_buf_size.as_mut_ptr(),
-        );
-        if let Some(err) = Error::from_raw_error(rc) {
-            Err(err)
-        } else {
-            Ok((argc.assume_init(), argv_buf_size.assume_init()))
-        }
+pub unsafe fn environ_sizes_get() -> Result<(Size, Size)> {
+    let mut argc = MaybeUninit::uninit();
+    let mut argv_buf_size = MaybeUninit::uninit();
+    let rc =
+        wasi_snapshot_preview1::environ_sizes_get(argc.as_mut_ptr(), argv_buf_size.as_mut_ptr());
+    if let Some(err) = Error::from_raw_error(rc) {
+        Err(err)
+    } else {
+        Ok((argc.assume_init(), argv_buf_size.assume_init()))
     }
 }
 
@@ -768,15 +757,13 @@ pub fn environ_sizes_get() -> Result<(Size, Size)> {
 /// ## Return
 ///
 /// * `resolution` - The resolution of the clock.
-pub fn clock_res_get(id: Clockid) -> Result<Timestamp> {
-    unsafe {
-        let mut resolution = MaybeUninit::uninit();
-        let rc = wasi_snapshot_preview1::clock_res_get(id, resolution.as_mut_ptr());
-        if let Some(err) = Error::from_raw_error(rc) {
-            Err(err)
-        } else {
-            Ok(resolution.assume_init())
-        }
+pub unsafe fn clock_res_get(id: Clockid) -> Result<Timestamp> {
+    let mut resolution = MaybeUninit::uninit();
+    let rc = wasi_snapshot_preview1::clock_res_get(id, resolution.as_mut_ptr());
+    if let Some(err) = Error::from_raw_error(rc) {
+        Err(err)
+    } else {
+        Ok(resolution.assume_init())
     }
 }
 
@@ -791,15 +778,13 @@ pub fn clock_res_get(id: Clockid) -> Result<Timestamp> {
 /// ## Return
 ///
 /// * `time` - The time value of the clock.
-pub fn clock_time_get(id: Clockid, precision: Timestamp) -> Result<Timestamp> {
-    unsafe {
-        let mut time = MaybeUninit::uninit();
-        let rc = wasi_snapshot_preview1::clock_time_get(id, precision, time.as_mut_ptr());
-        if let Some(err) = Error::from_raw_error(rc) {
-            Err(err)
-        } else {
-            Ok(time.assume_init())
-        }
+pub unsafe fn clock_time_get(id: Clockid, precision: Timestamp) -> Result<Timestamp> {
+    let mut time = MaybeUninit::uninit();
+    let rc = wasi_snapshot_preview1::clock_time_get(id, precision, time.as_mut_ptr());
+    if let Some(err) = Error::from_raw_error(rc) {
+        Err(err)
+    } else {
+        Ok(time.assume_init())
     }
 }
 
@@ -811,14 +796,12 @@ pub fn clock_time_get(id: Clockid, precision: Timestamp) -> Result<Timestamp> {
 /// * `offset` - The offset within the file to which the advisory applies.
 /// * `len` - The length of the region to which the advisory applies.
 /// * `advice` - The advice.
-pub fn fd_advise(fd: Fd, offset: Filesize, len: Filesize, advice: Advice) -> Result<()> {
-    unsafe {
-        let rc = wasi_snapshot_preview1::fd_advise(fd, offset, len, advice);
-        if let Some(err) = Error::from_raw_error(rc) {
-            Err(err)
-        } else {
-            Ok(())
-        }
+pub unsafe fn fd_advise(fd: Fd, offset: Filesize, len: Filesize, advice: Advice) -> Result<()> {
+    let rc = wasi_snapshot_preview1::fd_advise(fd, offset, len, advice);
+    if let Some(err) = Error::from_raw_error(rc) {
+        Err(err)
+    } else {
+        Ok(())
     }
 }
 
@@ -829,40 +812,34 @@ pub fn fd_advise(fd: Fd, offset: Filesize, len: Filesize, advice: Advice) -> Res
 ///
 /// * `offset` - The offset at which to start the allocation.
 /// * `len` - The length of the area that is allocated.
-pub fn fd_allocate(fd: Fd, offset: Filesize, len: Filesize) -> Result<()> {
-    unsafe {
-        let rc = wasi_snapshot_preview1::fd_allocate(fd, offset, len);
-        if let Some(err) = Error::from_raw_error(rc) {
-            Err(err)
-        } else {
-            Ok(())
-        }
+pub unsafe fn fd_allocate(fd: Fd, offset: Filesize, len: Filesize) -> Result<()> {
+    let rc = wasi_snapshot_preview1::fd_allocate(fd, offset, len);
+    if let Some(err) = Error::from_raw_error(rc) {
+        Err(err)
+    } else {
+        Ok(())
     }
 }
 
 /// Close a file descriptor.
 /// Note: This is similar to `close` in POSIX.
-pub fn fd_close(fd: Fd) -> Result<()> {
-    unsafe {
-        let rc = wasi_snapshot_preview1::fd_close(fd);
-        if let Some(err) = Error::from_raw_error(rc) {
-            Err(err)
-        } else {
-            Ok(())
-        }
+pub unsafe fn fd_close(fd: Fd) -> Result<()> {
+    let rc = wasi_snapshot_preview1::fd_close(fd);
+    if let Some(err) = Error::from_raw_error(rc) {
+        Err(err)
+    } else {
+        Ok(())
     }
 }
 
 /// Synchronize the data of a file to disk.
 /// Note: This is similar to `fdatasync` in POSIX.
-pub fn fd_datasync(fd: Fd) -> Result<()> {
-    unsafe {
-        let rc = wasi_snapshot_preview1::fd_datasync(fd);
-        if let Some(err) = Error::from_raw_error(rc) {
-            Err(err)
-        } else {
-            Ok(())
-        }
+pub unsafe fn fd_datasync(fd: Fd) -> Result<()> {
+    let rc = wasi_snapshot_preview1::fd_datasync(fd);
+    if let Some(err) = Error::from_raw_error(rc) {
+        Err(err)
+    } else {
+        Ok(())
     }
 }
 
@@ -872,15 +849,13 @@ pub fn fd_datasync(fd: Fd) -> Result<()> {
 /// ## Return
 ///
 /// * `stat` - The buffer where the file descriptor's attributes are stored.
-pub fn fd_fdstat_get(fd: Fd) -> Result<Fdstat> {
-    unsafe {
-        let mut stat = MaybeUninit::uninit();
-        let rc = wasi_snapshot_preview1::fd_fdstat_get(fd, stat.as_mut_ptr());
-        if let Some(err) = Error::from_raw_error(rc) {
-            Err(err)
-        } else {
-            Ok(stat.assume_init())
-        }
+pub unsafe fn fd_fdstat_get(fd: Fd) -> Result<Fdstat> {
+    let mut stat = MaybeUninit::uninit();
+    let rc = wasi_snapshot_preview1::fd_fdstat_get(fd, stat.as_mut_ptr());
+    if let Some(err) = Error::from_raw_error(rc) {
+        Err(err)
+    } else {
+        Ok(stat.assume_init())
     }
 }
 
@@ -890,14 +865,12 @@ pub fn fd_fdstat_get(fd: Fd) -> Result<Fdstat> {
 /// ## Parameters
 ///
 /// * `flags` - The desired values of the file descriptor flags.
-pub fn fd_fdstat_set_flags(fd: Fd, flags: Fdflags) -> Result<()> {
-    unsafe {
-        let rc = wasi_snapshot_preview1::fd_fdstat_set_flags(fd, flags);
-        if let Some(err) = Error::from_raw_error(rc) {
-            Err(err)
-        } else {
-            Ok(())
-        }
+pub unsafe fn fd_fdstat_set_flags(fd: Fd, flags: Fdflags) -> Result<()> {
+    let rc = wasi_snapshot_preview1::fd_fdstat_set_flags(fd, flags);
+    if let Some(err) = Error::from_raw_error(rc) {
+        Err(err)
+    } else {
+        Ok(())
     }
 }
 
@@ -907,19 +880,16 @@ pub fn fd_fdstat_set_flags(fd: Fd, flags: Fdflags) -> Result<()> {
 /// ## Parameters
 ///
 /// * `fs_rights_base` - The desired rights of the file descriptor.
-pub fn fd_fdstat_set_rights(
+pub unsafe fn fd_fdstat_set_rights(
     fd: Fd,
     fs_rights_base: Rights,
     fs_rights_inheriting: Rights,
 ) -> Result<()> {
-    unsafe {
-        let rc =
-            wasi_snapshot_preview1::fd_fdstat_set_rights(fd, fs_rights_base, fs_rights_inheriting);
-        if let Some(err) = Error::from_raw_error(rc) {
-            Err(err)
-        } else {
-            Ok(())
-        }
+    let rc = wasi_snapshot_preview1::fd_fdstat_set_rights(fd, fs_rights_base, fs_rights_inheriting);
+    if let Some(err) = Error::from_raw_error(rc) {
+        Err(err)
+    } else {
+        Ok(())
     }
 }
 
@@ -928,15 +898,13 @@ pub fn fd_fdstat_set_rights(
 /// ## Return
 ///
 /// * `buf` - The buffer where the file's attributes are stored.
-pub fn fd_filestat_get(fd: Fd) -> Result<Filestat> {
-    unsafe {
-        let mut buf = MaybeUninit::uninit();
-        let rc = wasi_snapshot_preview1::fd_filestat_get(fd, buf.as_mut_ptr());
-        if let Some(err) = Error::from_raw_error(rc) {
-            Err(err)
-        } else {
-            Ok(buf.assume_init())
-        }
+pub unsafe fn fd_filestat_get(fd: Fd) -> Result<Filestat> {
+    let mut buf = MaybeUninit::uninit();
+    let rc = wasi_snapshot_preview1::fd_filestat_get(fd, buf.as_mut_ptr());
+    if let Some(err) = Error::from_raw_error(rc) {
+        Err(err)
+    } else {
+        Ok(buf.assume_init())
     }
 }
 
@@ -946,14 +914,12 @@ pub fn fd_filestat_get(fd: Fd) -> Result<Filestat> {
 /// ## Parameters
 ///
 /// * `size` - The desired file size.
-pub fn fd_filestat_set_size(fd: Fd, size: Filesize) -> Result<()> {
-    unsafe {
-        let rc = wasi_snapshot_preview1::fd_filestat_set_size(fd, size);
-        if let Some(err) = Error::from_raw_error(rc) {
-            Err(err)
-        } else {
-            Ok(())
-        }
+pub unsafe fn fd_filestat_set_size(fd: Fd, size: Filesize) -> Result<()> {
+    let rc = wasi_snapshot_preview1::fd_filestat_set_size(fd, size);
+    if let Some(err) = Error::from_raw_error(rc) {
+        Err(err)
+    } else {
+        Ok(())
     }
 }
 
@@ -965,19 +931,17 @@ pub fn fd_filestat_set_size(fd: Fd, size: Filesize) -> Result<()> {
 /// * `atim` - The desired values of the data access timestamp.
 /// * `mtim` - The desired values of the data modification timestamp.
 /// * `fst_flags` - A bitmask indicating which timestamps to adjust.
-pub fn fd_filestat_set_times(
+pub unsafe fn fd_filestat_set_times(
     fd: Fd,
     atim: Timestamp,
     mtim: Timestamp,
     fst_flags: Fstflags,
 ) -> Result<()> {
-    unsafe {
-        let rc = wasi_snapshot_preview1::fd_filestat_set_times(fd, atim, mtim, fst_flags);
-        if let Some(err) = Error::from_raw_error(rc) {
-            Err(err)
-        } else {
-            Ok(())
-        }
+    let rc = wasi_snapshot_preview1::fd_filestat_set_times(fd, atim, mtim, fst_flags);
+    if let Some(err) = Error::from_raw_error(rc) {
+        Err(err)
+    } else {
+        Ok(())
     }
 }
 
@@ -992,21 +956,14 @@ pub fn fd_filestat_set_times(
 /// ## Return
 ///
 /// * `nread` - The number of bytes read.
-pub fn fd_pread(fd: Fd, iovs: IovecArray, offset: Filesize) -> Result<Size> {
-    unsafe {
-        let mut nread = MaybeUninit::uninit();
-        let rc = wasi_snapshot_preview1::fd_pread(
-            fd,
-            iovs.as_ptr(),
-            iovs.len(),
-            offset,
-            nread.as_mut_ptr(),
-        );
-        if let Some(err) = Error::from_raw_error(rc) {
-            Err(err)
-        } else {
-            Ok(nread.assume_init())
-        }
+pub unsafe fn fd_pread(fd: Fd, iovs: IovecArray, offset: Filesize) -> Result<Size> {
+    let mut nread = MaybeUninit::uninit();
+    let rc =
+        wasi_snapshot_preview1::fd_pread(fd, iovs.as_ptr(), iovs.len(), offset, nread.as_mut_ptr());
+    if let Some(err) = Error::from_raw_error(rc) {
+        Err(err)
+    } else {
+        Ok(nread.assume_init())
     }
 }
 
@@ -1015,15 +972,13 @@ pub fn fd_pread(fd: Fd, iovs: IovecArray, offset: Filesize) -> Result<Size> {
 /// ## Return
 ///
 /// * `buf` - The buffer where the description is stored.
-pub fn fd_prestat_get(fd: Fd) -> Result<Prestat> {
-    unsafe {
-        let mut buf = MaybeUninit::uninit();
-        let rc = wasi_snapshot_preview1::fd_prestat_get(fd, buf.as_mut_ptr());
-        if let Some(err) = Error::from_raw_error(rc) {
-            Err(err)
-        } else {
-            Ok(buf.assume_init())
-        }
+pub unsafe fn fd_prestat_get(fd: Fd) -> Result<Prestat> {
+    let mut buf = MaybeUninit::uninit();
+    let rc = wasi_snapshot_preview1::fd_prestat_get(fd, buf.as_mut_ptr());
+    if let Some(err) = Error::from_raw_error(rc) {
+        Err(err)
+    } else {
+        Ok(buf.assume_init())
     }
 }
 
@@ -1032,14 +987,12 @@ pub fn fd_prestat_get(fd: Fd) -> Result<Prestat> {
 /// ## Parameters
 ///
 /// * `path` - A buffer into which to write the preopened directory name.
-pub fn fd_prestat_dir_name(fd: Fd, path: *mut u8, path_len: Size) -> Result<()> {
-    unsafe {
-        let rc = wasi_snapshot_preview1::fd_prestat_dir_name(fd, path, path_len);
-        if let Some(err) = Error::from_raw_error(rc) {
-            Err(err)
-        } else {
-            Ok(())
-        }
+pub unsafe fn fd_prestat_dir_name(fd: Fd, path: *mut u8, path_len: Size) -> Result<()> {
+    let rc = wasi_snapshot_preview1::fd_prestat_dir_name(fd, path, path_len);
+    if let Some(err) = Error::from_raw_error(rc) {
+        Err(err)
+    } else {
+        Ok(())
     }
 }
 
@@ -1054,21 +1007,19 @@ pub fn fd_prestat_dir_name(fd: Fd, path: *mut u8, path_len: Size) -> Result<()> 
 /// ## Return
 ///
 /// * `nwritten` - The number of bytes written.
-pub fn fd_pwrite(fd: Fd, iovs: CiovecArray, offset: Filesize) -> Result<Size> {
-    unsafe {
-        let mut nwritten = MaybeUninit::uninit();
-        let rc = wasi_snapshot_preview1::fd_pwrite(
-            fd,
-            iovs.as_ptr(),
-            iovs.len(),
-            offset,
-            nwritten.as_mut_ptr(),
-        );
-        if let Some(err) = Error::from_raw_error(rc) {
-            Err(err)
-        } else {
-            Ok(nwritten.assume_init())
-        }
+pub unsafe fn fd_pwrite(fd: Fd, iovs: CiovecArray, offset: Filesize) -> Result<Size> {
+    let mut nwritten = MaybeUninit::uninit();
+    let rc = wasi_snapshot_preview1::fd_pwrite(
+        fd,
+        iovs.as_ptr(),
+        iovs.len(),
+        offset,
+        nwritten.as_mut_ptr(),
+    );
+    if let Some(err) = Error::from_raw_error(rc) {
+        Err(err)
+    } else {
+        Ok(nwritten.assume_init())
     }
 }
 
@@ -1082,15 +1033,13 @@ pub fn fd_pwrite(fd: Fd, iovs: CiovecArray, offset: Filesize) -> Result<Size> {
 /// ## Return
 ///
 /// * `nread` - The number of bytes read.
-pub fn fd_read(fd: Fd, iovs: IovecArray) -> Result<Size> {
-    unsafe {
-        let mut nread = MaybeUninit::uninit();
-        let rc = wasi_snapshot_preview1::fd_read(fd, iovs.as_ptr(), iovs.len(), nread.as_mut_ptr());
-        if let Some(err) = Error::from_raw_error(rc) {
-            Err(err)
-        } else {
-            Ok(nread.assume_init())
-        }
+pub unsafe fn fd_read(fd: Fd, iovs: IovecArray) -> Result<Size> {
+    let mut nread = MaybeUninit::uninit();
+    let rc = wasi_snapshot_preview1::fd_read(fd, iovs.as_ptr(), iovs.len(), nread.as_mut_ptr());
+    if let Some(err) = Error::from_raw_error(rc) {
+        Err(err)
+    } else {
+        Ok(nread.assume_init())
     }
 }
 
@@ -1112,15 +1061,13 @@ pub fn fd_read(fd: Fd, iovs: IovecArray) -> Result<Size> {
 /// ## Return
 ///
 /// * `bufused` - The number of bytes stored in the read buffer. If less than the size of the read buffer, the end of the directory has been reached.
-pub fn fd_readdir(fd: Fd, buf: *mut u8, buf_len: Size, cookie: Dircookie) -> Result<Size> {
-    unsafe {
-        let mut bufused = MaybeUninit::uninit();
-        let rc = wasi_snapshot_preview1::fd_readdir(fd, buf, buf_len, cookie, bufused.as_mut_ptr());
-        if let Some(err) = Error::from_raw_error(rc) {
-            Err(err)
-        } else {
-            Ok(bufused.assume_init())
-        }
+pub unsafe fn fd_readdir(fd: Fd, buf: *mut u8, buf_len: Size, cookie: Dircookie) -> Result<Size> {
+    let mut bufused = MaybeUninit::uninit();
+    let rc = wasi_snapshot_preview1::fd_readdir(fd, buf, buf_len, cookie, bufused.as_mut_ptr());
+    if let Some(err) = Error::from_raw_error(rc) {
+        Err(err)
+    } else {
+        Ok(bufused.assume_init())
     }
 }
 
@@ -1136,14 +1083,12 @@ pub fn fd_readdir(fd: Fd, buf: *mut u8, buf_len: Size, cookie: Dircookie) -> Res
 /// ## Parameters
 ///
 /// * `to` - The file descriptor to overwrite.
-pub fn fd_renumber(fd: Fd, to: Fd) -> Result<()> {
-    unsafe {
-        let rc = wasi_snapshot_preview1::fd_renumber(fd, to);
-        if let Some(err) = Error::from_raw_error(rc) {
-            Err(err)
-        } else {
-            Ok(())
-        }
+pub unsafe fn fd_renumber(fd: Fd, to: Fd) -> Result<()> {
+    let rc = wasi_snapshot_preview1::fd_renumber(fd, to);
+    if let Some(err) = Error::from_raw_error(rc) {
+        Err(err)
+    } else {
+        Ok(())
     }
 }
 
@@ -1158,28 +1103,24 @@ pub fn fd_renumber(fd: Fd, to: Fd) -> Result<()> {
 /// ## Return
 ///
 /// * `newoffset` - The new offset of the file descriptor, relative to the start of the file.
-pub fn fd_seek(fd: Fd, offset: Filedelta, whence: Whence) -> Result<Filesize> {
-    unsafe {
-        let mut newoffset = MaybeUninit::uninit();
-        let rc = wasi_snapshot_preview1::fd_seek(fd, offset, whence, newoffset.as_mut_ptr());
-        if let Some(err) = Error::from_raw_error(rc) {
-            Err(err)
-        } else {
-            Ok(newoffset.assume_init())
-        }
+pub unsafe fn fd_seek(fd: Fd, offset: Filedelta, whence: Whence) -> Result<Filesize> {
+    let mut newoffset = MaybeUninit::uninit();
+    let rc = wasi_snapshot_preview1::fd_seek(fd, offset, whence, newoffset.as_mut_ptr());
+    if let Some(err) = Error::from_raw_error(rc) {
+        Err(err)
+    } else {
+        Ok(newoffset.assume_init())
     }
 }
 
 /// Synchronize the data and metadata of a file to disk.
 /// Note: This is similar to `fsync` in POSIX.
-pub fn fd_sync(fd: Fd) -> Result<()> {
-    unsafe {
-        let rc = wasi_snapshot_preview1::fd_sync(fd);
-        if let Some(err) = Error::from_raw_error(rc) {
-            Err(err)
-        } else {
-            Ok(())
-        }
+pub unsafe fn fd_sync(fd: Fd) -> Result<()> {
+    let rc = wasi_snapshot_preview1::fd_sync(fd);
+    if let Some(err) = Error::from_raw_error(rc) {
+        Err(err)
+    } else {
+        Ok(())
     }
 }
 
@@ -1189,15 +1130,13 @@ pub fn fd_sync(fd: Fd) -> Result<()> {
 /// ## Return
 ///
 /// * `offset` - The current offset of the file descriptor, relative to the start of the file.
-pub fn fd_tell(fd: Fd) -> Result<Filesize> {
-    unsafe {
-        let mut offset = MaybeUninit::uninit();
-        let rc = wasi_snapshot_preview1::fd_tell(fd, offset.as_mut_ptr());
-        if let Some(err) = Error::from_raw_error(rc) {
-            Err(err)
-        } else {
-            Ok(offset.assume_init())
-        }
+pub unsafe fn fd_tell(fd: Fd) -> Result<Filesize> {
+    let mut offset = MaybeUninit::uninit();
+    let rc = wasi_snapshot_preview1::fd_tell(fd, offset.as_mut_ptr());
+    if let Some(err) = Error::from_raw_error(rc) {
+        Err(err)
+    } else {
+        Ok(offset.assume_init())
     }
 }
 
@@ -1211,16 +1150,13 @@ pub fn fd_tell(fd: Fd) -> Result<Filesize> {
 /// ## Return
 ///
 /// * `nwritten` - The number of bytes written.
-pub fn fd_write(fd: Fd, iovs: CiovecArray) -> Result<Size> {
-    unsafe {
-        let mut nwritten = MaybeUninit::uninit();
-        let rc =
-            wasi_snapshot_preview1::fd_write(fd, iovs.as_ptr(), iovs.len(), nwritten.as_mut_ptr());
-        if let Some(err) = Error::from_raw_error(rc) {
-            Err(err)
-        } else {
-            Ok(nwritten.assume_init())
-        }
+pub unsafe fn fd_write(fd: Fd, iovs: CiovecArray) -> Result<Size> {
+    let mut nwritten = MaybeUninit::uninit();
+    let rc = wasi_snapshot_preview1::fd_write(fd, iovs.as_ptr(), iovs.len(), nwritten.as_mut_ptr());
+    if let Some(err) = Error::from_raw_error(rc) {
+        Err(err)
+    } else {
+        Ok(nwritten.assume_init())
     }
 }
 
@@ -1230,14 +1166,12 @@ pub fn fd_write(fd: Fd, iovs: CiovecArray) -> Result<Size> {
 /// ## Parameters
 ///
 /// * `path` - The path at which to create the directory.
-pub fn path_create_directory(fd: Fd, path: &str) -> Result<()> {
-    unsafe {
-        let rc = wasi_snapshot_preview1::path_create_directory(fd, path.as_ptr(), path.len());
-        if let Some(err) = Error::from_raw_error(rc) {
-            Err(err)
-        } else {
-            Ok(())
-        }
+pub unsafe fn path_create_directory(fd: Fd, path: &str) -> Result<()> {
+    let rc = wasi_snapshot_preview1::path_create_directory(fd, path.as_ptr(), path.len());
+    if let Some(err) = Error::from_raw_error(rc) {
+        Err(err)
+    } else {
+        Ok(())
     }
 }
 
@@ -1252,21 +1186,19 @@ pub fn path_create_directory(fd: Fd, path: &str) -> Result<()> {
 /// ## Return
 ///
 /// * `buf` - The buffer where the file's attributes are stored.
-pub fn path_filestat_get(fd: Fd, flags: Lookupflags, path: &str) -> Result<Filestat> {
-    unsafe {
-        let mut buf = MaybeUninit::uninit();
-        let rc = wasi_snapshot_preview1::path_filestat_get(
-            fd,
-            flags,
-            path.as_ptr(),
-            path.len(),
-            buf.as_mut_ptr(),
-        );
-        if let Some(err) = Error::from_raw_error(rc) {
-            Err(err)
-        } else {
-            Ok(buf.assume_init())
-        }
+pub unsafe fn path_filestat_get(fd: Fd, flags: Lookupflags, path: &str) -> Result<Filestat> {
+    let mut buf = MaybeUninit::uninit();
+    let rc = wasi_snapshot_preview1::path_filestat_get(
+        fd,
+        flags,
+        path.as_ptr(),
+        path.len(),
+        buf.as_mut_ptr(),
+    );
+    if let Some(err) = Error::from_raw_error(rc) {
+        Err(err)
+    } else {
+        Ok(buf.assume_init())
     }
 }
 
@@ -1280,7 +1212,7 @@ pub fn path_filestat_get(fd: Fd, flags: Lookupflags, path: &str) -> Result<Files
 /// * `atim` - The desired values of the data access timestamp.
 /// * `mtim` - The desired values of the data modification timestamp.
 /// * `fst_flags` - A bitmask indicating which timestamps to adjust.
-pub fn path_filestat_set_times(
+pub unsafe fn path_filestat_set_times(
     fd: Fd,
     flags: Lookupflags,
     path: &str,
@@ -1288,21 +1220,19 @@ pub fn path_filestat_set_times(
     mtim: Timestamp,
     fst_flags: Fstflags,
 ) -> Result<()> {
-    unsafe {
-        let rc = wasi_snapshot_preview1::path_filestat_set_times(
-            fd,
-            flags,
-            path.as_ptr(),
-            path.len(),
-            atim,
-            mtim,
-            fst_flags,
-        );
-        if let Some(err) = Error::from_raw_error(rc) {
-            Err(err)
-        } else {
-            Ok(())
-        }
+    let rc = wasi_snapshot_preview1::path_filestat_set_times(
+        fd,
+        flags,
+        path.as_ptr(),
+        path.len(),
+        atim,
+        mtim,
+        fst_flags,
+    );
+    if let Some(err) = Error::from_raw_error(rc) {
+        Err(err)
+    } else {
+        Ok(())
     }
 }
 
@@ -1315,28 +1245,26 @@ pub fn path_filestat_set_times(
 /// * `old_path` - The source path from which to link.
 /// * `new_fd` - The working directory at which the resolution of the new path starts.
 /// * `new_path` - The destination path at which to create the hard link.
-pub fn path_link(
+pub unsafe fn path_link(
     old_fd: Fd,
     old_flags: Lookupflags,
     old_path: &str,
     new_fd: Fd,
     new_path: &str,
 ) -> Result<()> {
-    unsafe {
-        let rc = wasi_snapshot_preview1::path_link(
-            old_fd,
-            old_flags,
-            old_path.as_ptr(),
-            old_path.len(),
-            new_fd,
-            new_path.as_ptr(),
-            new_path.len(),
-        );
-        if let Some(err) = Error::from_raw_error(rc) {
-            Err(err)
-        } else {
-            Ok(())
-        }
+    let rc = wasi_snapshot_preview1::path_link(
+        old_fd,
+        old_flags,
+        old_path.as_ptr(),
+        old_path.len(),
+        new_fd,
+        new_path.as_ptr(),
+        new_path.len(),
+    );
+    if let Some(err) = Error::from_raw_error(rc) {
+        Err(err)
+    } else {
+        Ok(())
     }
 }
 
@@ -1365,7 +1293,7 @@ pub fn path_link(
 /// ## Return
 ///
 /// * `opened_fd` - The file descriptor of the file that has been opened.
-pub fn path_open(
+pub unsafe fn path_open(
     fd: Fd,
     dirflags: Lookupflags,
     path: &str,
@@ -1374,24 +1302,22 @@ pub fn path_open(
     fs_rights_inherting: Rights,
     fdflags: Fdflags,
 ) -> Result<Fd> {
-    unsafe {
-        let mut opened_fd = MaybeUninit::uninit();
-        let rc = wasi_snapshot_preview1::path_open(
-            fd,
-            dirflags,
-            path.as_ptr(),
-            path.len(),
-            oflags,
-            fs_rights_base,
-            fs_rights_inherting,
-            fdflags,
-            opened_fd.as_mut_ptr(),
-        );
-        if let Some(err) = Error::from_raw_error(rc) {
-            Err(err)
-        } else {
-            Ok(opened_fd.assume_init())
-        }
+    let mut opened_fd = MaybeUninit::uninit();
+    let rc = wasi_snapshot_preview1::path_open(
+        fd,
+        dirflags,
+        path.as_ptr(),
+        path.len(),
+        oflags,
+        fs_rights_base,
+        fs_rights_inherting,
+        fdflags,
+        opened_fd.as_mut_ptr(),
+    );
+    if let Some(err) = Error::from_raw_error(rc) {
+        Err(err)
+    } else {
+        Ok(opened_fd.assume_init())
     }
 }
 
@@ -1406,22 +1332,20 @@ pub fn path_open(
 /// ## Return
 ///
 /// * `bufused` - The number of bytes placed in the buffer.
-pub fn path_readlink(fd: Fd, path: &str, buf: *mut u8, buf_len: Size) -> Result<Size> {
-    unsafe {
-        let mut bufused = MaybeUninit::uninit();
-        let rc = wasi_snapshot_preview1::path_readlink(
-            fd,
-            path.as_ptr(),
-            path.len(),
-            buf,
-            buf_len,
-            bufused.as_mut_ptr(),
-        );
-        if let Some(err) = Error::from_raw_error(rc) {
-            Err(err)
-        } else {
-            Ok(bufused.assume_init())
-        }
+pub unsafe fn path_readlink(fd: Fd, path: &str, buf: *mut u8, buf_len: Size) -> Result<Size> {
+    let mut bufused = MaybeUninit::uninit();
+    let rc = wasi_snapshot_preview1::path_readlink(
+        fd,
+        path.as_ptr(),
+        path.len(),
+        buf,
+        buf_len,
+        bufused.as_mut_ptr(),
+    );
+    if let Some(err) = Error::from_raw_error(rc) {
+        Err(err)
+    } else {
+        Ok(bufused.assume_init())
     }
 }
 
@@ -1432,14 +1356,12 @@ pub fn path_readlink(fd: Fd, path: &str, buf: *mut u8, buf_len: Size) -> Result<
 /// ## Parameters
 ///
 /// * `path` - The path to a directory to remove.
-pub fn path_remove_directory(fd: Fd, path: &str) -> Result<()> {
-    unsafe {
-        let rc = wasi_snapshot_preview1::path_remove_directory(fd, path.as_ptr(), path.len());
-        if let Some(err) = Error::from_raw_error(rc) {
-            Err(err)
-        } else {
-            Ok(())
-        }
+pub unsafe fn path_remove_directory(fd: Fd, path: &str) -> Result<()> {
+    let rc = wasi_snapshot_preview1::path_remove_directory(fd, path.as_ptr(), path.len());
+    if let Some(err) = Error::from_raw_error(rc) {
+        Err(err)
+    } else {
+        Ok(())
     }
 }
 
@@ -1451,21 +1373,19 @@ pub fn path_remove_directory(fd: Fd, path: &str) -> Result<()> {
 /// * `old_path` - The source path of the file or directory to rename.
 /// * `new_fd` - The working directory at which the resolution of the new path starts.
 /// * `new_path` - The destination path to which to rename the file or directory.
-pub fn path_rename(fd: Fd, old_path: &str, new_fd: Fd, new_path: &str) -> Result<()> {
-    unsafe {
-        let rc = wasi_snapshot_preview1::path_rename(
-            fd,
-            old_path.as_ptr(),
-            old_path.len(),
-            new_fd,
-            new_path.as_ptr(),
-            new_path.len(),
-        );
-        if let Some(err) = Error::from_raw_error(rc) {
-            Err(err)
-        } else {
-            Ok(())
-        }
+pub unsafe fn path_rename(fd: Fd, old_path: &str, new_fd: Fd, new_path: &str) -> Result<()> {
+    let rc = wasi_snapshot_preview1::path_rename(
+        fd,
+        old_path.as_ptr(),
+        old_path.len(),
+        new_fd,
+        new_path.as_ptr(),
+        new_path.len(),
+    );
+    if let Some(err) = Error::from_raw_error(rc) {
+        Err(err)
+    } else {
+        Ok(())
     }
 }
 
@@ -1476,20 +1396,18 @@ pub fn path_rename(fd: Fd, old_path: &str, new_fd: Fd, new_path: &str) -> Result
 ///
 /// * `old_path` - The contents of the symbolic link.
 /// * `new_path` - The destination path at which to create the symbolic link.
-pub fn path_symlink(old_path: &str, fd: Fd, new_path: &str) -> Result<()> {
-    unsafe {
-        let rc = wasi_snapshot_preview1::path_symlink(
-            old_path.as_ptr(),
-            old_path.len(),
-            fd,
-            new_path.as_ptr(),
-            new_path.len(),
-        );
-        if let Some(err) = Error::from_raw_error(rc) {
-            Err(err)
-        } else {
-            Ok(())
-        }
+pub unsafe fn path_symlink(old_path: &str, fd: Fd, new_path: &str) -> Result<()> {
+    let rc = wasi_snapshot_preview1::path_symlink(
+        old_path.as_ptr(),
+        old_path.len(),
+        fd,
+        new_path.as_ptr(),
+        new_path.len(),
+    );
+    if let Some(err) = Error::from_raw_error(rc) {
+        Err(err)
+    } else {
+        Ok(())
     }
 }
 
@@ -1500,14 +1418,12 @@ pub fn path_symlink(old_path: &str, fd: Fd, new_path: &str) -> Result<()> {
 /// ## Parameters
 ///
 /// * `path` - The path to a file to unlink.
-pub fn path_unlink_file(fd: Fd, path: &str) -> Result<()> {
-    unsafe {
-        let rc = wasi_snapshot_preview1::path_unlink_file(fd, path.as_ptr(), path.len());
-        if let Some(err) = Error::from_raw_error(rc) {
-            Err(err)
-        } else {
-            Ok(())
-        }
+pub unsafe fn path_unlink_file(fd: Fd, path: &str) -> Result<()> {
+    let rc = wasi_snapshot_preview1::path_unlink_file(fd, path.as_ptr(), path.len());
+    if let Some(err) = Error::from_raw_error(rc) {
+        Err(err)
+    } else {
+        Ok(())
     }
 }
 
@@ -1522,20 +1438,17 @@ pub fn path_unlink_file(fd: Fd, path: &str) -> Result<()> {
 /// ## Return
 ///
 /// * `nevents` - The number of events stored.
-pub fn poll_oneoff(
+pub unsafe fn poll_oneoff(
     r#in: *const Subscription,
     out: *mut Event,
     nsubscriptions: Size,
 ) -> Result<Size> {
-    unsafe {
-        let mut nevents = MaybeUninit::uninit();
-        let rc =
-            wasi_snapshot_preview1::poll_oneoff(r#in, out, nsubscriptions, nevents.as_mut_ptr());
-        if let Some(err) = Error::from_raw_error(rc) {
-            Err(err)
-        } else {
-            Ok(nevents.assume_init())
-        }
+    let mut nevents = MaybeUninit::uninit();
+    let rc = wasi_snapshot_preview1::poll_oneoff(r#in, out, nsubscriptions, nevents.as_mut_ptr());
+    if let Some(err) = Error::from_raw_error(rc) {
+        Err(err)
+    } else {
+        Ok(nevents.assume_init())
     }
 }
 
@@ -1546,10 +1459,8 @@ pub fn poll_oneoff(
 /// ## Parameters
 ///
 /// * `rval` - The exit code returned by the process.
-pub fn proc_exit(rval: Exitcode) {
-    unsafe {
-        wasi_snapshot_preview1::proc_exit(rval);
-    }
+pub unsafe fn proc_exit(rval: Exitcode) {
+    wasi_snapshot_preview1::proc_exit(rval);
 }
 
 /// Send a signal to the process of the calling thread.
@@ -1558,27 +1469,23 @@ pub fn proc_exit(rval: Exitcode) {
 /// ## Parameters
 ///
 /// * `sig` - The signal condition to trigger.
-pub fn proc_raise(sig: Signal) -> Result<()> {
-    unsafe {
-        let rc = wasi_snapshot_preview1::proc_raise(sig);
-        if let Some(err) = Error::from_raw_error(rc) {
-            Err(err)
-        } else {
-            Ok(())
-        }
+pub unsafe fn proc_raise(sig: Signal) -> Result<()> {
+    let rc = wasi_snapshot_preview1::proc_raise(sig);
+    if let Some(err) = Error::from_raw_error(rc) {
+        Err(err)
+    } else {
+        Ok(())
     }
 }
 
 /// Temporarily yield execution of the calling thread.
 /// Note: This is similar to `sched_yield` in POSIX.
-pub fn sched_yield() -> Result<()> {
-    unsafe {
-        let rc = wasi_snapshot_preview1::sched_yield();
-        if let Some(err) = Error::from_raw_error(rc) {
-            Err(err)
-        } else {
-            Ok(())
-        }
+pub unsafe fn sched_yield() -> Result<()> {
+    let rc = wasi_snapshot_preview1::sched_yield();
+    if let Some(err) = Error::from_raw_error(rc) {
+        Err(err)
+    } else {
+        Ok(())
     }
 }
 
@@ -1592,14 +1499,12 @@ pub fn sched_yield() -> Result<()> {
 /// ## Parameters
 ///
 /// * `buf` - The buffer to fill with random data.
-pub fn random_get(buf: *mut u8, buf_len: Size) -> Result<()> {
-    unsafe {
-        let rc = wasi_snapshot_preview1::random_get(buf, buf_len);
-        if let Some(err) = Error::from_raw_error(rc) {
-            Err(err)
-        } else {
-            Ok(())
-        }
+pub unsafe fn random_get(buf: *mut u8, buf_len: Size) -> Result<()> {
+    let rc = wasi_snapshot_preview1::random_get(buf, buf_len);
+    if let Some(err) = Error::from_raw_error(rc) {
+        Err(err)
+    } else {
+        Ok(())
     }
 }
 
@@ -1616,23 +1521,21 @@ pub fn random_get(buf: *mut u8, buf_len: Size) -> Result<()> {
 ///
 /// * `ro_datalen` - Number of bytes stored in ri_data.
 /// * `ro_flags` - Message flags.
-pub fn sock_recv(fd: Fd, ri_data: IovecArray, ri_flags: Riflags) -> Result<(Size, Roflags)> {
-    unsafe {
-        let mut ro_datalen = MaybeUninit::uninit();
-        let mut ro_flags = MaybeUninit::uninit();
-        let rc = wasi_snapshot_preview1::sock_recv(
-            fd,
-            ri_data.as_ptr(),
-            ri_data.len(),
-            ri_flags,
-            ro_datalen.as_mut_ptr(),
-            ro_flags.as_mut_ptr(),
-        );
-        if let Some(err) = Error::from_raw_error(rc) {
-            Err(err)
-        } else {
-            Ok((ro_datalen.assume_init(), ro_flags.assume_init()))
-        }
+pub unsafe fn sock_recv(fd: Fd, ri_data: IovecArray, ri_flags: Riflags) -> Result<(Size, Roflags)> {
+    let mut ro_datalen = MaybeUninit::uninit();
+    let mut ro_flags = MaybeUninit::uninit();
+    let rc = wasi_snapshot_preview1::sock_recv(
+        fd,
+        ri_data.as_ptr(),
+        ri_data.len(),
+        ri_flags,
+        ro_datalen.as_mut_ptr(),
+        ro_flags.as_mut_ptr(),
+    );
+    if let Some(err) = Error::from_raw_error(rc) {
+        Err(err)
+    } else {
+        Ok((ro_datalen.assume_init(), ro_flags.assume_init()))
     }
 }
 
@@ -1648,21 +1551,19 @@ pub fn sock_recv(fd: Fd, ri_data: IovecArray, ri_flags: Riflags) -> Result<(Size
 /// ## Return
 ///
 /// * `so_datalen` - Number of bytes transmitted.
-pub fn sock_send(fd: Fd, si_data: CiovecArray, si_flags: Siflags) -> Result<Size> {
-    unsafe {
-        let mut so_datalen = MaybeUninit::uninit();
-        let rc = wasi_snapshot_preview1::sock_send(
-            fd,
-            si_data.as_ptr(),
-            si_data.len(),
-            si_flags,
-            so_datalen.as_mut_ptr(),
-        );
-        if let Some(err) = Error::from_raw_error(rc) {
-            Err(err)
-        } else {
-            Ok(so_datalen.assume_init())
-        }
+pub unsafe fn sock_send(fd: Fd, si_data: CiovecArray, si_flags: Siflags) -> Result<Size> {
+    let mut so_datalen = MaybeUninit::uninit();
+    let rc = wasi_snapshot_preview1::sock_send(
+        fd,
+        si_data.as_ptr(),
+        si_data.len(),
+        si_flags,
+        so_datalen.as_mut_ptr(),
+    );
+    if let Some(err) = Error::from_raw_error(rc) {
+        Err(err)
+    } else {
+        Ok(so_datalen.assume_init())
     }
 }
 
@@ -1672,14 +1573,12 @@ pub fn sock_send(fd: Fd, si_data: CiovecArray, si_flags: Siflags) -> Result<Size
 /// ## Parameters
 ///
 /// * `how` - Which channels on the socket to shut down.
-pub fn sock_shutdown(fd: Fd, how: Sdflags) -> Result<()> {
-    unsafe {
-        let rc = wasi_snapshot_preview1::sock_shutdown(fd, how);
-        if let Some(err) = Error::from_raw_error(rc) {
-            Err(err)
-        } else {
-            Ok(())
-        }
+pub unsafe fn sock_shutdown(fd: Fd, how: Sdflags) -> Result<()> {
+    let rc = wasi_snapshot_preview1::sock_shutdown(fd, how);
+    if let Some(err) = Error::from_raw_error(rc) {
+        Err(err)
+    } else {
+        Ok(())
     }
 }
 

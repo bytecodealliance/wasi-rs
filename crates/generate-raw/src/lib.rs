@@ -262,8 +262,10 @@ fn render_highlevel(func: &InterfaceFunc, module: &str, src: &mut String) {
 
     // Render the function and its arguments, and note that the arguments here
     // are the exact type name arguments as opposed to the pointer/length pair
-    // ones.
-    src.push_str("pub fn ");
+    // ones. These functions are unsafe because they work with integer file
+    // descriptors, which are effectively forgeable and danglable raw pointers
+    // into the file descriptor address space.
+    src.push_str("pub unsafe fn ");
     src.push_str(&rust_name);
     src.push_str("(");
     for param in func.params.iter() {
@@ -295,7 +297,7 @@ fn render_highlevel(func: &InterfaceFunc, module: &str, src: &mut String) {
         src.push_str(">");
     }
 
-    src.push_str("{ unsafe {");
+    src.push_str("{");
     for result in func.results.iter().skip(1) {
         src.push_str("let mut ");
         result.name.render(src);
@@ -350,7 +352,7 @@ fn render_highlevel(func: &InterfaceFunc, module: &str, src: &mut String) {
         }
         src.push_str(") }");
     }
-    src.push_str("} }");
+    src.push_str("}");
 }
 
 impl Render for InterfaceFunc {
