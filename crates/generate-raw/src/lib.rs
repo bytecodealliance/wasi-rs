@@ -21,7 +21,7 @@ pub use self::error::Error;
 pub type Result<T, E = Error> = core::result::Result<T, E>;
 ",
     );
-    for ty in doc.datatypes() {
+    for ty in doc.typenames() {
         ty.render(&mut raw);
         raw.push_str("\n");
     }
@@ -57,114 +57,101 @@ trait Render {
     fn render(&self, src: &mut String);
 }
 
-impl Render for Datatype {
+impl Render for NamedType {
     fn render(&self, src: &mut String) {
-        match &self.variant {
-            witx::DatatypeVariant::Alias(a) => a.render(src),
-            witx::DatatypeVariant::Enum(e) => e.render(src),
-            witx::DatatypeVariant::Flags(f) => f.render(src),
-            witx::DatatypeVariant::Struct(s) => s.render(src),
-            witx::DatatypeVariant::Union(s) => s.render(src),
-            witx::DatatypeVariant::Handle(s) => s.render(src),
+        let name = self.name.as_str();
+        match &self.dt {
+            TypeRef::Value(ty) => match &**ty {
+                Type::Enum(e) => render_enum(src, name, e),
+                Type::Flags(f) => render_flags(src, name, f),
+                Type::Struct(s) => render_struct(src, name, s),
+                Type::Union(u) => render_union(src, name, u),
+                Type::Handle(h) => render_handle(src, name, h),
+                Type::Array { .. }
+                | Type::Pointer { .. }
+                | Type::ConstPointer { .. }
+                | Type::Builtin { .. } => render_alias(src, name, &self.dt),
+            },
+            TypeRef::Name(_nt) => render_alias(src, name, &self.dt),
         }
     }
 }
 
-impl Render for UnionDatatype {
-    fn render(&self, src: &mut String) {
-        src.push_str("#[repr(C)]\n");
-        src.push_str("#[derive(Copy, Clone)]\n");
+fn render_union(src: &mut String, name: &str, u: &UnionDatatype) {
+    src.push_str("#[repr(C)]\n");
+    src.push_str("#[derive(Copy, Clone)]\n");
+    src.push_str(&format!("pub union {} {{\n", name.to_camel_case()));
+    for variant in u.variants.iter() {
+        rustdoc(&variant.docs, src);
+        src.push_str("pub ");
+        variant.name.render(src);
+        src.push_str(": ");
+        variant.tref.render(src);
+        src.push_str(",\n");
+    }
+    src.push_str("}");
+}
+
+fn render_struct(src: &mut String, name: &str, s: &StructDatatype) {
+    src.push_str("#[repr(C)]\n");
+    src.push_str("#[derive(Copy, Clone)]\n");
+    src.push_str(&format!("pub struct {} {{\n", name.to_camel_case()));
+    for member in s.members.iter() {
+        rustdoc(&member.docs, src);
+        src.push_str("pub ");
+        member.name.render(src);
+        src.push_str(": ");
+        member.tref.render(src);
+        src.push_str(",\n");
+    }
+    src.push_str("}");
+}
+
+fn render_flags(src: &mut String, name: &str, f: &FlagsDatatype) {
+    src.push_str(&format!("pub type {} = ", name.to_camel_case()));
+    f.repr.render(src);
+    src.push_str(";\n");
+    for (i, variant) in f.flags.iter().enumerate() {
+        rustdoc(&variant.docs, src);
         src.push_str(&format!(
-            "pub union {} {{\n",
-            self.name.as_str().to_camel_case()
+            "pub const {}_{}: {} = 0x{:x};",
+            name.to_shouty_snake_case(),
+            variant.name.as_str().to_shouty_snake_case(),
+            name.to_camel_case(),
+            1 << i
         ));
-        for variant in self.variants.iter() {
-            rustdoc(&variant.docs, src);
-            src.push_str("pub ");
-            variant.name.render(src);
-            src.push_str(": ");
-            variant.type_.render(src);
-            src.push_str(",\n");
+    }
+}
+
+fn render_enum(src: &mut String, name: &str, e: &EnumDatatype) {
+    src.push_str(&format!("pub type {} = ", name.to_camel_case()));
+    e.repr.render(src);
+    src.push_str(";\n");
+    for (i, variant) in e.variants.iter().enumerate() {
+        rustdoc(&variant.docs, src);
+        src.push_str(&format!(
+            "pub const {}_{}: {} = {};",
+            name.to_shouty_snake_case(),
+            variant.name.as_str().to_shouty_snake_case(),
+            name.to_camel_case(),
+            i
+        ));
+    }
+
+    if name == "errno" {
+        src.push_str("fn strerror(code: u16) -> &'static str {");
+        src.push_str("match code {");
+        for variant in e.variants.iter() {
+            src.push_str(&name.to_shouty_snake_case());
+            src.push_str("_");
+            src.push_str(&variant.name.as_str().to_shouty_snake_case());
+            src.push_str(" => \"");
+            src.push_str(variant.docs.trim());
+            src.push_str("\",");
         }
+        src.push_str("_ => \"Unknown error.\",");
         src.push_str("}");
-    }
-}
-
-impl Render for StructDatatype {
-    fn render(&self, src: &mut String) {
-        src.push_str("#[repr(C)]\n");
-        src.push_str("#[derive(Copy, Clone)]\n");
-        src.push_str(&format!(
-            "pub struct {} {{\n",
-            self.name.as_str().to_camel_case()
-        ));
-        for member in self.members.iter() {
-            rustdoc(&member.docs, src);
-            src.push_str("pub ");
-            member.name.render(src);
-            src.push_str(": ");
-            member.type_.render(src);
-            src.push_str(",\n");
-        }
         src.push_str("}");
-    }
-}
-
-impl Render for FlagsDatatype {
-    fn render(&self, src: &mut String) {
-        src.push_str(&format!(
-            "pub type {} = ",
-            self.name.as_str().to_camel_case()
-        ));
-        self.repr.render(src);
-        src.push_str(";\n");
-        for (i, variant) in self.flags.iter().enumerate() {
-            rustdoc(&variant.docs, src);
-            src.push_str(&format!(
-                "pub const {}_{}: {} = 0x{:x};",
-                self.name.as_str().to_shouty_snake_case(),
-                variant.name.as_str().to_shouty_snake_case(),
-                self.name.as_str().to_camel_case(),
-                1 << i
-            ));
-        }
-    }
-}
-
-impl Render for EnumDatatype {
-    fn render(&self, src: &mut String) {
-        src.push_str(&format!(
-            "pub type {} = ",
-            self.name.as_str().to_camel_case()
-        ));
-        self.repr.render(src);
-        src.push_str(";\n");
-        for (i, variant) in self.variants.iter().enumerate() {
-            rustdoc(&variant.docs, src);
-            src.push_str(&format!(
-                "pub const {}_{}: {} = {};",
-                self.name.as_str().to_shouty_snake_case(),
-                variant.name.as_str().to_shouty_snake_case(),
-                self.name.as_str().to_camel_case(),
-                i
-            ));
-        }
-
-        if self.name.as_str() == "errno" {
-            src.push_str("fn strerror(code: u16) -> &'static str {");
-            src.push_str("match code {");
-            for variant in self.variants.iter() {
-                src.push_str(&self.name.as_str().to_shouty_snake_case());
-                src.push_str("_");
-                src.push_str(&variant.name.as_str().to_shouty_snake_case());
-                src.push_str(" => \"");
-                src.push_str(variant.docs.trim());
-                src.push_str("\",");
-            }
-            src.push_str("_ => \"Unknown error.\",");
-            src.push_str("}");
-            src.push_str("}");
-        }
     }
 }
 
@@ -179,45 +166,46 @@ impl Render for IntRepr {
     }
 }
 
-impl Render for AliasDatatype {
-    fn render(&self, src: &mut String) {
-        src.push_str(&format!("pub type {}", self.name.as_str().to_camel_case()));
-        if self.to.passed_by() == DatatypePassedBy::PointerLengthPair {
-            src.push_str("<'a>");
-        }
-        src.push_str(" = ");
-
-        // Give `size` special treatment to translate it to `usize` in Rust
-        // instead of `u32`, makes things a bit nicer in Rust.
-        if self.name.as_str() == "size" {
-            src.push_str("usize");
-        } else {
-            self.to.render(src);
-        }
-        src.push(';');
+fn render_alias(src: &mut String, name: &str, dest: &TypeRef) {
+    src.push_str(&format!("pub type {}", name.to_camel_case()));
+    if dest.type_().passed_by() == TypePassedBy::PointerLengthPair {
+        src.push_str("<'a>");
     }
+    src.push_str(" = ");
+
+    // Give `size_t` special treatment to translate it to `usize` in Rust
+    // instead of `u32`, makes things a bit nicer in Rust.
+    if name == "size" {
+        src.push_str("usize");
+    } else {
+        dest.render(src);
+    }
+    src.push(';');
 }
 
-impl Render for DatatypeIdent {
+impl Render for TypeRef {
     fn render(&self, src: &mut String) {
         match self {
-            DatatypeIdent::Builtin(t) => t.render(src),
-            DatatypeIdent::Array(t) => {
-                src.push_str("&'a [");
-                t.render(src);
-                src.push_str("]");
-            }
-            DatatypeIdent::Pointer(t) => {
-                src.push_str("*mut ");
-                t.render(src);
-            }
-            DatatypeIdent::ConstPointer(t) => {
-                src.push_str("*const ");
-                t.render(src);
-            }
-            DatatypeIdent::Ident(t) => {
+            TypeRef::Name(t) => {
                 src.push_str(&t.name.as_str().to_camel_case());
             }
+            TypeRef::Value(v) => match &**v {
+                Type::Builtin(t) => t.render(src),
+                Type::Array(t) => {
+                    src.push_str("&'a [");
+                    t.render(src);
+                    src.push_str("]");
+                }
+                Type::Pointer(t) => {
+                    src.push_str("*mut ");
+                    t.render(src);
+                }
+                Type::ConstPointer(t) => {
+                    src.push_str("*const ");
+                    t.render(src);
+                }
+                t => panic!("reference to anonymous {} not possible!", t.kind()),
+            },
         }
     }
 }
@@ -281,7 +269,7 @@ fn render_highlevel(func: &InterfaceFunc, module: &str, src: &mut String) {
     for param in func.params.iter() {
         param.name.render(src);
         src.push_str(": ");
-        param.type_.render(src);
+        param.tref.render(src);
         src.push_str(",");
     }
     src.push_str(")");
@@ -298,7 +286,7 @@ fn render_highlevel(func: &InterfaceFunc, module: &str, src: &mut String) {
             src.push_str("(");
         }
         for result in func.results.iter().skip(1) {
-            result.type_.render(src);
+            result.tref.render(src);
             src.push_str(",");
         }
         if func.results.len() != 2 {
@@ -323,10 +311,10 @@ fn render_highlevel(func: &InterfaceFunc, module: &str, src: &mut String) {
 
     // Forward all parameters, fetching the pointer/length as appropriate
     for param in func.params.iter() {
-        match param.type_.passed_by() {
-            DatatypePassedBy::Value(_) => param.name.render(src),
-            DatatypePassedBy::Pointer => unreachable!(),
-            DatatypePassedBy::PointerLengthPair => {
+        match param.tref.type_().passed_by() {
+            TypePassedBy::Value(_) => param.name.render(src),
+            TypePassedBy::Pointer => unreachable!(),
+            TypePassedBy::PointerLengthPair => {
                 param.name.render(src);
                 src.push_str(".as_ptr(), ");
                 param.name.render(src);
@@ -383,7 +371,7 @@ impl Render for InterfaceFunc {
         for result in self.results.iter().skip(1) {
             result.name.render(src);
             src.push_str(": *mut ");
-            result.type_.render(src);
+            result.tref.render(src);
             src.push_str(",");
         }
         src.push_str(")");
@@ -406,35 +394,35 @@ impl Render for InterfaceFuncParam {
             InterfaceFuncParamPosition::Param(_) => true,
             _ => false,
         };
-        match self.type_.passed_by() {
+        match self.tref.type_().passed_by() {
             // By-value arguments are passed as-is
-            DatatypePassedBy::Value(_) => {
+            TypePassedBy::Value(_) => {
                 if is_param {
                     self.name.render(src);
                     src.push_str(": ");
                 }
-                self.type_.render(src);
+                self.tref.render(src);
             }
             // Pointer arguments are passed with a `*mut` out in front
-            DatatypePassedBy::Pointer => {
+            TypePassedBy::Pointer => {
                 if is_param {
                     self.name.render(src);
                     src.push_str(": ");
                 }
                 src.push_str("*mut ");
-                self.type_.render(src);
+                self.tref.render(src);
             }
             // ... and pointer/length arguments are passed with first their
             // pointer and then their length, as the name would otherwise imply
-            DatatypePassedBy::PointerLengthPair => {
+            TypePassedBy::PointerLengthPair => {
                 assert!(is_param);
                 src.push_str(self.name.as_str());
                 src.push_str("_ptr");
                 src.push_str(": ");
                 src.push_str("*const ");
-                match resolve(&self.type_) {
-                    DatatypeIdent::Array(x) => x.render(src),
-                    DatatypeIdent::Builtin(BuiltinType::String) => src.push_str("u8"),
+                match &*self.tref.type_() {
+                    Type::Array(x) => x.render(src),
+                    Type::Builtin(BuiltinType::String) => src.push_str("u8"),
                     x => panic!("unexpected pointer length pair type {:?}", x),
                 }
                 src.push_str(", ");
@@ -457,20 +445,11 @@ impl Render for Id {
     }
 }
 
-impl Render for HandleDatatype {
-    fn render(&self, src: &mut String) {
-        drop(src);
-        panic!("don't know how to render a handle");
-    }
-}
-
-fn resolve(ty: &DatatypeIdent) -> &DatatypeIdent {
-    if let DatatypeIdent::Ident(i) = ty {
-        if let DatatypeVariant::Alias(a) = &i.variant {
-            return resolve(&a.to);
-        }
-    }
-    return ty;
+fn render_handle(src: &mut String, name: &str, h: &HandleDatatype) {
+    drop(src);
+    drop(name);
+    drop(h);
+    panic!("don't know how to render a handle");
 }
 
 fn rustdoc(docs: &str, dst: &mut String) {
