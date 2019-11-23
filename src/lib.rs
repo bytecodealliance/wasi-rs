@@ -1683,7 +1683,6 @@ pub fn sock_shutdown(fd: Fd, how: Sdflags) -> Result<()> {
     }
 }
 
-#[allow(non_camel_case_types)]
 pub mod wasi_snapshot_preview1 {
     use super::*;
     #[link(wasm_import_module = "wasi_snapshot_preview1")]

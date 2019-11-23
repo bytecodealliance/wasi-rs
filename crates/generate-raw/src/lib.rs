@@ -187,7 +187,7 @@ impl Render for AliasDatatype {
         }
         src.push_str(" = ");
 
-        // Give `size_t` special treatment to translate it to `usize` in Rust
+        // Give `size` special treatment to translate it to `usize` in Rust
         // instead of `u32`, makes things a bit nicer in Rust.
         if self.name.as_str() == "size" {
             src.push_str("usize");
@@ -250,7 +250,6 @@ impl Render for Module {
         }
 
         // raw module
-        src.push_str("#[allow(non_camel_case_types)]\n");
         src.push_str("pub mod ");
         src.push_str(&rust_name);
         src.push_str("{\nuse super::*;");
