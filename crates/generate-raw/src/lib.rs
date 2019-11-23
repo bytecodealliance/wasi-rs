@@ -1,10 +1,11 @@
+use heck::*;
 use std::io::{Read, Write};
 use std::path::Path;
 use std::process::{Command, Stdio};
 use witx::*;
 
 pub fn generate(wasi: &Path) -> String {
-    let doc = witx::load(wasi.join("phases/old/witx/wasi_unstable.witx")).unwrap();
+    let doc = witx::load(&[wasi.join("phases/snapshot/witx/wasi_snapshot_preview1.witx")]).unwrap();
 
     let mut raw = String::new();
     raw.push_str(
@@ -13,8 +14,11 @@ pub fn generate(wasi: &Path) -> String {
 //
 // To regenerate this file run the `crates/generate-raw` command
 
-#![allow(non_camel_case_types)]
+use core::mem::MaybeUninit;
 
+mod error;
+pub use self::error::Error;
+pub type Result<T, E = Error> = core::result::Result<T, E>;
 ",
     );
     for ty in doc.datatypes() {
@@ -61,6 +65,7 @@ impl Render for Datatype {
             witx::DatatypeVariant::Flags(f) => f.render(src),
             witx::DatatypeVariant::Struct(s) => s.render(src),
             witx::DatatypeVariant::Union(s) => s.render(src),
+            witx::DatatypeVariant::Handle(s) => s.render(src),
         }
     }
 }
@@ -69,8 +74,12 @@ impl Render for UnionDatatype {
     fn render(&self, src: &mut String) {
         src.push_str("#[repr(C)]\n");
         src.push_str("#[derive(Copy, Clone)]\n");
-        src.push_str(&format!("pub union __wasi_{} {{\n", self.name.as_str()));
+        src.push_str(&format!(
+            "pub union {} {{\n",
+            self.name.as_str().to_camel_case()
+        ));
         for variant in self.variants.iter() {
+            rustdoc(&variant.docs, src);
             src.push_str("pub ");
             variant.name.render(src);
             src.push_str(": ");
@@ -85,8 +94,12 @@ impl Render for StructDatatype {
     fn render(&self, src: &mut String) {
         src.push_str("#[repr(C)]\n");
         src.push_str("#[derive(Copy, Clone)]\n");
-        src.push_str(&format!("pub struct __wasi_{} {{\n", self.name.as_str()));
+        src.push_str(&format!(
+            "pub struct {} {{\n",
+            self.name.as_str().to_camel_case()
+        ));
         for member in self.members.iter() {
+            rustdoc(&member.docs, src);
             src.push_str("pub ");
             member.name.render(src);
             src.push_str(": ");
@@ -99,14 +112,19 @@ impl Render for StructDatatype {
 
 impl Render for FlagsDatatype {
     fn render(&self, src: &mut String) {
-        src.push_str(&format!("pub type __wasi_{} = ", self.name.as_str()));
+        src.push_str(&format!(
+            "pub type {} = ",
+            self.name.as_str().to_camel_case()
+        ));
         self.repr.render(src);
         src.push_str(";\n");
         for (i, variant) in self.flags.iter().enumerate() {
+            rustdoc(&variant.docs, src);
             src.push_str(&format!(
-                "pub const __WASI_{}: __wasi_{} = 0x{:x};",
-                variant.as_str(),
-                self.name.as_str(),
+                "pub const {}_{}: {} = 0x{:x};",
+                self.name.as_str().to_shouty_snake_case(),
+                variant.name.as_str().to_shouty_snake_case(),
+                self.name.as_str().to_camel_case(),
                 1 << i
             ));
         }
@@ -115,16 +133,37 @@ impl Render for FlagsDatatype {
 
 impl Render for EnumDatatype {
     fn render(&self, src: &mut String) {
-        src.push_str(&format!("pub type __wasi_{} = ", self.name.as_str()));
+        src.push_str(&format!(
+            "pub type {} = ",
+            self.name.as_str().to_camel_case()
+        ));
         self.repr.render(src);
         src.push_str(";\n");
         for (i, variant) in self.variants.iter().enumerate() {
+            rustdoc(&variant.docs, src);
             src.push_str(&format!(
-                "pub const __WASI_{}: __wasi_{} = {};",
-                variant.as_str(),
-                self.name.as_str(),
+                "pub const {}_{}: {} = {};",
+                self.name.as_str().to_shouty_snake_case(),
+                variant.name.as_str().to_shouty_snake_case(),
+                self.name.as_str().to_camel_case(),
                 i
             ));
+        }
+
+        if self.name.as_str() == "errno" {
+            src.push_str("fn strerror(code: u16) -> &'static str {");
+            src.push_str("match code {");
+            for variant in self.variants.iter() {
+                src.push_str(&self.name.as_str().to_shouty_snake_case());
+                src.push_str("_");
+                src.push_str(&variant.name.as_str().to_shouty_snake_case());
+                src.push_str(" => \"");
+                src.push_str(variant.docs.trim());
+                src.push_str("\",");
+            }
+            src.push_str("_ => \"Unknown error.\",");
+            src.push_str("}");
+            src.push_str("}");
         }
     }
 }
@@ -142,14 +181,15 @@ impl Render for IntRepr {
 
 impl Render for AliasDatatype {
     fn render(&self, src: &mut String) {
+        src.push_str(&format!("pub type {}", self.name.as_str().to_camel_case()));
         if self.to.passed_by() == DatatypePassedBy::PointerLengthPair {
-            return;
+            src.push_str("<'a>");
         }
-        src.push_str(&format!("pub type __wasi_{} = ", self.name.as_str()));
+        src.push_str(" = ");
 
-        // Give `size_t` special treatment to translate it to `usize` in Rust
+        // Give `size` special treatment to translate it to `usize` in Rust
         // instead of `u32`, makes things a bit nicer in Rust.
-        if self.name.as_str() == "size_t" {
+        if self.name.as_str() == "size" {
             src.push_str("usize");
         } else {
             self.to.render(src);
@@ -162,7 +202,11 @@ impl Render for DatatypeIdent {
     fn render(&self, src: &mut String) {
         match self {
             DatatypeIdent::Builtin(t) => t.render(src),
-            DatatypeIdent::Array(_) => unreachable!(),
+            DatatypeIdent::Array(t) => {
+                src.push_str("&'a [");
+                t.render(src);
+                src.push_str("]");
+            }
             DatatypeIdent::Pointer(t) => {
                 src.push_str("*mut ");
                 t.render(src);
@@ -172,8 +216,7 @@ impl Render for DatatypeIdent {
                 t.render(src);
             }
             DatatypeIdent::Ident(t) => {
-                src.push_str("__wasi_");
-                src.push_str(t.name.as_str());
+                src.push_str(&t.name.as_str().to_camel_case());
             }
         }
     }
@@ -182,7 +225,7 @@ impl Render for DatatypeIdent {
 impl Render for BuiltinType {
     fn render(&self, src: &mut String) {
         match self {
-            BuiltinType::String => src.push_str("str"),
+            BuiltinType::String => src.push_str("&str"),
             BuiltinType::U8 => src.push_str("u8"),
             BuiltinType::U16 => src.push_str("u16"),
             BuiltinType::U32 => src.push_str("u32"),
@@ -199,6 +242,17 @@ impl Render for BuiltinType {
 
 impl Render for Module {
     fn render(&self, src: &mut String) {
+        let rust_name = self.name.as_str().to_snake_case();
+        // wrapper functions
+        for f in self.funcs() {
+            render_highlevel(&f, &rust_name, src);
+            src.push_str("\n\n");
+        }
+
+        // raw module
+        src.push_str("pub mod ");
+        src.push_str(&rust_name);
+        src.push_str("{\nuse super::*;");
         src.push_str("#[link(wasm_import_module =\"");
         src.push_str(self.name.as_str());
         src.push_str("\")]\n");
@@ -208,16 +262,119 @@ impl Render for Module {
             src.push_str("\n");
         }
         src.push_str("}");
+        src.push_str("}");
     }
+}
+
+fn render_highlevel(func: &InterfaceFunc, module: &str, src: &mut String) {
+    let rust_name = func.name.as_str().to_snake_case();
+    rustdoc(&func.docs, src);
+    rustdoc_params(&func.params, "Parameters", src);
+    rustdoc_params(&func.results, "Return", src);
+
+    // Render the function and its arguments, and note that the arguments here
+    // are the exact type name arguments as opposed to the pointer/length pair
+    // ones.
+    src.push_str("pub fn ");
+    src.push_str(&rust_name);
+    src.push_str("(");
+    for param in func.params.iter() {
+        param.name.render(src);
+        src.push_str(": ");
+        param.type_.render(src);
+        src.push_str(",");
+    }
+    src.push_str(")");
+
+    // Render the result type of this function, if there is one.
+    if let Some(first) = func.results.get(0) {
+        // only know how to generate bindings for arguments where the first
+        // results is an errno, so assert this here and if it ever changes we'll
+        // need to update codegen below.
+        assert_eq!(first.name.as_str(), "error");
+        src.push_str(" -> Result<");
+        // 1 == `Result<()>`, 2 == `Result<T>`, 3+ == `Result<(...)>`
+        if func.results.len() != 2 {
+            src.push_str("(");
+        }
+        for result in func.results.iter().skip(1) {
+            result.type_.render(src);
+            src.push_str(",");
+        }
+        if func.results.len() != 2 {
+            src.push_str(")");
+        }
+        src.push_str(">");
+    }
+
+    src.push_str("{ unsafe {");
+    for result in func.results.iter().skip(1) {
+        src.push_str("let mut ");
+        result.name.render(src);
+        src.push_str(" = MaybeUninit::uninit();");
+    }
+    if func.results.len() > 0 {
+        src.push_str("let rc = ");
+    }
+    src.push_str(module);
+    src.push_str("::");
+    src.push_str(&rust_name);
+    src.push_str("(");
+
+    // Forward all parameters, fetching the pointer/length as appropriate
+    for param in func.params.iter() {
+        match param.type_.passed_by() {
+            DatatypePassedBy::Value(_) => param.name.render(src),
+            DatatypePassedBy::Pointer => unreachable!(),
+            DatatypePassedBy::PointerLengthPair => {
+                param.name.render(src);
+                src.push_str(".as_ptr(), ");
+                param.name.render(src);
+                src.push_str(".len()");
+            }
+        }
+        src.push_str(",");
+    }
+
+    // Forward all out-pointers as trailing arguments
+    for result in func.results.iter().skip(1) {
+        result.name.render(src);
+        src.push_str(".as_mut_ptr(),");
+    }
+    src.push_str(");");
+
+    // Check the return value, and if successful load all of the out pointers
+    // assuming they were initialized (part of the wasi contract).
+    if func.results.len() > 0 {
+        src.push_str("if let Some(err) = Error::from_raw_error(rc) { ");
+        src.push_str("Err(err)");
+        src.push_str("} else {");
+        src.push_str("Ok(");
+        if func.results.len() != 2 {
+            src.push_str("(");
+        }
+        for result in func.results.iter().skip(1) {
+            result.name.render(src);
+            src.push_str(".assume_init(),");
+        }
+        if func.results.len() != 2 {
+            src.push_str(")");
+        }
+        src.push_str(") }");
+    }
+    src.push_str("} }");
 }
 
 impl Render for InterfaceFunc {
     fn render(&self, src: &mut String) {
-        src.push_str("#[link_name = \"");
-        src.push_str(self.name.as_str());
-        src.push_str("\"]\n");
-        src.push_str("pub fn __wasi_");
-        src.push_str(self.name.as_str());
+        rustdoc(&self.docs, src);
+        if self.name.as_str() != self.name.as_str().to_snake_case() {
+            src.push_str("#[link_name = \"");
+            src.push_str(self.name.as_str());
+            src.push_str("\"]\n");
+        }
+        src.push_str("pub fn ");
+        src.push_str(&self.name.as_str().to_snake_case());
         src.push_str("(");
         for param in self.params.iter() {
             param.render(src);
@@ -300,6 +457,13 @@ impl Render for Id {
     }
 }
 
+impl Render for HandleDatatype {
+    fn render(&self, src: &mut String) {
+        drop(src);
+        panic!("don't know how to render a handle");
+    }
+}
+
 fn resolve(ty: &DatatypeIdent) -> &DatatypeIdent {
     if let DatatypeIdent::Ident(i) = ty {
         if let DatatypeVariant::Alias(a) = &i.variant {
@@ -307,4 +471,46 @@ fn resolve(ty: &DatatypeIdent) -> &DatatypeIdent {
         }
     }
     return ty;
+}
+
+fn rustdoc(docs: &str, dst: &mut String) {
+    if docs.trim().is_empty() {
+        return;
+    }
+    for line in docs.lines() {
+        dst.push_str("/// ");
+        dst.push_str(line);
+        dst.push_str("\n");
+    }
+}
+
+fn rustdoc_params(docs: &[InterfaceFuncParam], header: &str, dst: &mut String) {
+    let docs = docs
+        .iter()
+        .filter(|param| param.docs.trim().len() > 0)
+        .collect::<Vec<_>>();
+    if docs.len() == 0 {
+        return;
+    }
+
+    dst.push_str("///\n");
+    dst.push_str("/// ## ");
+    dst.push_str(header);
+    dst.push_str("\n");
+    dst.push_str("///\n");
+
+    for param in docs {
+        for (i, line) in param.docs.lines().enumerate() {
+            dst.push_str("/// ");
+            if i == 0 {
+                dst.push_str("* `");
+                param.name.render(dst);
+                dst.push_str("` - ");
+            } else {
+                dst.push_str("  ");
+            }
+            dst.push_str(line);
+            dst.push_str("\n");
+        }
+    }
 }

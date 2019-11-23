@@ -14,25 +14,63 @@
   </p>
 </div>
 
-This package contains experimental [WASI](https://github.com/WebAssembly/WASI)
-API bindings in Rust.
+This crate contains API bindings for [WASI](https://github.com/WebAssembly/WASI)
+system calls in Rust, and currently reflects the `wasi_snapshot_preview1`
+module. This crate is quite low-level and provides conceptually a "system call"
+interface. In most settings, it's better to use the Rust standard library, which
+has WASI support.
 
-There are two modules:
+The `wasi` crate is also entirely procedurally generated from the `*.witx` files
+describing the WASI apis. While some conveniences are provided the bindings here
+are intentionally low-level!
 
- - `wasi_unstable::raw`, which provides raw access to the literal binding to
-   the API. These functions are unsafe and use raw pointers.
+# Usage
 
- - `wasi_unstable`, which provides thin wrappers around the raw functions
-   which use idiomatic Rust types rather than raw pointers, and are safe.
+First you can depend on this crate via `Cargo.toml`:
 
-This crate is quite low-level and provides conceptually a "system call"
-interface. In most settings, it's better to use the Rust standard library,
-which has WASI support.
+```toml
+[dependencies]
+wasi = "0.8.0"
+```
+
+Next you can use the APIs in the root of the module like so:
+
+```rust
+fn main() {
+    let stdout = 1;
+    let message = "Hello, World!\n";
+    let data = [wasi::Ciovec {
+        buf: message.as_ptr(),
+        buf_len: message.len(),
+    }];
+    wasi::fd_write(stdout, &data).unwrap();
+}
+```
+
+Next you can use a tool like [`cargo
+wasi`](https://github.com/bytecodealliance/cargo-wasi) to compile and run your
+project:
 
 To compile Rust projects to wasm using WASI, use the `wasm32-wasi` target,
 like this:
 
 ```
-rustup target add wasm32-wasi
-cargo build --target wasm32-wasi
+$ cargo wasi run
+   Compiling wasi v0.8.0+wasi-snapshot-preview1
+   Compiling wut v0.1.0 (/code)
+    Finished dev [unoptimized + debuginfo] target(s) in 0.34s
+     Running `/.cargo/bin/cargo-wasi target/wasm32-wasi/debug/wut.wasm`
+     Running `target/wasm32-wasi/debug/wut.wasm`
+Hello, World!
 ```
+
+# License
+
+This project is licensed under the Apache 2.0 license with the LLVM exception.
+See [LICENSE](LICENSE) for more details.
+
+### Contribution
+
+Unless you explicitly state otherwise, any contribution intentionally submitted
+for inclusion in this project by you, as defined in the Apache-2.0 license,
+shall be licensed as above, without any additional terms or conditions.
