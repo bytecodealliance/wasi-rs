@@ -46,4 +46,6 @@ impl fmt::Debug for Error {
 }
 
 #[cfg(feature = "std")]
+extern crate std;
+#[cfg(feature = "std")]
 impl std::error::Error for Error {}
