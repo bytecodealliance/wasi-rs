@@ -7,7 +7,7 @@ description = "Experimental WASI API bindings for Rust"
 edition = "2018"
 categories = ["no-std", "wasm"]
 keywords = ["webassembly", "wasm"]
-repository = "https://github.com/CraneStation/rust-wasi"
+repository = "https://github.com/bytecodealliance/wasi"
 readme = "README.md"
 documentation = "https://docs.rs/wasi"
 
