@@ -1,0 +1,21 @@
+[package]
+name = "wasi-ephemeral"
+version = "0.0.0"
+publish = false
+authors = ["Bytecode Alliance"]
+license = "Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT"
+description = "Experimental WASI API bindings for Rust"
+edition = "2018"
+categories = ["no-std", "wasm"]
+keywords = ["webassembly", "wasm"]
+repository = "https://github.com/bytecodealliance/wasi"
+
+[build-dependencies]
+generate-raw = { path = "../generate-raw" }
+
+[features]
+default = ["std"]
+std = []
+
+[badges]
+maintenance = { status = "experimental" }

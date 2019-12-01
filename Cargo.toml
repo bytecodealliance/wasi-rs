@@ -12,7 +12,7 @@ readme = "README.md"
 documentation = "https://docs.rs/wasi"
 
 [workspace]
-members = ['crates/generate-raw']
+members = ['crates/generate-raw', 'crates/wasi-ephemeral']
 
 [dependencies]
 # When built as part of libstd
