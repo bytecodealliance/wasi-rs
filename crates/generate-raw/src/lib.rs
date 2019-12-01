@@ -4,8 +4,8 @@ use std::path::Path;
 use std::process::{Command, Stdio};
 use witx::*;
 
-pub fn generate(wasi: &Path) -> String {
-    let doc = witx::load(&[wasi.join("phases/snapshot/witx/wasi_snapshot_preview1.witx")]).unwrap();
+pub fn generate(witx_path: &Path) -> String {
+    let doc = witx::load(&[witx_path]).unwrap();
 
     let mut raw = String::new();
     raw.push_str(

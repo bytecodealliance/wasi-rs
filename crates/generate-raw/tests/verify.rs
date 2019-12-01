@@ -1,7 +1,8 @@
 #[test]
 fn assert_same_as_src() {
     let actual = include_str!("../../../src/lib.rs");
-    let expected = generate_raw::generate("WASI".as_ref());
+    let expected =
+        generate_raw::generate("WASI/phases/snapshot/witx/wasi_snapshot_preview1.witx".as_ref());
     if actual == expected {
         return;
     }
