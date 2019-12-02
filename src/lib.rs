@@ -16,13 +16,10 @@
 //! at any one point in time describing the current state of the specification.
 //! This crate implements a particular snapshot. You can find the snapshot
 //! version implemented in this crate in the build metadata of the crate
-//! version number. For example something like:
-//!
-//!     0.8.0+wasi-snapshot-preview1
-//!
-//! Means that this crate's own personal version is 0.8.0 and it implements the
+//! version number. For example something like `0.9.0+wasi-snapshot-preview1`
+//! means that this crate's own personal version is 0.9.0 and it implements the
 //! `wasi-snapshot-preview1` snapshot. A major release of this crate (i.e.
-//! bumping the "0.8.0") is expected whenever the generated code changes
+//! bumping the "0.9.0") is expected whenever the generated code changes
 //! or a new WASI snapshot is used.
 //!
 //! # Crate Features
