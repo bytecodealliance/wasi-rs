@@ -9,7 +9,7 @@ jobs:
       matrix:
         rust: [stable, beta, nightly]
     steps:
-    - uses: actions/checkout@master
+    - uses: actions/checkout@v1
       with:
         submodules: true
     - name: Install Rust
@@ -24,7 +24,7 @@ jobs:
     name: Rustfmt
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@master
+    - uses: actions/checkout@v1
       with:
         submodules: true
     - name: Install Rust
@@ -35,7 +35,7 @@ jobs:
     name: Test Generated Code
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@master
+    - uses: actions/checkout@v1
       with:
         submodules: true
     - name: Install Rust
