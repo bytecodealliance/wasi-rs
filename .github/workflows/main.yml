@@ -19,6 +19,7 @@ jobs:
     - run: cargo build --no-default-features
     - run: cargo build --target wasm32-wasi
     - run: cargo build --target wasm32-wasi --no-default-features
+    - run: cargo build -p wasi-ephemeral
 
   rustfmt:
     name: Rustfmt
