@@ -446,11 +446,8 @@ impl Render for Id {
     }
 }
 
-fn render_handle(src: &mut String, name: &str, h: &HandleDatatype) {
-    drop(src);
-    drop(name);
-    drop(h);
-    panic!("don't know how to render a handle");
+fn render_handle(src: &mut String, name: &str, _h: &HandleDatatype) {
+    src.push_str(&format!("pub type {} = u32;", name.to_camel_case()));
 }
 
 fn rustdoc(docs: &str, dst: &mut String) {
