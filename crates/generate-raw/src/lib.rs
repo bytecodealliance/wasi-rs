@@ -122,7 +122,7 @@ fn render_union(src: &mut String, name: &str, u: &UnionDatatype) {
 
 fn render_struct(src: &mut String, name: &str, s: &StructDatatype) {
     src.push_str("#[repr(C)]\n");
-    src.push_str("#[derive(Copy, Clone)]\n");
+    src.push_str("#[derive(Copy, Clone, Debug)]\n");
     src.push_str(&format!("pub struct {} {{\n", name.to_camel_case()));
     for member in s.members.iter() {
         rustdoc(&member.docs, src);
