@@ -265,7 +265,8 @@ impl Render for Module {
 }
 
 fn render_highlevel(func: &InterfaceFunc, module: &str, src: &mut String) {
-    let rust_name = func.name.as_str().to_snake_case();
+    let mut rust_name = String::new();
+    func.name.render(&mut rust_name);
     rustdoc(&func.docs, src);
     rustdoc_params(&func.params, "Parameters", src);
     rustdoc_params(&func.results, "Return", src);
@@ -374,7 +375,7 @@ impl Render for InterfaceFunc {
             src.push_str("\"]\n");
         }
         src.push_str("pub fn ");
-        src.push_str(&self.name.as_str().to_snake_case());
+        self.name.render(src);
         src.push_str("(");
         for param in self.params.iter() {
             param.render(src);
@@ -452,6 +453,7 @@ impl Render for Id {
         match self.as_str() {
             "in" => src.push_str("r#in"),
             "type" => src.push_str("r#type"),
+            "yield" => src.push_str("r#yield"),
             s => src.push_str(s),
         }
     }
