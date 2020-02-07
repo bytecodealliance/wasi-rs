@@ -17,9 +17,8 @@ fn main() {
     let witx_paths: Vec<_> = WITX_MODULES
         .iter()
         .map(|x| {
-            let mut p = root.join(&["wasi_ephemeral_", x].join("")).to_owned();
-            p.set_extension("witx");
-            p
+            root.join(&["wasi_ephemeral_", x, ".witx"].join(""))
+                .to_owned()
         })
         .collect();
     let out = generate_raw::generate(&witx_paths);
