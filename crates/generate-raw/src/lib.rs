@@ -63,9 +63,7 @@ impl Render for NamedType {
             TypeRef::Value(ty) => match &**ty {
                 Type::Enum(e) => render_enum(src, name, e),
                 Type::Flags(f) => render_flags(src, name, f),
-                Type::Int(_) => {
-                    // TODO handle Int
-                }
+                Type::Int(c) => render_const(src, name, c),
                 Type::Struct(s) => render_struct(src, name, s),
                 Type::Union(u) => render_union(src, name, u),
                 Type::Handle(h) => render_handle(src, name, h),
@@ -76,6 +74,23 @@ impl Render for NamedType {
             },
             TypeRef::Name(_nt) => render_alias(src, name, &self.tref),
         }
+    }
+}
+
+// TODO verify this is correct way of handling IntDatatype
+fn render_const(src: &mut String, name: &str, c: &IntDatatype) {
+    src.push_str(&format!("pub type {} = ", name.to_camel_case()));
+    c.repr.render(src);
+    src.push_str(";\n");
+    for r#const in c.consts.iter() {
+        rustdoc(&r#const.docs, src);
+        src.push_str(&format!(
+            "pub const {}_{}: {} = {};",
+            name.to_shouty_snake_case(),
+            r#const.name.as_str().to_shouty_snake_case(),
+            name.to_camel_case(),
+            r#const.value
+        ));
     }
 }
 
