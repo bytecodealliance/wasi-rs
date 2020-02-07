@@ -11,7 +11,7 @@ keywords = ["webassembly", "wasm"]
 repository = "https://github.com/bytecodealliance/wasi"
 
 [build-dependencies]
-generate-raw = { path = "../generate-raw" }
+generate-raw = { path = "../generate-raw", features = ["multi-module"] }
 
 [features]
 default = ["std"]

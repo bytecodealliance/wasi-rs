@@ -4,8 +4,8 @@ use std::path::Path;
 use std::process::{Command, Stdio};
 use witx::*;
 
-pub fn generate(witx_path: &Path) -> String {
-    let doc = witx::load(&[witx_path]).unwrap();
+pub fn generate<P: AsRef<Path>>(witx_paths: &[P]) -> String {
+    let doc = witx::load(witx_paths).unwrap();
 
     let mut raw = String::new();
     raw.push_str(
@@ -59,20 +59,38 @@ trait Render {
 impl Render for NamedType {
     fn render(&self, src: &mut String) {
         let name = self.name.as_str();
-        match &self.dt {
+        match &self.tref {
             TypeRef::Value(ty) => match &**ty {
                 Type::Enum(e) => render_enum(src, name, e),
                 Type::Flags(f) => render_flags(src, name, f),
+                Type::Int(c) => render_const(src, name, c),
                 Type::Struct(s) => render_struct(src, name, s),
                 Type::Union(u) => render_union(src, name, u),
                 Type::Handle(h) => render_handle(src, name, h),
                 Type::Array { .. }
                 | Type::Pointer { .. }
                 | Type::ConstPointer { .. }
-                | Type::Builtin { .. } => render_alias(src, name, &self.dt),
+                | Type::Builtin { .. } => render_alias(src, name, &self.tref),
             },
-            TypeRef::Name(_nt) => render_alias(src, name, &self.dt),
+            TypeRef::Name(_nt) => render_alias(src, name, &self.tref),
         }
+    }
+}
+
+// TODO verify this is correct way of handling IntDatatype
+fn render_const(src: &mut String, name: &str, c: &IntDatatype) {
+    src.push_str(&format!("pub type {} = ", name.to_camel_case()));
+    c.repr.render(src);
+    src.push_str(";\n");
+    for r#const in c.consts.iter() {
+        rustdoc(&r#const.docs, src);
+        src.push_str(&format!(
+            "pub const {}_{}: {} = {};",
+            name.to_shouty_snake_case(),
+            r#const.name.as_str().to_shouty_snake_case(),
+            name.to_camel_case(),
+            r#const.value
+        ));
     }
 }
 
@@ -223,6 +241,14 @@ impl Render for BuiltinType {
             BuiltinType::S64 => src.push_str("i64"),
             BuiltinType::F32 => src.push_str("f32"),
             BuiltinType::F64 => src.push_str("f64"),
+            BuiltinType::USize => {
+                // TODO verify handling of USize
+                src.push_str("usize")
+            }
+            BuiltinType::Char8 => {
+                // TODO verify handling of Char8
+                src.push_str("char")
+            }
         }
     }
 }
@@ -254,7 +280,9 @@ impl Render for Module {
 }
 
 fn render_highlevel(func: &InterfaceFunc, module: &str, src: &mut String) {
-    let rust_name = func.name.as_str().to_snake_case();
+    let mut rust_name = String::new();
+    func.name.render(&mut rust_name);
+    let rust_name = rust_name.to_snake_case();
     rustdoc(&func.docs, src);
     rustdoc_params(&func.params, "Parameters", src);
     rustdoc_params(&func.results, "Return", src);
@@ -265,7 +293,18 @@ fn render_highlevel(func: &InterfaceFunc, module: &str, src: &mut String) {
     // descriptors, which are effectively forgeable and danglable raw pointers
     // into the file descriptor address space.
     src.push_str("pub unsafe fn ");
-    src.push_str(&rust_name);
+
+    // TODO workout how to handle wasi-ephemeral which introduces multiple
+    // WASI modules into the picture. For now, feature-gate it, and if we're
+    // compiling ephmeral bindings, prefix wrapper syscall with module name.
+    cfg_if::cfg_if! {
+        if #[cfg(feature = "multi-module")] {
+            src.push_str(&[module, &rust_name].join("_"));
+        } else {
+            src.push_str(&rust_name);
+        }
+    }
+
     src.push_str("(");
     for param in func.params.iter() {
         param.name.render(src);
@@ -363,7 +402,9 @@ impl Render for InterfaceFunc {
             src.push_str("\"]\n");
         }
         src.push_str("pub fn ");
-        src.push_str(&self.name.as_str().to_snake_case());
+        let mut name = String::new();
+        self.name.render(&mut name);
+        src.push_str(&name.to_snake_case());
         src.push_str("(");
         for param in self.params.iter() {
             param.render(src);
@@ -441,6 +482,7 @@ impl Render for Id {
         match self.as_str() {
             "in" => src.push_str("r#in"),
             "type" => src.push_str("r#type"),
+            "yield" => src.push_str("r#yield"),
             s => src.push_str(s),
         }
     }
