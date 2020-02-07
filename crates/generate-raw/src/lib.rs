@@ -4,8 +4,8 @@ use std::path::Path;
 use std::process::{Command, Stdio};
 use witx::*;
 
-pub fn generate(witx_path: &Path) -> String {
-    let doc = witx::load(&[witx_path]).unwrap();
+pub fn generate<P: AsRef<Path>>(witx_paths: &[P]) -> String {
+    let doc = witx::load(witx_paths).unwrap();
 
     let mut raw = String::new();
     raw.push_str(
@@ -59,19 +59,22 @@ trait Render {
 impl Render for NamedType {
     fn render(&self, src: &mut String) {
         let name = self.name.as_str();
-        match &self.dt {
+        match &self.tref {
             TypeRef::Value(ty) => match &**ty {
                 Type::Enum(e) => render_enum(src, name, e),
                 Type::Flags(f) => render_flags(src, name, f),
+                Type::Int(_) => {
+                    // TODO handle Int
+                }
                 Type::Struct(s) => render_struct(src, name, s),
                 Type::Union(u) => render_union(src, name, u),
                 Type::Handle(h) => render_handle(src, name, h),
                 Type::Array { .. }
                 | Type::Pointer { .. }
                 | Type::ConstPointer { .. }
-                | Type::Builtin { .. } => render_alias(src, name, &self.dt),
+                | Type::Builtin { .. } => render_alias(src, name, &self.tref),
             },
-            TypeRef::Name(_nt) => render_alias(src, name, &self.dt),
+            TypeRef::Name(_nt) => render_alias(src, name, &self.tref),
         }
     }
 }
@@ -223,6 +226,10 @@ impl Render for BuiltinType {
             BuiltinType::S64 => src.push_str("i64"),
             BuiltinType::F32 => src.push_str("f32"),
             BuiltinType::F64 => src.push_str("f64"),
+            BuiltinType::USize => src.push_str("usize"),
+            BuiltinType::Char8 => {
+                // TODO handle Char8
+            }
         }
     }
 }

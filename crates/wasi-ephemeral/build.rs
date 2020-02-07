@@ -1,20 +1,35 @@
-use std::{env, fs::File, io::Write, path::PathBuf};
+use std::{
+    env,
+    fs::File,
+    io::Write,
+    path::{Path, PathBuf},
+};
+
+const WITX_ROOT: &str = "../generate-raw/WASI/phases/ephemeral/witx";
+const WITX_MODULES: &[&str] = &[
+    "args", "clock", "environ", "fd", "path", "poll", "proc", "random", "sched", "sock",
+];
 
 fn main() {
     let out_path: PathBuf = env::var_os("OUT_DIR").unwrap().into();
     let mut f = File::create(out_path.join("lib_generated.rs")).unwrap();
-    const WASI_EPHEMERAL_WITX: &str =
-        "../generate-raw/WASI/phases/ephemeral/witx/wasi_ephemeral_preview.witx";
-    let witx_path: PathBuf = env::var_os("WASI_EPHEMERAL_WITX")
-        .unwrap_or_else(|| WASI_EPHEMERAL_WITX.into())
-        .into();
-    let out = generate_raw::generate(&witx_path);
+    let root = Path::new(WITX_ROOT);
+    let witx_paths: Vec<_> = WITX_MODULES
+        .iter()
+        .map(|x| {
+            let mut p = root.join(&["wasi_ephemeral_", x].join("")).to_owned();
+            p.set_extension("witx");
+            p
+        })
+        .collect();
+    let out = generate_raw::generate(&witx_paths);
     write!(f, "{}", out).unwrap();
-    println!("cargo:rerun-if-env-changed=WASI_EPHEMERAL_WITX");
-    println!("cargo:rerun-if-changed={}", witx_path.display());
+    for p in &witx_paths {
+        println!("cargo:rerun-if-changed={}", p.display());
+    }
     println!(
         "cargo:rerun-if-changed={}",
-        witx_path.with_file_name("typenames.witx").display(),
+        root.join("wasi_ephemeral_typenames.witx").display()
     );
     // TODO: Account for changes in use directives.
 }
