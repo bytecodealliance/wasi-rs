@@ -97,16 +97,28 @@ fn render_const(src: &mut String, name: &str, c: &IntDatatype) {
 fn render_union(src: &mut String, name: &str, u: &UnionDatatype) {
     src.push_str("#[repr(C)]\n");
     src.push_str("#[derive(Copy, Clone)]\n");
-    src.push_str(&format!("pub union {} {{\n", name.to_camel_case()));
+    src.push_str(&format!("pub union {}U {{\n", name.to_camel_case()));
     for variant in u.variants.iter() {
-        rustdoc(&variant.docs, src);
-        src.push_str("pub ");
-        variant.name.render(src);
-        src.push_str(": ");
-        variant.tref.render(src);
-        src.push_str(",\n");
+        if let Some(ref tref) = variant.tref {
+            rustdoc(&variant.docs, src);
+            src.push_str("pub ");
+            variant.name.render(src);
+            src.push_str(": ");
+            tref.render(src);
+            src.push_str(",\n");
+        }
     }
-    src.push_str("}");
+    src.push_str("}\n");
+    src.push_str("#[repr(C)]\n");
+    src.push_str("#[derive(Copy, Clone)]\n");
+    src.push_str(&format!("pub struct {} {{\n", name.to_camel_case()));
+    let tagname = match u.tag {
+        TypeRef::Name(ref nt) => nt.name.as_str().to_camel_case(),
+        TypeRef::Value { .. } => unreachable!("tag must be named type"),
+    };
+    src.push_str(&format!("pub tag: {},\n", tagname));
+    src.push_str(&format!("pub u: {}U,\n", name.to_camel_case()));
+    src.push_str("}\n");
 }
 
 fn render_struct(src: &mut String, name: &str, s: &StructDatatype) {
@@ -189,14 +201,7 @@ fn render_alias(src: &mut String, name: &str, dest: &TypeRef) {
         src.push_str("<'a>");
     }
     src.push_str(" = ");
-
-    // Give `size_t` special treatment to translate it to `usize` in Rust
-    // instead of `u32`, makes things a bit nicer in Rust.
-    if name == "size" {
-        src.push_str("usize");
-    } else {
-        dest.render(src);
-    }
+    dest.render(src);
     src.push(';');
 }
 

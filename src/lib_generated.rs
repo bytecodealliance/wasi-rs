@@ -6,7 +6,7 @@ use core::mem::MaybeUninit;
 
 pub use crate::error::Error;
 pub type Result<T, E = Error> = core::result::Result<T, E>;
-pub type Size = usize;
+pub type Size = u32;
 pub type Filesize = u64;
 pub type Timestamp = u64;
 pub type Clockid = u32;
@@ -495,10 +495,17 @@ pub struct EventFdReadwrite {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub union EventU {
-    /// When type is `eventtype::fd_read` or `eventtype::fd_write`:
-    pub fd_readwrite: EventFdReadwrite,
+pub union EventUU {
+    pub fd_read: EventFdReadwrite,
+    pub fd_write: EventFdReadwrite,
 }
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct EventU {
+    pub tag: Eventtype,
+    pub u: EventUU,
+}
+
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct Event {
@@ -506,9 +513,7 @@ pub struct Event {
     pub userdata: Userdata,
     /// If non-zero, an error that occurred while processing the subscription request.
     pub error: Errno,
-    /// The type of the event that occurred.
-    pub r#type: Eventtype,
-    /// The contents of the event.
+    /// The type of the event that occurred, and its contents.
     pub u: EventU,
 }
 pub type Subclockflags = u16;
@@ -539,21 +544,25 @@ pub struct SubscriptionFdReadwrite {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub union SubscriptionU {
-    /// When type is `eventtype::clock`:
+pub union SubscriptionUU {
     pub clock: SubscriptionClock,
-    /// When type is `eventtype::fd_read` or `eventtype::fd_write`:
-    pub fd_readwrite: SubscriptionFdReadwrite,
+    pub fd_read: SubscriptionFdReadwrite,
+    pub fd_write: SubscriptionFdReadwrite,
 }
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct SubscriptionU {
+    pub tag: Eventtype,
+    pub u: SubscriptionUU,
+}
+
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct Subscription {
     /// User-provided value that is attached to the subscription in the
     /// implementation and returned through `event::userdata`.
     pub userdata: Userdata,
-    /// The type of the event to which to subscribe.
-    pub r#type: Eventtype,
-    /// The contents of the subscription.
+    /// The type of the event to which to subscribe, and its contents
     pub u: SubscriptionU,
 }
 pub type Exitcode = u32;
@@ -677,17 +686,15 @@ pub struct PrestatDir {
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub union PrestatU {
-    /// When type is `preopentype::dir`:
     pub dir: PrestatDir,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct Prestat {
-    /// The type of the pre-opened capability.
-    pub pr_type: Preopentype,
-    /// The contents of the information.
+    pub tag: Preopentype,
     pub u: PrestatU,
 }
+
 /// Read command-line argument data.
 /// The size of the array should match that returned by `args_sizes_get`
 pub unsafe fn args_get(argv: *mut *mut u8, argv_buf: *mut u8) -> Result<()> {
