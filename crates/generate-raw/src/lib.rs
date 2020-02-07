@@ -278,7 +278,18 @@ fn render_highlevel(func: &InterfaceFunc, module: &str, src: &mut String) {
     // descriptors, which are effectively forgeable and danglable raw pointers
     // into the file descriptor address space.
     src.push_str("pub unsafe fn ");
-    src.push_str(&rust_name);
+
+    // TODO workout how to handle wasi-ephemeral which introduces multiple
+    // WASI modules into the picture. For now, feature-gate it, and if we're
+    // compiling ephmeral bindings, prefix wrapper syscall with module name.
+    cfg_if::cfg_if! {
+        if #[cfg(feature = "multi-module")] {
+            src.push_str(&[module, &rust_name].join("_"));
+        } else {
+            src.push_str(&rust_name);
+        }
+    }
+
     src.push_str("(");
     for param in func.params.iter() {
         param.name.render(src);
