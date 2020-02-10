@@ -241,13 +241,11 @@ impl Render for BuiltinType {
             BuiltinType::S64 => src.push_str("i64"),
             BuiltinType::F32 => src.push_str("f32"),
             BuiltinType::F64 => src.push_str("f64"),
-            BuiltinType::USize => {
-                // TODO verify handling of USize
-                src.push_str("usize")
-            }
+            BuiltinType::USize => src.push_str("usize"),
             BuiltinType::Char8 => {
-                // TODO verify handling of Char8
-                src.push_str("char")
+                // Char8 represents a UTF8 code *unit* (`u8` in Rust, `char8_t` in C++20)
+                // rather than a code *point* (`char` in Rust which is multi-byte)
+                src.push_str("u8")
             }
         }
     }
