@@ -495,26 +495,16 @@ pub struct EventFdReadwrite {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub union EventUU {
-    pub fd_read: EventFdReadwrite,
-    pub fd_write: EventFdReadwrite,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct EventU {
-    pub tag: Eventtype,
-    pub u: EventUU,
-}
-
-#[repr(C)]
-#[derive(Copy, Clone)]
 pub struct Event {
     /// User-provided value that got attached to `subscription::userdata`.
     pub userdata: Userdata,
     /// If non-zero, an error that occurred while processing the subscription request.
     pub error: Errno,
-    /// The type of the event that occurred, and its contents.
-    pub u: EventU,
+    /// The type of event that occured
+    pub r#type: Eventtype,
+    /// The contents of the event, if it is an `eventtype::fd_read` or
+    /// `eventtype::fd_write`. `eventtype::clock` events ignore this field.
+    pub fd_readwrite: EventFdReadwrite,
 }
 pub type Subclockflags = u16;
 /// If set, treat the timestamp provided in
