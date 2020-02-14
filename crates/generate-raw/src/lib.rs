@@ -112,11 +112,10 @@ fn render_union(src: &mut String, name: &str, u: &UnionDatatype) {
     src.push_str("#[repr(C)]\n");
     src.push_str("#[derive(Copy, Clone)]\n");
     src.push_str(&format!("pub struct {} {{\n", name.to_camel_case()));
-    let tagname = match u.tag {
-        TypeRef::Name(ref nt) => nt.name.as_str().to_camel_case(),
-        TypeRef::Value { .. } => unreachable!("tag must be named type"),
-    };
-    src.push_str(&format!("pub tag: {},\n", tagname));
+    src.push_str(&format!(
+        "pub tag: {},\n",
+        u.tag.name.as_str().to_camel_case()
+    ));
     src.push_str(&format!("pub u: {}U,\n", name.to_camel_case()));
     src.push_str("}\n");
 }
