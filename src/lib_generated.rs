@@ -495,21 +495,16 @@ pub struct EventFdReadwrite {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub union EventU {
-    /// When type is `eventtype::fd_read` or `eventtype::fd_write`:
-    pub fd_readwrite: EventFdReadwrite,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
 pub struct Event {
     /// User-provided value that got attached to `subscription::userdata`.
     pub userdata: Userdata,
     /// If non-zero, an error that occurred while processing the subscription request.
     pub error: Errno,
-    /// The type of the event that occurred.
+    /// The type of event that occured
     pub r#type: Eventtype,
-    /// The contents of the event.
-    pub u: EventU,
+    /// The contents of the event, if it is an `eventtype::fd_read` or
+    /// `eventtype::fd_write`. `eventtype::clock` events ignore this field.
+    pub fd_readwrite: EventFdReadwrite,
 }
 pub type Subclockflags = u16;
 /// If set, treat the timestamp provided in
@@ -539,21 +534,25 @@ pub struct SubscriptionFdReadwrite {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub union SubscriptionU {
-    /// When type is `eventtype::clock`:
+pub union SubscriptionUU {
     pub clock: SubscriptionClock,
-    /// When type is `eventtype::fd_read` or `eventtype::fd_write`:
-    pub fd_readwrite: SubscriptionFdReadwrite,
+    pub fd_read: SubscriptionFdReadwrite,
+    pub fd_write: SubscriptionFdReadwrite,
 }
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct SubscriptionU {
+    pub tag: Eventtype,
+    pub u: SubscriptionUU,
+}
+
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct Subscription {
     /// User-provided value that is attached to the subscription in the
     /// implementation and returned through `event::userdata`.
     pub userdata: Userdata,
-    /// The type of the event to which to subscribe.
-    pub r#type: Eventtype,
-    /// The contents of the subscription.
+    /// The type of the event to which to subscribe, and its contents
     pub u: SubscriptionU,
 }
 pub type Exitcode = u32;
@@ -677,17 +676,15 @@ pub struct PrestatDir {
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub union PrestatU {
-    /// When type is `preopentype::dir`:
     pub dir: PrestatDir,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct Prestat {
-    /// The type of the pre-opened capability.
-    pub pr_type: Preopentype,
-    /// The contents of the information.
+    pub tag: Preopentype,
     pub u: PrestatU,
 }
+
 /// Read command-line argument data.
 /// The size of the array should match that returned by `args_sizes_get`
 pub unsafe fn args_get(argv: *mut *mut u8, argv_buf: *mut u8) -> Result<()> {
