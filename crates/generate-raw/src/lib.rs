@@ -200,7 +200,15 @@ fn render_alias(src: &mut String, name: &str, dest: &TypeRef) {
         src.push_str("<'a>");
     }
     src.push_str(" = ");
-    dest.render(src);
+
+    // Give `size` special treatment to translate it to `usize` in Rust instead of `u32`. Makes
+    // things a bit nicer for client libraries. We can remove this hack once WASI moves to a
+    // snapshot that uses BuiltinType::Size.
+    if name == "size" {
+        src.push_str("usize");
+    } else {
+        dest.render(src);
+    }
     src.push(';');
 }
 

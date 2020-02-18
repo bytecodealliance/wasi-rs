@@ -6,7 +6,7 @@ use core::mem::MaybeUninit;
 
 pub use crate::error::Error;
 pub type Result<T, E = Error> = core::result::Result<T, E>;
-pub type Size = u32;
+pub type Size = usize;
 pub type Filesize = u64;
 pub type Timestamp = u64;
 pub type Clockid = u32;
