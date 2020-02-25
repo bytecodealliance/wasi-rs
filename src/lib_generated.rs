@@ -494,7 +494,7 @@ pub struct EventFdReadwrite {
     pub flags: Eventrwflags,
 }
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub struct Event {
     /// User-provided value that got attached to `subscription::userdata`.
     pub userdata: Userdata,
@@ -547,6 +547,7 @@ pub struct SubscriptionU {
 }
 
 #[repr(C)]
+#[derive(Copy, Clone)]
 pub struct Subscription {
     /// User-provided value that is attached to the subscription in the
     /// implementation and returned through `event::userdata`.
@@ -678,7 +679,7 @@ pub union PrestatU {
     pub dir: PrestatDir,
 }
 #[repr(C)]
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone)]
 pub struct Prestat {
     pub tag: Preopentype,
     pub u: PrestatU,
@@ -723,21 +724,23 @@ pub unsafe fn environ_get(environ: *mut *mut u8, environ_buf: *mut u8) -> Result
     }
 }
 
-/// Return command-line argument data sizes.
+/// Return environment variable data sizes.
 ///
 /// ## Return
 ///
-/// * `argc` - The number of arguments.
-/// * `argv_buf_size` - The size of the argument string data.
+/// * `environc` - The number of environment variable arguments.
+/// * `environ_buf_size` - The size of the environment variable data.
 pub unsafe fn environ_sizes_get() -> Result<(Size, Size)> {
-    let mut argc = MaybeUninit::uninit();
-    let mut argv_buf_size = MaybeUninit::uninit();
-    let rc =
-        wasi_snapshot_preview1::environ_sizes_get(argc.as_mut_ptr(), argv_buf_size.as_mut_ptr());
+    let mut environc = MaybeUninit::uninit();
+    let mut environ_buf_size = MaybeUninit::uninit();
+    let rc = wasi_snapshot_preview1::environ_sizes_get(
+        environc.as_mut_ptr(),
+        environ_buf_size.as_mut_ptr(),
+    );
     if let Some(err) = Error::from_raw_error(rc) {
         Err(err)
     } else {
-        Ok((argc.assume_init(), argv_buf_size.assume_init()))
+        Ok((environc.assume_init(), environ_buf_size.assume_init()))
     }
 }
 
@@ -1590,8 +1593,8 @@ pub mod wasi_snapshot_preview1 {
         /// Read environment variable data.
         /// The sizes of the buffers should match that returned by `environ_sizes_get`.
         pub fn environ_get(environ: *mut *mut u8, environ_buf: *mut u8) -> Errno;
-        /// Return command-line argument data sizes.
-        pub fn environ_sizes_get(argc: *mut Size, argv_buf_size: *mut Size) -> Errno;
+        /// Return environment variable data sizes.
+        pub fn environ_sizes_get(environc: *mut Size, environ_buf_size: *mut Size) -> Errno;
         /// Return the resolution of a clock.
         /// Implementations are required to provide a non-zero value for supported clocks. For unsupported clocks,
         /// return `errno::inval`.

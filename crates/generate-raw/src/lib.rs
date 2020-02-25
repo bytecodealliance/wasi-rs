@@ -122,7 +122,12 @@ fn render_union(src: &mut String, name: &str, u: &UnionDatatype) {
 
 fn render_struct(src: &mut String, name: &str, s: &StructDatatype) {
     src.push_str("#[repr(C)]\n");
-    src.push_str("#[derive(Copy, Clone, Debug)]\n");
+    if struct_contains_union(s) {
+        // Unions can't automatically derive `Debug`.
+        src.push_str("#[derive(Copy, Clone)]\n");
+    } else {
+        src.push_str("#[derive(Copy, Clone, Debug)]\n");
+    }
     src.push_str(&format!("pub struct {} {{\n", name.to_camel_case()));
     for member in s.members.iter() {
         rustdoc(&member.docs, src);
@@ -541,5 +546,20 @@ fn rustdoc_params(docs: &[InterfaceFuncParam], header: &str, dst: &mut String) {
             dst.push_str(line);
             dst.push_str("\n");
         }
+    }
+}
+
+fn struct_contains_union(s: &StructDatatype) -> bool {
+    s.members
+        .iter()
+        .any(|member| type_contains_union(&member.tref.type_()))
+}
+
+fn type_contains_union(ty: &Type) -> bool {
+    match ty {
+        Type::Union(_) => true,
+        Type::Array(tref) => type_contains_union(&tref.type_()),
+        Type::Struct(st) => struct_contains_union(st),
+        _ => false,
     }
 }
