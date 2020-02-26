@@ -332,7 +332,7 @@ pub const RIGHTS_POLL_FD_READWRITE: Rights = 0x8000000;
 pub const RIGHTS_SOCK_SHUTDOWN: Rights = 0x10000000;
 pub type Fd = u32;
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub struct Iovec {
     /// The address of the buffer to be filled.
     pub buf: *mut u8,
@@ -340,7 +340,7 @@ pub struct Iovec {
     pub buf_len: Size,
 }
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub struct Ciovec {
     /// The address of the buffer to be written.
     pub buf: *const u8,
@@ -378,7 +378,7 @@ pub const FILETYPE_SOCKET_STREAM: Filetype = 6;
 /// The file refers to a symbolic link inode.
 pub const FILETYPE_SYMBOLIC_LINK: Filetype = 7;
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub struct Dirent {
     /// The offset of the next directory entry stored in this directory.
     pub d_next: Dircookie,
@@ -416,7 +416,7 @@ pub const FDFLAGS_RSYNC: Fdflags = 0x8;
 /// may also synchronously update the file's metadata.
 pub const FDFLAGS_SYNC: Fdflags = 0x10;
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub struct Fdstat {
     /// File type.
     pub fs_filetype: Filetype,
@@ -452,7 +452,7 @@ pub const OFLAGS_EXCL: Oflags = 0x4;
 pub const OFLAGS_TRUNC: Oflags = 0x8;
 pub type Linkcount = u64;
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub struct Filestat {
     /// Device ID of device containing the file.
     pub dev: Device,
@@ -486,7 +486,7 @@ pub type Eventrwflags = u16;
 /// The peer of this socket has closed or disconnected.
 pub const EVENTRWFLAGS_FD_READWRITE_HANGUP: Eventrwflags = 0x1;
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub struct EventFdReadwrite {
     /// The number of bytes available for reading or writing.
     pub nbytes: Filesize,
@@ -494,7 +494,7 @@ pub struct EventFdReadwrite {
     pub flags: Eventrwflags,
 }
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub struct Event {
     /// User-provided value that got attached to `subscription::userdata`.
     pub userdata: Userdata,
@@ -514,7 +514,7 @@ pub type Subclockflags = u16;
 /// current time value of clock `subscription_clock::id`.
 pub const SUBCLOCKFLAGS_SUBSCRIPTION_CLOCK_ABSTIME: Subclockflags = 0x1;
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub struct SubscriptionClock {
     /// The clock against which to compare the timestamp.
     pub id: Clockid,
@@ -527,7 +527,7 @@ pub struct SubscriptionClock {
     pub flags: Subclockflags,
 }
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub struct SubscriptionFdReadwrite {
     /// The file descriptor on which to wait for it to become ready for reading or writing.
     pub file_descriptor: Fd,
@@ -668,7 +668,7 @@ pub type Preopentype = u8;
 /// A pre-opened directory.
 pub const PREOPENTYPE_DIR: Preopentype = 0;
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub struct PrestatDir {
     /// The length of the directory name for use with `fd_prestat_dir_name`.
     pub pr_name_len: Size,
@@ -724,21 +724,23 @@ pub unsafe fn environ_get(environ: *mut *mut u8, environ_buf: *mut u8) -> Result
     }
 }
 
-/// Return command-line argument data sizes.
+/// Return environment variable data sizes.
 ///
 /// ## Return
 ///
-/// * `argc` - The number of arguments.
-/// * `argv_buf_size` - The size of the argument string data.
+/// * `environc` - The number of environment variable arguments.
+/// * `environ_buf_size` - The size of the environment variable data.
 pub unsafe fn environ_sizes_get() -> Result<(Size, Size)> {
-    let mut argc = MaybeUninit::uninit();
-    let mut argv_buf_size = MaybeUninit::uninit();
-    let rc =
-        wasi_snapshot_preview1::environ_sizes_get(argc.as_mut_ptr(), argv_buf_size.as_mut_ptr());
+    let mut environc = MaybeUninit::uninit();
+    let mut environ_buf_size = MaybeUninit::uninit();
+    let rc = wasi_snapshot_preview1::environ_sizes_get(
+        environc.as_mut_ptr(),
+        environ_buf_size.as_mut_ptr(),
+    );
     if let Some(err) = Error::from_raw_error(rc) {
         Err(err)
     } else {
-        Ok((argc.assume_init(), argv_buf_size.assume_init()))
+        Ok((environc.assume_init(), environ_buf_size.assume_init()))
     }
 }
 
@@ -1591,8 +1593,8 @@ pub mod wasi_snapshot_preview1 {
         /// Read environment variable data.
         /// The sizes of the buffers should match that returned by `environ_sizes_get`.
         pub fn environ_get(environ: *mut *mut u8, environ_buf: *mut u8) -> Errno;
-        /// Return command-line argument data sizes.
-        pub fn environ_sizes_get(argc: *mut Size, argv_buf_size: *mut Size) -> Errno;
+        /// Return environment variable data sizes.
+        pub fn environ_sizes_get(environc: *mut Size, environ_buf_size: *mut Size) -> Errno;
         /// Return the resolution of a clock.
         /// Implementations are required to provide a non-zero value for supported clocks. For unsupported clocks,
         /// return `errno::inval`.
