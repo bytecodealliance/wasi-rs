@@ -5,7 +5,7 @@ use std::{
     path::{Path, PathBuf},
 };
 
-const WITX_ROOT: &str = "../generate-raw/WASI/phases/ephemeral/witx";
+const WITX_ROOT: &str = "../witx-bindgen/WASI/phases/ephemeral/witx";
 const WITX_MODULES: &[&str] = &[
     "args", "clock", "environ", "fd", "path", "poll", "proc", "random", "sched", "sock",
 ];
@@ -21,7 +21,7 @@ fn main() {
                 .to_owned()
         })
         .collect();
-    let out = generate_raw::generate(&witx_paths);
+    let out = witx_bindgen::generate(&witx_paths);
     write!(f, "{}", out).unwrap();
     for p in &witx_paths {
         println!("cargo:rerun-if-changed={}", p.display());
