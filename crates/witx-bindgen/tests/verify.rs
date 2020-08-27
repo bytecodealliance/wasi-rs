@@ -2,7 +2,7 @@
 fn assert_same_as_src() {
     let actual = include_str!("../../../src/lib_generated.rs");
     let expected =
-        generate_raw::generate(&["WASI/phases/snapshot/witx/wasi_snapshot_preview1.witx"]);
+        witx_bindgen::generate(&["WASI/phases/snapshot/witx/wasi_snapshot_preview1.witx"]);
     if actual == expected {
         return;
     }
@@ -12,7 +12,7 @@ fn assert_same_as_src() {
 the generate `raw.rs` does not match the actual source `raw.rs`, it's
 recommended to run this command from the root of the repository:
 
-    cargo run -p generate-raw crates/generate-raw/WASI > src/lib_generated.rs
+    cargo run -p witx-bindgen crates/witx-bindgen/WASI > src/lib_generated.rs
 
 "
     );
