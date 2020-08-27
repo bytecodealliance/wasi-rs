@@ -368,7 +368,12 @@ fn render_highlevel(func: &InterfaceFunc, module: &str, src: &mut String) {
     for param in func.params.iter() {
         match param.tref.type_().passed_by() {
             TypePassedBy::Value(_) => param.name.render(src),
-            TypePassedBy::Pointer => unreachable!(),
+            TypePassedBy::Pointer => unreachable!(
+                "unable to translate parameter `{}` of type `{}` in function `{}`",
+                param.name.as_str(),
+                param.tref.type_name(),
+                func.name.as_str()
+            ),
             TypePassedBy::PointerLengthPair => {
                 param.name.render(src);
                 src.push_str(".as_ptr(), ");
