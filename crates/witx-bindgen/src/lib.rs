@@ -222,6 +222,9 @@ impl Render for TypeRef {
         match self {
             TypeRef::Name(t) => {
                 src.push_str(&t.name.as_str().to_camel_case());
+                if t.type_().passed_by() == TypePassedBy::PointerLengthPair {
+                    src.push_str("<'_>");
+                }
             }
             TypeRef::Value(v) => match &**v {
                 Type::Builtin(t) => t.render(src),
