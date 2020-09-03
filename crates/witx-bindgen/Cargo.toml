@@ -1,7 +1,6 @@
 [package]
 name = "witx-bindgen"
 version = "0.1.0"
-publish = false
 authors = ["The Cranelift Project Developers"]
 license = "Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT"
 edition = "2018"
