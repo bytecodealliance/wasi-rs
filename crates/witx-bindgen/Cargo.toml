@@ -7,7 +7,7 @@ edition = "2018"
 
 [dependencies]
 heck = "0.3"
-witx = { path = "WASI/tools/witx" }
+witx = { path = "WASI/tools/witx", version = "0.8.7" }
 cfg-if = "0.1"
 
 [features]
