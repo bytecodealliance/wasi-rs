@@ -1044,8 +1044,8 @@ pub unsafe fn fd_read(fd: Fd, iovs: IovecArray<'_>) -> Result<Size> {
 
 /// Read directory entries from a directory.
 /// When successful, the contents of the output buffer consist of a sequence of
-/// directory entries. Each directory entry consists of a dirent_t object,
-/// followed by dirent_t::d_namlen bytes holding the name of the directory
+/// directory entries. Each directory entry consists of a `dirent` object,
+/// followed by `dirent::d_namlen` bytes holding the name of the directory
 /// entry.
 /// This function fills the output buffer as much as possible, potentially
 /// truncating the last directory entry. This allows the caller to grow its
@@ -1298,7 +1298,7 @@ pub unsafe fn path_open(
     path: &str,
     oflags: Oflags,
     fs_rights_base: Rights,
-    fs_rights_inherting: Rights,
+    fs_rights_inheriting: Rights,
     fdflags: Fdflags,
 ) -> Result<Fd> {
     let mut opened_fd = MaybeUninit::uninit();
@@ -1309,7 +1309,7 @@ pub unsafe fn path_open(
         path.len(),
         oflags,
         fs_rights_base,
-        fs_rights_inherting,
+        fs_rights_inheriting,
         fdflags,
         opened_fd.as_mut_ptr(),
     );
@@ -1672,8 +1672,8 @@ pub mod wasi_snapshot_preview1 {
         pub fn fd_read(fd: Fd, iovs_ptr: *const Iovec, iovs_len: usize, nread: *mut Size) -> Errno;
         /// Read directory entries from a directory.
         /// When successful, the contents of the output buffer consist of a sequence of
-        /// directory entries. Each directory entry consists of a dirent_t object,
-        /// followed by dirent_t::d_namlen bytes holding the name of the directory
+        /// directory entries. Each directory entry consists of a `dirent` object,
+        /// followed by `dirent::d_namlen` bytes holding the name of the directory
         /// entry.
         /// This function fills the output buffer as much as possible, potentially
         /// truncating the last directory entry. This allows the caller to grow its
@@ -1765,7 +1765,7 @@ pub mod wasi_snapshot_preview1 {
             path_len: usize,
             oflags: Oflags,
             fs_rights_base: Rights,
-            fs_rights_inherting: Rights,
+            fs_rights_inheriting: Rights,
             fdflags: Fdflags,
             opened_fd: *mut Fd,
         ) -> Errno;
