@@ -5,6 +5,7 @@ authors = ["The Cranelift Project Developers"]
 license = "Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT"
 edition = "2018"
 description = "Utility to turn witx files into Rust source code bindings"
+repository = "https://github.com/bytecodealliance/wasi/tree/main/crates/witx-bindgen"
 
 [dependencies]
 heck = "0.3"
