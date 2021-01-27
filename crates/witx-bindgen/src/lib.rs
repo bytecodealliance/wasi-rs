@@ -172,7 +172,21 @@ fn render_enum(src: &mut String, name: &str, e: &EnumDatatype) {
     }
 
     if name == "errno" {
-        src.push_str("pub(crate) fn strerror(code: u16) -> &'static str {");
+        src.push_str("pub fn errno_name(code: u16) -> &'static str {");
+        src.push_str("match code {");
+        for variant in e.variants.iter() {
+            src.push_str(&name.to_shouty_snake_case());
+            src.push_str("_");
+            src.push_str(&variant.name.as_str().to_shouty_snake_case());
+            src.push_str(" => \"");
+            src.push_str(&variant.name.as_str().to_shouty_snake_case());
+            src.push_str("\",");
+        }
+        src.push_str("_ => \"Unknown error.\",");
+        src.push_str("}");
+        src.push_str("}");
+
+        src.push_str("pub fn errno_docs(code: u16) -> &'static str {");
         src.push_str("match code {");
         for variant in e.variants.iter() {
             src.push_str(&name.to_shouty_snake_case());
