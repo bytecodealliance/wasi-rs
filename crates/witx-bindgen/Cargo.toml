@@ -9,7 +9,7 @@ repository = "https://github.com/bytecodealliance/wasi/tree/main/crates/witx-bin
 
 [dependencies]
 heck = "0.3"
-witx = { path = "WASI/tools/witx", version = "0.8.8" }
+witx = { git = 'https://github.com/alexcrichton/wasi', branch = 'abis' }
 cfg-if = "0.1"
 
 [features]

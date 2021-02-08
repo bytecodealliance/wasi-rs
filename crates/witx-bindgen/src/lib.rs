@@ -1,5 +1,6 @@
 use heck::*;
 use std::io::{Read, Write};
+use std::mem;
 use std::path::Path;
 use std::process::{Command, Stdio};
 use witx::*;
@@ -15,9 +16,7 @@ pub fn generate<P: AsRef<Path>>(witx_paths: &[P]) -> String {
 // To regenerate this file run the `crates/witx-bindgen` command
 
 use core::mem::MaybeUninit;
-
-pub use crate::error::Error;
-pub type Result<T, E = Error> = core::result::Result<T, E>;
+use core::fmt;
 ",
     );
     for ty in doc.typenames() {
@@ -27,6 +26,16 @@ pub type Result<T, E = Error> = core::result::Result<T, E>;
     for m in doc.modules() {
         m.render(&mut raw);
         raw.push_str("\n");
+    }
+    for c in doc.constants() {
+        rustdoc(&c.docs, &mut raw);
+        raw.push_str(&format!(
+            "pub const {}_{}: {} = {};\n",
+            c.ty.as_str().to_shouty_snake_case(),
+            c.name.as_str().to_shouty_snake_case(),
+            c.ty.as_str().to_camel_case(),
+            c.value
+        ));
     }
 
     let mut rustfmt = Command::new("rustfmt")
@@ -61,13 +70,10 @@ impl Render for NamedType {
         let name = self.name.as_str();
         match &self.tref {
             TypeRef::Value(ty) => match &**ty {
-                Type::Enum(e) => render_enum(src, name, e),
-                Type::Flags(f) => render_flags(src, name, f),
-                Type::Int(c) => render_const(src, name, c),
-                Type::Struct(s) => render_struct(src, name, s),
-                Type::Union(u) => render_union(src, name, u),
+                Type::Record(s) => render_record(src, name, s),
                 Type::Handle(h) => render_handle(src, name, h),
-                Type::Array { .. }
+                Type::Variant(h) => render_variant(src, name, h),
+                Type::List { .. }
                 | Type::Pointer { .. }
                 | Type::ConstPointer { .. }
                 | Type::Builtin { .. } => render_alias(src, name, &self.tref),
@@ -77,52 +83,25 @@ impl Render for NamedType {
     }
 }
 
-// TODO verify this is correct way of handling IntDatatype
-fn render_const(src: &mut String, name: &str, c: &IntDatatype) {
-    src.push_str(&format!("pub type {} = ", name.to_camel_case()));
-    c.repr.render(src);
-    src.push_str(";\n");
-    for r#const in c.consts.iter() {
-        rustdoc(&r#const.docs, src);
-        src.push_str(&format!(
-            "pub const {}_{}: {} = {};",
-            name.to_shouty_snake_case(),
-            r#const.name.as_str().to_shouty_snake_case(),
-            name.to_camel_case(),
-            r#const.value
-        ));
-    }
-}
-
-fn render_union(src: &mut String, name: &str, u: &UnionDatatype) {
-    src.push_str("#[repr(C)]\n");
-    src.push_str("#[derive(Copy, Clone)]\n");
-    src.push_str(&format!("pub union {}U {{\n", name.to_camel_case()));
-    for variant in u.variants.iter() {
-        if let Some(ref tref) = variant.tref {
-            rustdoc(&variant.docs, src);
-            src.push_str("pub ");
-            variant.name.render(src);
-            src.push_str(": ");
-            tref.render(src);
-            src.push_str(",\n");
+fn render_record(src: &mut String, name: &str, s: &RecordDatatype) {
+    if let Some(repr) = s.bitflags_repr() {
+        src.push_str(&format!("pub type {} = ", name.to_camel_case()));
+        repr.render(src);
+        src.push(';');
+        for (i, member) in s.members.iter().enumerate() {
+            rustdoc(&member.docs, src);
+            src.push_str(&format!(
+                "pub const {}_{}: {} = 1 << {};\n",
+                name.to_shouty_snake_case(),
+                member.name.as_str().to_shouty_snake_case(),
+                name.to_camel_case(),
+                i,
+            ));
         }
+        return;
     }
-    src.push_str("}\n");
     src.push_str("#[repr(C)]\n");
-    src.push_str("#[derive(Copy, Clone)]\n");
-    src.push_str(&format!("pub struct {} {{\n", name.to_camel_case()));
-    src.push_str(&format!(
-        "pub tag: {},\n",
-        u.tag.name.as_str().to_camel_case()
-    ));
-    src.push_str(&format!("pub u: {}U,\n", name.to_camel_case()));
-    src.push_str("}\n");
-}
-
-fn render_struct(src: &mut String, name: &str, s: &StructDatatype) {
-    src.push_str("#[repr(C)]\n");
-    if struct_contains_union(s) {
+    if record_contains_union(s) {
         // Unions can't automatically derive `Debug`.
         src.push_str("#[derive(Copy, Clone)]\n");
     } else {
@@ -140,65 +119,117 @@ fn render_struct(src: &mut String, name: &str, s: &StructDatatype) {
     src.push_str("}");
 }
 
-fn render_flags(src: &mut String, name: &str, f: &FlagsDatatype) {
-    src.push_str(&format!("pub type {} = ", name.to_camel_case()));
-    f.repr.render(src);
-    src.push_str(";\n");
-    for (i, variant) in f.flags.iter().enumerate() {
-        rustdoc(&variant.docs, src);
-        src.push_str(&format!(
-            "pub const {}_{}: {} = 0x{:x};",
-            name.to_shouty_snake_case(),
-            variant.name.as_str().to_shouty_snake_case(),
-            name.to_camel_case(),
-            1 << i
-        ));
+fn render_variant(src: &mut String, name: &str, v: &Variant) {
+    if v.cases.iter().all(|c| c.tref.is_none()) {
+        return render_enum_like_variant(src, name, v);
     }
+    src.push_str("#[repr(C)]\n");
+    src.push_str("#[derive(Copy, Clone)]\n");
+    src.push_str(&format!("pub union {}U {{\n", name.to_camel_case()));
+    for case in v.cases.iter() {
+        if let Some(ref tref) = case.tref {
+            rustdoc(&case.docs, src);
+            src.push_str("pub ");
+            case.name.render(src);
+            src.push_str(": ");
+            tref.render(src);
+            src.push_str(",\n");
+        }
+    }
+    src.push_str("}\n");
+    src.push_str("#[repr(C)]\n");
+    src.push_str("#[derive(Copy, Clone)]\n");
+    src.push_str(&format!("pub struct {} {{\n", name.to_camel_case()));
+    src.push_str("pub tag: ");
+    v.tag_repr.render(src);
+    src.push_str(",\n");
+    src.push_str(&format!("pub u: {}U,\n", name.to_camel_case()));
+    src.push_str("}\n");
 }
 
-fn render_enum(src: &mut String, name: &str, e: &EnumDatatype) {
-    src.push_str(&format!("pub type {} = ", name.to_camel_case()));
-    e.repr.render(src);
-    src.push_str(";\n");
-    for (i, variant) in e.variants.iter().enumerate() {
+fn render_enum_like_variant(src: &mut String, name: &str, s: &Variant) {
+    src.push_str("#[repr(transparent)]\n");
+    src.push_str("#[derive(Copy, Clone, Hash, Eq, PartialEq, Ord, PartialOrd)]\n");
+    src.push_str(&format!("pub struct {}(", name.to_camel_case()));
+    s.tag_repr.render(src);
+    src.push_str(");\n");
+    for (i, variant) in s.cases.iter().enumerate() {
         rustdoc(&variant.docs, src);
         src.push_str(&format!(
-            "pub const {}_{}: {} = {};",
+            "pub const {}_{}: {ty} = {ty}({});\n",
             name.to_shouty_snake_case(),
             variant.name.as_str().to_shouty_snake_case(),
-            name.to_camel_case(),
-            i
+            i,
+            ty = name.to_camel_case(),
         ));
     }
+    let camel_name = name.to_camel_case();
 
-    if name == "errno" {
-        src.push_str("pub fn errno_name(code: u16) -> &'static str {");
-        src.push_str("match code {");
-        for variant in e.variants.iter() {
-            src.push_str(&name.to_shouty_snake_case());
-            src.push_str("_");
-            src.push_str(&variant.name.as_str().to_shouty_snake_case());
-            src.push_str(" => \"");
-            src.push_str(&variant.name.as_str().to_shouty_snake_case());
-            src.push_str("\",");
-        }
-        src.push_str("_ => \"Unknown error.\",");
-        src.push_str("}");
-        src.push_str("}");
+    src.push_str("impl ");
+    src.push_str(&camel_name);
+    src.push_str("{\n");
 
-        src.push_str("pub fn errno_docs(code: u16) -> &'static str {");
-        src.push_str("match code {");
-        for variant in e.variants.iter() {
-            src.push_str(&name.to_shouty_snake_case());
-            src.push_str("_");
-            src.push_str(&variant.name.as_str().to_shouty_snake_case());
-            src.push_str(" => \"");
-            src.push_str(variant.docs.trim());
-            src.push_str("\",");
-        }
-        src.push_str("_ => \"Unknown error.\",");
-        src.push_str("}");
-        src.push_str("}");
+    src.push_str("pub const fn raw(&self) -> ");
+    s.tag_repr.render(src);
+    src.push_str("{ self.0 }\n\n");
+
+    src.push_str("pub fn name(&self) -> &'static str {\n");
+    src.push_str("match self.0 {");
+    for (i, variant) in s.cases.iter().enumerate() {
+        src.push_str(&i.to_string());
+        src.push_str(" => \"");
+        src.push_str(&variant.name.as_str().to_shouty_snake_case());
+        src.push_str("\",");
+    }
+    src.push_str("_ => unsafe { core::hint::unreachable_unchecked() },");
+    src.push_str("}\n");
+    src.push_str("}\n");
+
+    src.push_str("pub fn message(&self) -> &'static str {\n");
+    src.push_str("match self.0 {");
+    for (i, variant) in s.cases.iter().enumerate() {
+        src.push_str(&i.to_string());
+        src.push_str(" => \"");
+        src.push_str(variant.docs.trim());
+        src.push_str("\",");
+    }
+    src.push_str("_ => unsafe { core::hint::unreachable_unchecked() },");
+    src.push_str("}\n");
+    src.push_str("}\n");
+
+    src.push_str("}\n");
+
+    src.push_str("impl fmt::Debug for ");
+    src.push_str(&camel_name);
+    src.push_str("{\nfn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {\n");
+    src.push_str("f.debug_struct(\"");
+    src.push_str(&camel_name);
+    src.push_str("\")");
+    src.push_str(".field(\"code\", &self.0)");
+    src.push_str(".field(\"name\", &self.name())");
+    src.push_str(".field(\"message\", &self.message())");
+    src.push_str(".finish()");
+    src.push_str("}\n");
+    src.push_str("}\n");
+
+    // Auto-synthesize an implementation of the standard `Error` trait for
+    // error-looking types based on their name.
+    //
+    // TODO: should this perhaps be an attribute in the witx file?
+    if name.contains("errno") {
+        src.push_str("impl fmt::Display for ");
+        src.push_str(&camel_name);
+        src.push_str("{\nfn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {\n");
+        src.push_str("write!(f, \"{} (error {})\", self.name(), self.0)");
+        src.push_str("}\n");
+        src.push_str("}\n");
+        src.push_str("\n");
+        src.push_str("#[cfg(feature = \"std\")]\n");
+        src.push_str("extern crate std;\n");
+        src.push_str("#[cfg(feature = \"std\")]\n");
+        src.push_str("impl std::error::Error for ");
+        src.push_str(&camel_name);
+        src.push_str("{}\n");
     }
 }
 
@@ -215,7 +246,7 @@ impl Render for IntRepr {
 
 fn render_alias(src: &mut String, name: &str, dest: &TypeRef) {
     src.push_str(&format!("pub type {}", name.to_camel_case()));
-    if dest.type_().passed_by() == TypePassedBy::PointerLengthPair {
+    if let Type::List(_) = &**dest.type_() {
         src.push_str("<'a>");
     }
     src.push_str(" = ");
@@ -236,17 +267,20 @@ impl Render for TypeRef {
         match self {
             TypeRef::Name(t) => {
                 src.push_str(&t.name.as_str().to_camel_case());
-                if t.type_().passed_by() == TypePassedBy::PointerLengthPair {
+                if let Type::List(_) = &**t.type_() {
                     src.push_str("<'_>");
                 }
             }
             TypeRef::Value(v) => match &**v {
                 Type::Builtin(t) => t.render(src),
-                Type::Array(t) => {
-                    src.push_str("&'a [");
-                    t.render(src);
-                    src.push_str("]");
-                }
+                Type::List(t) => match &**t.type_() {
+                    Type::Builtin(BuiltinType::Char) => src.push_str("&str"),
+                    _ => {
+                        src.push_str("&'a [");
+                        t.render(src);
+                        src.push_str("]");
+                    }
+                },
                 Type::Pointer(t) => {
                     src.push_str("*mut ");
                     t.render(src);
@@ -254,6 +288,33 @@ impl Render for TypeRef {
                 Type::ConstPointer(t) => {
                     src.push_str("*const ");
                     t.render(src);
+                }
+                Type::Variant(v) if v.is_bool() => src.push_str("bool"),
+                Type::Variant(v) => match v.as_expected() {
+                    Some((ok, err)) => {
+                        src.push_str("Result<");
+                        match ok {
+                            Some(ty) => ty.render(src),
+                            None => src.push_str("()"),
+                        }
+                        src.push_str(",");
+                        match err {
+                            Some(ty) => ty.render(src),
+                            None => src.push_str("()"),
+                        }
+                        src.push_str(">");
+                    }
+                    None => {
+                        panic!("unsupported anonymous variant")
+                    }
+                },
+                Type::Record(r) if r.is_tuple() => {
+                    src.push_str("(");
+                    for member in r.members.iter() {
+                        member.tref.render(src);
+                        src.push_str(",");
+                    }
+                    src.push_str(")");
                 }
                 t => panic!("reference to anonymous {} not possible!", t.kind()),
             },
@@ -264,10 +325,17 @@ impl Render for TypeRef {
 impl Render for BuiltinType {
     fn render(&self, src: &mut String) {
         match self {
-            BuiltinType::String => src.push_str("&str"),
-            BuiltinType::U8 => src.push_str("u8"),
+            // A C `char` in Rust we just interpret always as `u8`. It's
+            // technically possible to use `std::os::raw::c_char` but that's
+            // overkill for the purposes that we'll be using this type for.
+            BuiltinType::U8 { lang_c_char: _ } => src.push_str("u8"),
             BuiltinType::U16 => src.push_str("u16"),
-            BuiltinType::U32 => src.push_str("u32"),
+            BuiltinType::U32 {
+                lang_ptr_size: false,
+            } => src.push_str("u32"),
+            BuiltinType::U32 {
+                lang_ptr_size: true,
+            } => src.push_str("usize"),
             BuiltinType::U64 => src.push_str("u64"),
             BuiltinType::S8 => src.push_str("i8"),
             BuiltinType::S16 => src.push_str("i16"),
@@ -275,29 +343,24 @@ impl Render for BuiltinType {
             BuiltinType::S64 => src.push_str("i64"),
             BuiltinType::F32 => src.push_str("f32"),
             BuiltinType::F64 => src.push_str("f64"),
-            BuiltinType::USize => src.push_str("usize"),
-            BuiltinType::Char8 => {
-                // Char8 represents a UTF8 code *unit* (`u8` in Rust, `char8_t` in C++20)
-                // rather than a code *point* (`char` in Rust which is multi-byte)
-                src.push_str("u8")
-            }
+            BuiltinType::Char => src.push_str("char"),
         }
     }
 }
 
 impl Render for Module {
     fn render(&self, src: &mut String) {
-        let rust_name = self.name.as_str().to_snake_case();
         // wrapper functions
         for f in self.funcs() {
-            render_highlevel(&f, &rust_name, src);
+            render_highlevel(&f, &self.name, src);
             src.push_str("\n\n");
         }
 
         // raw module
+        let rust_name = self.name.as_str().to_snake_case();
         src.push_str("pub mod ");
         src.push_str(&rust_name);
-        src.push_str("{\nuse super::*;");
+        src.push_str("{\n");
         src.push_str("#[link(wasm_import_module =\"");
         src.push_str(self.name.as_str());
         src.push_str("\")]\n");
@@ -311,7 +374,7 @@ impl Render for Module {
     }
 }
 
-fn render_highlevel(func: &InterfaceFunc, module: &str, src: &mut String) {
+fn render_highlevel(func: &InterfaceFunc, module: &Id, src: &mut String) {
     let mut rust_name = String::new();
     func.name.render(&mut rust_name);
     let rust_name = rust_name.to_snake_case();
@@ -329,12 +392,10 @@ fn render_highlevel(func: &InterfaceFunc, module: &str, src: &mut String) {
     // TODO workout how to handle wasi-ephemeral which introduces multiple
     // WASI modules into the picture. For now, feature-gate it, and if we're
     // compiling ephmeral bindings, prefix wrapper syscall with module name.
-    cfg_if::cfg_if! {
-        if #[cfg(feature = "multi-module")] {
-            src.push_str(&[module, &rust_name].join("_"));
-        } else {
-            src.push_str(&rust_name);
-        }
+    if cfg!(feature = "multi-module") {
+        src.push_str(&[module.as_str().to_snake_case().as_str(), &rust_name].join("_"));
+    } else {
+        src.push_str(&rust_name);
     }
 
     src.push_str("(");
@@ -346,88 +407,230 @@ fn render_highlevel(func: &InterfaceFunc, module: &str, src: &mut String) {
     }
     src.push_str(")");
 
-    // Render the result type of this function, if there is one.
-    if let Some(first) = func.results.get(0) {
-        // only know how to generate bindings for arguments where the first
-        // results is an errno, so assert this here and if it ever changes we'll
-        // need to update codegen below.
-        assert_eq!(first.name.as_str(), "error");
-        src.push_str(" -> Result<");
-        // 1 == `Result<()>`, 2 == `Result<T>`, 3+ == `Result<(...)>`
-        if func.results.len() != 2 {
-            src.push_str("(");
+    match func.results.len() {
+        0 => {}
+        1 => {
+            src.push_str(" -> ");
+            func.results[0].tref.render(src);
         }
-        for result in func.results.iter().skip(1) {
-            result.tref.render(src);
-            src.push_str(",");
-        }
-        if func.results.len() != 2 {
+        _ => {
+            src.push_str(" -> (");
+            for result in func.results.iter() {
+                result.tref.render(src);
+                src.push_str(", ");
+            }
             src.push_str(")");
         }
-        src.push_str(">");
     }
-
     src.push_str("{");
-    for result in func.results.iter().skip(1) {
-        src.push_str("let mut ");
-        result.name.render(src);
-        src.push_str(" = MaybeUninit::uninit();");
-    }
-    if func.results.len() > 0 {
-        src.push_str("let rc = ");
-    }
-    src.push_str(module);
-    src.push_str("::");
-    src.push_str(&rust_name);
-    src.push_str("(");
 
-    // Forward all parameters, fetching the pointer/length as appropriate
-    for param in func.params.iter() {
-        match param.tref.type_().passed_by() {
-            TypePassedBy::Value(_) => param.name.render(src),
-            TypePassedBy::Pointer => unreachable!(
-                "unable to translate parameter `{}` of type `{}` in function `{}`",
-                param.name.as_str(),
-                param.tref.type_name(),
-                func.name.as_str()
-            ),
-            TypePassedBy::PointerLengthPair => {
-                param.name.render(src);
-                src.push_str(".as_ptr(), ");
-                param.name.render(src);
-                src.push_str(".len()");
+    func.call_wasm(
+        module,
+        &mut Rust {
+            src,
+            params: &func.params,
+            block_storage: Vec::new(),
+            blocks: Vec::new(),
+        },
+    );
+
+    src.push_str("}");
+}
+
+struct Rust<'a> {
+    src: &'a mut String,
+    params: &'a [InterfaceFuncParam],
+    block_storage: Vec<String>,
+    blocks: Vec<String>,
+}
+
+impl Bindgen for Rust<'_> {
+    type Operand = String;
+
+    fn push_block(&mut self) {
+        let prev = mem::replace(self.src, String::new());
+        self.block_storage.push(prev);
+    }
+
+    fn finish_block(&mut self, operand: Option<String>) {
+        let to_restore = self.block_storage.pop().unwrap();
+        let src = mem::replace(self.src, to_restore);
+        match operand {
+            None => {
+                assert!(src.is_empty());
+                self.blocks.push("()".to_string());
+            }
+            Some(s) => {
+                if src.is_empty() {
+                    self.blocks.push(s);
+                } else {
+                    self.blocks.push(format!("{{ {}; {} }}", src, s));
+                }
             }
         }
-        src.push_str(",");
     }
 
-    // Forward all out-pointers as trailing arguments
-    for result in func.results.iter().skip(1) {
-        result.name.render(src);
-        src.push_str(".as_mut_ptr(),");
+    fn allocate_space(&mut self, n: usize, ty: &witx::NamedType) {
+        self.src
+            .push_str(&format!("let mut rp{} = MaybeUninit::<", n));
+        self.src.push_str(&ty.name.as_str().to_camel_case());
+        self.src.push_str(">::uninit();");
     }
-    src.push_str(");");
 
-    // Check the return value, and if successful load all of the out pointers
-    // assuming they were initialized (part of the wasi contract).
-    if func.results.len() > 0 {
-        src.push_str("if let Some(err) = Error::from_raw_error(rc) { ");
-        src.push_str("Err(err)");
-        src.push_str("} else {");
-        src.push_str("Ok(");
-        if func.results.len() != 2 {
-            src.push_str("(");
+    fn emit(
+        &mut self,
+        inst: &Instruction<'_>,
+        operands: &mut Vec<String>,
+        results: &mut Vec<String>,
+    ) {
+        let mut top_as = |cvt: &str| {
+            let mut s = operands.pop().unwrap();
+            s.push_str(" as ");
+            s.push_str(cvt);
+            results.push(s);
+        };
+
+        match inst {
+            Instruction::GetArg { nth } => {
+                let mut s = String::new();
+                self.params[*nth].name.render(&mut s);
+                results.push(s);
+            }
+            Instruction::AddrOf => {
+                results.push(format!("&{} as *const _ as i32", operands[0]));
+            }
+            Instruction::I64FromBitflags { .. } | Instruction::I64FromU64 => top_as("i64"),
+            Instruction::I32FromPointer
+            | Instruction::I32FromConstPointer
+            | Instruction::I32FromHandle { .. }
+            | Instruction::I32FromUsize
+            | Instruction::I32FromChar
+            | Instruction::I32FromU8
+            | Instruction::I32FromS8
+            | Instruction::I32FromChar8
+            | Instruction::I32FromU16
+            | Instruction::I32FromS16
+            | Instruction::I32FromU32
+            | Instruction::I32FromBitflags { .. } => top_as("i32"),
+
+            Instruction::EnumLower { .. } => {
+                results.push(format!("{}.0 as i32", operands[0]));
+            }
+
+            Instruction::F32FromIf32
+            | Instruction::F64FromIf64
+            | Instruction::If32FromF32
+            | Instruction::If64FromF64
+            | Instruction::I64FromS64
+            | Instruction::I32FromS32 => {
+                results.push(operands.pop().unwrap());
+            }
+            Instruction::ListPointerLength => {
+                let list = operands.pop().unwrap();
+                results.push(format!("{}.as_ptr() as i32", list));
+                results.push(format!("{}.len() as i32", list));
+            }
+            Instruction::S8FromI32 => top_as("i8"),
+            Instruction::Char8FromI32 | Instruction::U8FromI32 => top_as("u8"),
+            Instruction::S16FromI32 => top_as("i16"),
+            Instruction::U16FromI32 => top_as("u16"),
+            Instruction::S32FromI32 => {}
+            Instruction::U32FromI32 => top_as("u32"),
+            Instruction::S64FromI64 => {}
+            Instruction::U64FromI64 => top_as("u64"),
+            Instruction::UsizeFromI32 => top_as("usize"),
+            Instruction::HandleFromI32 { .. } => top_as("u32"),
+            Instruction::PointerFromI32 { .. } => top_as("*mut _"),
+            Instruction::ConstPointerFromI32 { .. } => top_as("*const _"),
+            Instruction::BitflagsFromI32 { .. } => unimplemented!(),
+            Instruction::BitflagsFromI64 { .. } => unimplemented!(),
+
+            Instruction::ReturnPointerGet { n } => {
+                results.push(format!("rp{}.as_mut_ptr() as i32", n));
+            }
+
+            Instruction::Load { ty } => {
+                let mut s = format!("std::ptr::read({} as *const ", &operands[0]);
+                s.push_str(&ty.name.as_str().to_camel_case());
+                s.push_str(")");
+                results.push(s);
+            }
+
+            Instruction::ReuseReturn => {
+                results.push("ret".to_string());
+            }
+
+            Instruction::TupleLift { .. } => {
+                let value = format!("({})", operands.join(", "));
+                results.push(value);
+            }
+
+            Instruction::ResultLift => {
+                let err = self.blocks.pop().unwrap();
+                let ok = self.blocks.pop().unwrap();
+                let mut result = format!("match {} {{", operands[0]);
+                result.push_str("0 => Ok(");
+                result.push_str(&ok);
+                result.push_str("),");
+                result.push_str("_ => Err(");
+                result.push_str(&err);
+                result.push_str("),");
+                result.push_str("}");
+                results.push(result);
+            }
+
+            Instruction::EnumLift { ty } => {
+                let mut result = ty.name.as_str().to_camel_case();
+                result.push_str("(");
+                result.push_str(&operands[0]);
+                result.push_str(" as ");
+                match &**ty.type_() {
+                    Type::Variant(v) => v.tag_repr.render(&mut result),
+                    _ => unreachable!(),
+                }
+                result.push_str(")");
+                results.push(result);
+            }
+
+            Instruction::CharFromI32 => unimplemented!(),
+
+            Instruction::CallWasm {
+                module,
+                name,
+                params: _,
+                results: func_results,
+            } => {
+                assert!(func_results.len() < 2);
+                if func_results.len() > 0 {
+                    self.src.push_str("let ret = ");
+                    results.push("ret".to_string());
+                }
+                self.src.push_str(&module.to_snake_case());
+                self.src.push_str("::");
+                self.src.push_str(&name.to_snake_case());
+                self.src.push_str("(");
+                self.src.push_str(&operands.join(", "));
+                self.src.push_str(");");
+            }
+
+            Instruction::Return { amt: 0 } => {}
+            Instruction::Return { amt: 1 } => {
+                self.src.push_str(&operands[0]);
+            }
+            Instruction::Return { .. } => {
+                self.src.push_str("(");
+                self.src.push_str(&operands.join(", "));
+                self.src.push_str(")");
+            }
+
+            Instruction::Store { .. }
+            | Instruction::ListFromPointerLength { .. }
+            | Instruction::CallInterface { .. }
+            | Instruction::ResultLower { .. }
+            | Instruction::TupleLower { .. }
+            | Instruction::VariantPayload => unimplemented!(),
         }
-        for result in func.results.iter().skip(1) {
-            result.name.render(src);
-            src.push_str(".assume_init(),");
-        }
-        if func.results.len() != 2 {
-            src.push_str(")");
-        }
-        src.push_str(") }");
     }
-    src.push_str("}");
 }
 
 impl Render for InterfaceFunc {
@@ -442,75 +645,24 @@ impl Render for InterfaceFunc {
         let mut name = String::new();
         self.name.render(&mut name);
         src.push_str(&name.to_snake_case());
+
+        let (params, results) = self.wasm_signature();
+        assert!(results.len() <= 1);
         src.push_str("(");
-        for param in self.params.iter() {
+        for (i, param) in params.iter().enumerate() {
+            src.push_str(&format!("arg{}: ", i));
             param.render(src);
             src.push_str(",");
         }
-        for result in self.results.iter().skip(1) {
-            result.name.render(src);
-            src.push_str(": *mut ");
-            result.tref.render(src);
-            src.push_str(",");
-        }
         src.push_str(")");
-        if let Some(result) = self.results.get(0) {
+
+        if self.noreturn {
+            src.push_str(" -> !");
+        } else if let Some(result) = results.get(0) {
             src.push_str(" -> ");
             result.render(src);
-        // special-case the `proc_exit` function for now to be "noreturn", and
-        // eventually we'll have an attribute in `*.witx` to specify this as
-        // well.
-        } else if self.name.as_str() == "proc_exit" {
-            src.push_str(" -> !");
         }
         src.push_str(";");
-    }
-}
-
-impl Render for InterfaceFuncParam {
-    fn render(&self, src: &mut String) {
-        let is_param = match self.position {
-            InterfaceFuncParamPosition::Param(_) => true,
-            _ => false,
-        };
-        match self.tref.type_().passed_by() {
-            // By-value arguments are passed as-is
-            TypePassedBy::Value(_) => {
-                if is_param {
-                    self.name.render(src);
-                    src.push_str(": ");
-                }
-                self.tref.render(src);
-            }
-            // Pointer arguments are passed with a `*mut` out in front
-            TypePassedBy::Pointer => {
-                if is_param {
-                    self.name.render(src);
-                    src.push_str(": ");
-                }
-                src.push_str("*mut ");
-                self.tref.render(src);
-            }
-            // ... and pointer/length arguments are passed with first their
-            // pointer and then their length, as the name would otherwise imply
-            TypePassedBy::PointerLengthPair => {
-                assert!(is_param);
-                src.push_str(self.name.as_str());
-                src.push_str("_ptr");
-                src.push_str(": ");
-                src.push_str("*const ");
-                match &*self.tref.type_() {
-                    Type::Array(x) => x.render(src),
-                    Type::Builtin(BuiltinType::String) => src.push_str("u8"),
-                    x => panic!("unexpected pointer length pair type {:?}", x),
-                }
-                src.push_str(", ");
-                src.push_str(self.name.as_str());
-                src.push_str("_len");
-                src.push_str(": ");
-                src.push_str("usize");
-            }
-        }
     }
 }
 
@@ -521,6 +673,17 @@ impl Render for Id {
             "type" => src.push_str("r#type"),
             "yield" => src.push_str("r#yield"),
             s => src.push_str(s),
+        }
+    }
+}
+
+impl Render for WasmType {
+    fn render(&self, src: &mut String) {
+        match self {
+            WasmType::I32 => src.push_str("i32"),
+            WasmType::I64 => src.push_str("i64"),
+            WasmType::F32 => src.push_str("f32"),
+            WasmType::F64 => src.push_str("f64"),
         }
     }
 }
@@ -558,12 +721,16 @@ fn rustdoc_params(docs: &[InterfaceFuncParam], header: &str, dst: &mut String) {
     for param in docs {
         for (i, line) in param.docs.lines().enumerate() {
             dst.push_str("/// ");
-            if i == 0 {
-                dst.push_str("* `");
-                param.name.render(dst);
-                dst.push_str("` - ");
-            } else {
-                dst.push_str("  ");
+            // Currently wasi only has at most one return value, so there's no
+            // need to indent it or name it.
+            if header != "Return" {
+                if i == 0 {
+                    dst.push_str("* `");
+                    param.name.render(dst);
+                    dst.push_str("` - ");
+                } else {
+                    dst.push_str("  ");
+                }
             }
             dst.push_str(line);
             dst.push_str("\n");
@@ -571,7 +738,7 @@ fn rustdoc_params(docs: &[InterfaceFuncParam], header: &str, dst: &mut String) {
     }
 }
 
-fn struct_contains_union(s: &StructDatatype) -> bool {
+fn record_contains_union(s: &RecordDatatype) -> bool {
     s.members
         .iter()
         .any(|member| type_contains_union(&member.tref.type_()))
@@ -579,9 +746,9 @@ fn struct_contains_union(s: &StructDatatype) -> bool {
 
 fn type_contains_union(ty: &Type) -> bool {
     match ty {
-        Type::Union(_) => true,
-        Type::Array(tref) => type_contains_union(&tref.type_()),
-        Type::Struct(st) => struct_contains_union(st),
+        Type::Variant(c) => c.cases.iter().any(|c| c.tref.is_some()),
+        Type::List(tref) => type_contains_union(&tref.type_()),
+        Type::Record(st) => record_contains_union(st),
         _ => false,
     }
 }
