@@ -395,7 +395,7 @@ fn render_highlevel(func: &InterfaceFunc, module: &Id, src: &mut String) {
     if cfg!(feature = "multi-module") {
         src.push_str(&[module.as_str().to_snake_case().as_str(), &rust_name].join("_"));
     } else {
-        src.push_str(&rust_name);
+        src.push_str(to_rust_ident(&rust_name));
     }
 
     src.push_str("(");
@@ -607,7 +607,7 @@ impl Bindgen for Rust<'_> {
                 }
                 self.src.push_str(&module.to_snake_case());
                 self.src.push_str("::");
-                self.src.push_str(&name.to_snake_case());
+                self.src.push_str(to_rust_ident(&name.to_snake_case()));
                 self.src.push_str("(");
                 self.src.push_str(&operands.join(", "));
                 self.src.push_str(");");
@@ -644,7 +644,7 @@ impl Render for InterfaceFunc {
         src.push_str("pub fn ");
         let mut name = String::new();
         self.name.render(&mut name);
-        src.push_str(&name.to_snake_case());
+        src.push_str(to_rust_ident(&name.to_snake_case()));
 
         let (params, results) = self.wasm_signature();
         assert!(results.len() <= 1);
@@ -666,14 +666,18 @@ impl Render for InterfaceFunc {
     }
 }
 
+fn to_rust_ident(name: &str) -> &str {
+    match name {
+        "in" => "in_",
+        "type" => "type_",
+        "yield" => "yield_",
+        s => s,
+    }
+}
+
 impl Render for Id {
     fn render(&self, src: &mut String) {
-        match self.as_str() {
-            "in" => src.push_str("r#in"),
-            "type" => src.push_str("r#type"),
-            "yield" => src.push_str("r#yield"),
-            s => src.push_str(s),
-        }
+        src.push_str(to_rust_ident(self.as_str()))
     }
 }
 

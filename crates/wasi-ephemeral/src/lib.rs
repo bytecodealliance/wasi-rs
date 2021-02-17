@@ -28,6 +28,4 @@
 
 #![no_std]
 
-mod error;
-
 include!(concat!(env!("OUT_DIR"), "/lib_generated.rs"));
