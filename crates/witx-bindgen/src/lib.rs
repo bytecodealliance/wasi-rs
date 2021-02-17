@@ -550,7 +550,7 @@ impl Bindgen for Rust<'_> {
             }
 
             Instruction::Load { ty } => {
-                let mut s = format!("std::ptr::read({} as *const ", &operands[0]);
+                let mut s = format!("core::ptr::read({} as *const ", &operands[0]);
                 s.push_str(&ty.name.as_str().to_camel_case());
                 s.push_str(")");
                 results.push(s);

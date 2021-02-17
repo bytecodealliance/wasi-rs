@@ -1226,8 +1226,8 @@ pub unsafe fn args_sizes_get() -> Result<(Size, Size), Errno> {
         wasi_snapshot_preview1::args_sizes_get(rp0.as_mut_ptr() as i32, rp1.as_mut_ptr() as i32);
     match ret {
         0 => Ok((
-            std::ptr::read(rp0.as_mut_ptr() as i32 as *const Size),
-            std::ptr::read(rp1.as_mut_ptr() as i32 as *const Size),
+            core::ptr::read(rp0.as_mut_ptr() as i32 as *const Size),
+            core::ptr::read(rp1.as_mut_ptr() as i32 as *const Size),
         )),
         _ => Err(Errno(ret as u16)),
     }
@@ -1256,8 +1256,8 @@ pub unsafe fn environ_sizes_get() -> Result<(Size, Size), Errno> {
         wasi_snapshot_preview1::environ_sizes_get(rp0.as_mut_ptr() as i32, rp1.as_mut_ptr() as i32);
     match ret {
         0 => Ok((
-            std::ptr::read(rp0.as_mut_ptr() as i32 as *const Size),
-            std::ptr::read(rp1.as_mut_ptr() as i32 as *const Size),
+            core::ptr::read(rp0.as_mut_ptr() as i32 as *const Size),
+            core::ptr::read(rp1.as_mut_ptr() as i32 as *const Size),
         )),
         _ => Err(Errno(ret as u16)),
     }
@@ -1279,7 +1279,7 @@ pub unsafe fn clock_res_get(id: Clockid) -> Result<Timestamp, Errno> {
     let mut rp0 = MaybeUninit::<Timestamp>::uninit();
     let ret = wasi_snapshot_preview1::clock_res_get(id.0 as i32, rp0.as_mut_ptr() as i32);
     match ret {
-        0 => Ok(std::ptr::read(rp0.as_mut_ptr() as i32 as *const Timestamp)),
+        0 => Ok(core::ptr::read(rp0.as_mut_ptr() as i32 as *const Timestamp)),
         _ => Err(Errno(ret as u16)),
     }
 }
@@ -1303,7 +1303,7 @@ pub unsafe fn clock_time_get(id: Clockid, precision: Timestamp) -> Result<Timest
         rp0.as_mut_ptr() as i32,
     );
     match ret {
-        0 => Ok(std::ptr::read(rp0.as_mut_ptr() as i32 as *const Timestamp)),
+        0 => Ok(core::ptr::read(rp0.as_mut_ptr() as i32 as *const Timestamp)),
         _ => Err(Errno(ret as u16)),
     }
 }
@@ -1375,7 +1375,7 @@ pub unsafe fn fd_fdstat_get(fd: Fd) -> Result<Fdstat, Errno> {
     let mut rp0 = MaybeUninit::<Fdstat>::uninit();
     let ret = wasi_snapshot_preview1::fd_fdstat_get(fd as i32, rp0.as_mut_ptr() as i32);
     match ret {
-        0 => Ok(std::ptr::read(rp0.as_mut_ptr() as i32 as *const Fdstat)),
+        0 => Ok(core::ptr::read(rp0.as_mut_ptr() as i32 as *const Fdstat)),
         _ => Err(Errno(ret as u16)),
     }
 }
@@ -1425,7 +1425,7 @@ pub unsafe fn fd_filestat_get(fd: Fd) -> Result<Filestat, Errno> {
     let mut rp0 = MaybeUninit::<Filestat>::uninit();
     let ret = wasi_snapshot_preview1::fd_filestat_get(fd as i32, rp0.as_mut_ptr() as i32);
     match ret {
-        0 => Ok(std::ptr::read(rp0.as_mut_ptr() as i32 as *const Filestat)),
+        0 => Ok(core::ptr::read(rp0.as_mut_ptr() as i32 as *const Filestat)),
         _ => Err(Errno(ret as u16)),
     }
 }
@@ -1491,7 +1491,7 @@ pub unsafe fn fd_pread(fd: Fd, iovs: IovecArray<'_>, offset: Filesize) -> Result
         rp0.as_mut_ptr() as i32,
     );
     match ret {
-        0 => Ok(std::ptr::read(rp0.as_mut_ptr() as i32 as *const Size)),
+        0 => Ok(core::ptr::read(rp0.as_mut_ptr() as i32 as *const Size)),
         _ => Err(Errno(ret as u16)),
     }
 }
@@ -1505,7 +1505,7 @@ pub unsafe fn fd_prestat_get(fd: Fd) -> Result<Prestat, Errno> {
     let mut rp0 = MaybeUninit::<Prestat>::uninit();
     let ret = wasi_snapshot_preview1::fd_prestat_get(fd as i32, rp0.as_mut_ptr() as i32);
     match ret {
-        0 => Ok(std::ptr::read(rp0.as_mut_ptr() as i32 as *const Prestat)),
+        0 => Ok(core::ptr::read(rp0.as_mut_ptr() as i32 as *const Prestat)),
         _ => Err(Errno(ret as u16)),
     }
 }
@@ -1544,7 +1544,7 @@ pub unsafe fn fd_pwrite(fd: Fd, iovs: CiovecArray<'_>, offset: Filesize) -> Resu
         rp0.as_mut_ptr() as i32,
     );
     match ret {
-        0 => Ok(std::ptr::read(rp0.as_mut_ptr() as i32 as *const Size)),
+        0 => Ok(core::ptr::read(rp0.as_mut_ptr() as i32 as *const Size)),
         _ => Err(Errno(ret as u16)),
     }
 }
@@ -1568,7 +1568,7 @@ pub unsafe fn fd_read(fd: Fd, iovs: IovecArray<'_>) -> Result<Size, Errno> {
         rp0.as_mut_ptr() as i32,
     );
     match ret {
-        0 => Ok(std::ptr::read(rp0.as_mut_ptr() as i32 as *const Size)),
+        0 => Ok(core::ptr::read(rp0.as_mut_ptr() as i32 as *const Size)),
         _ => Err(Errno(ret as u16)),
     }
 }
@@ -1606,7 +1606,7 @@ pub unsafe fn fd_readdir(
         rp0.as_mut_ptr() as i32,
     );
     match ret {
-        0 => Ok(std::ptr::read(rp0.as_mut_ptr() as i32 as *const Size)),
+        0 => Ok(core::ptr::read(rp0.as_mut_ptr() as i32 as *const Size)),
         _ => Err(Errno(ret as u16)),
     }
 }
@@ -1651,7 +1651,7 @@ pub unsafe fn fd_seek(fd: Fd, offset: Filedelta, whence: Whence) -> Result<Files
         rp0.as_mut_ptr() as i32,
     );
     match ret {
-        0 => Ok(std::ptr::read(rp0.as_mut_ptr() as i32 as *const Filesize)),
+        0 => Ok(core::ptr::read(rp0.as_mut_ptr() as i32 as *const Filesize)),
         _ => Err(Errno(ret as u16)),
     }
 }
@@ -1676,7 +1676,7 @@ pub unsafe fn fd_tell(fd: Fd) -> Result<Filesize, Errno> {
     let mut rp0 = MaybeUninit::<Filesize>::uninit();
     let ret = wasi_snapshot_preview1::fd_tell(fd as i32, rp0.as_mut_ptr() as i32);
     match ret {
-        0 => Ok(std::ptr::read(rp0.as_mut_ptr() as i32 as *const Filesize)),
+        0 => Ok(core::ptr::read(rp0.as_mut_ptr() as i32 as *const Filesize)),
         _ => Err(Errno(ret as u16)),
     }
 }
@@ -1696,7 +1696,7 @@ pub unsafe fn fd_write(fd: Fd, iovs: CiovecArray<'_>) -> Result<Size, Errno> {
         rp0.as_mut_ptr() as i32,
     );
     match ret {
-        0 => Ok(std::ptr::read(rp0.as_mut_ptr() as i32 as *const Size)),
+        0 => Ok(core::ptr::read(rp0.as_mut_ptr() as i32 as *const Size)),
         _ => Err(Errno(ret as u16)),
     }
 }
@@ -1740,7 +1740,7 @@ pub unsafe fn path_filestat_get(fd: Fd, flags: Lookupflags, path: &str) -> Resul
         rp0.as_mut_ptr() as i32,
     );
     match ret {
-        0 => Ok(std::ptr::read(rp0.as_mut_ptr() as i32 as *const Filestat)),
+        0 => Ok(core::ptr::read(rp0.as_mut_ptr() as i32 as *const Filestat)),
         _ => Err(Errno(ret as u16)),
     }
 }
@@ -1856,7 +1856,7 @@ pub unsafe fn path_open(
         rp0.as_mut_ptr() as i32,
     );
     match ret {
-        0 => Ok(std::ptr::read(rp0.as_mut_ptr() as i32 as *const Fd)),
+        0 => Ok(core::ptr::read(rp0.as_mut_ptr() as i32 as *const Fd)),
         _ => Err(Errno(ret as u16)),
     }
 }
@@ -1888,7 +1888,7 @@ pub unsafe fn path_readlink(
         rp0.as_mut_ptr() as i32,
     );
     match ret {
-        0 => Ok(std::ptr::read(rp0.as_mut_ptr() as i32 as *const Size)),
+        0 => Ok(core::ptr::read(rp0.as_mut_ptr() as i32 as *const Size)),
         _ => Err(Errno(ret as u16)),
     }
 }
@@ -1999,7 +1999,7 @@ pub unsafe fn poll_oneoff(
         rp0.as_mut_ptr() as i32,
     );
     match ret {
-        0 => Ok(std::ptr::read(rp0.as_mut_ptr() as i32 as *const Size)),
+        0 => Ok(core::ptr::read(rp0.as_mut_ptr() as i32 as *const Size)),
         _ => Err(Errno(ret as u16)),
     }
 }
@@ -2086,8 +2086,8 @@ pub unsafe fn sock_recv(
     );
     match ret {
         0 => Ok((
-            std::ptr::read(rp0.as_mut_ptr() as i32 as *const Size),
-            std::ptr::read(rp1.as_mut_ptr() as i32 as *const Roflags),
+            core::ptr::read(rp0.as_mut_ptr() as i32 as *const Size),
+            core::ptr::read(rp1.as_mut_ptr() as i32 as *const Roflags),
         )),
         _ => Err(Errno(ret as u16)),
     }
@@ -2119,7 +2119,7 @@ pub unsafe fn sock_send(
         rp0.as_mut_ptr() as i32,
     );
     match ret {
-        0 => Ok(std::ptr::read(rp0.as_mut_ptr() as i32 as *const Size)),
+        0 => Ok(core::ptr::read(rp0.as_mut_ptr() as i32 as *const Size)),
         _ => Err(Errno(ret as u16)),
     }
 }
