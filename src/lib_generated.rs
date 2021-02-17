@@ -802,7 +802,7 @@ pub struct Event {
     /// If non-zero, an error that occurred while processing the subscription request.
     pub error: Errno,
     /// The type of event that occured
-    pub r#type: Eventtype,
+    pub type_: Eventtype,
     /// The contents of the event, if it is an `eventtype::fd_read` or
     /// `eventtype::fd_write`. `eventtype::clock` events ignore this field.
     pub fd_readwrite: EventFdReadwrite,
@@ -1979,7 +1979,7 @@ pub unsafe fn path_unlink_file(fd: Fd, path: &str) -> Result<(), Errno> {
 ///
 /// ## Parameters
 ///
-/// * `r#in` - The events to which to subscribe.
+/// * `in_` - The events to which to subscribe.
 /// * `out` - The events that have occurred.
 /// * `nsubscriptions` - Both the number of subscriptions and events.
 ///
@@ -1987,13 +1987,13 @@ pub unsafe fn path_unlink_file(fd: Fd, path: &str) -> Result<(), Errno> {
 ///
 /// The number of events stored.
 pub unsafe fn poll_oneoff(
-    r#in: *const Subscription,
+    in_: *const Subscription,
     out: *mut Event,
     nsubscriptions: Size,
 ) -> Result<Size, Errno> {
     let mut rp0 = MaybeUninit::<Size>::uninit();
     let ret = wasi_snapshot_preview1::poll_oneoff(
-        r#in as i32,
+        in_ as i32,
         out as i32,
         nsubscriptions as i32,
         rp0.as_mut_ptr() as i32,
