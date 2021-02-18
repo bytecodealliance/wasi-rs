@@ -28,6 +28,3 @@ rustc-dep-of-std = ["compiler_builtins", "core", "rustc-std-workspace-alloc"]
 
 [badges]
 maintenance = { status = "experimental" }
-
-[patch.crates-io]
-witx = { path = './crates/witx-bindgen/WASI/tools/witx' }
