@@ -1,0 +1,19 @@
+[package]
+name = "wasi-http"
+version = "0.0.0"
+publish = false
+authors = ["Bytecode Alliance"]
+license = "Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT"
+description = "Experimental WASI Preview2 HTTP proposal API bindings for Rust"
+edition = "2021"
+categories = ["no-std", "wasm"]
+keywords = ["webassembly", "wasm"]
+repository = "https://github.com/bytecodealliance/wasi"
+
+[dependencies]
+anyhow = { version = "1.0" }
+http = { version = "0.2" }
+wasi = { git = "https://github.com/bytecodealliance/preview2-prototyping" }
+
+[badges]
+maintenance = { status = "experimental" }
