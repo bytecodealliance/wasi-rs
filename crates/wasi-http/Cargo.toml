@@ -11,8 +11,9 @@ keywords = ["webassembly", "wasm"]
 repository = "https://github.com/bytecodealliance/wasi"
 
 [dependencies]
-anyhow = { version = "1.0" }
-http = { version = "0.2" }
+anyhow = { version = "1.0.70" }
+bytes = "1.4.0"
+http = { version = "0.2.9" }
 wasi = { git = "https://github.com/bytecodealliance/preview2-prototyping" }
 
 [badges]

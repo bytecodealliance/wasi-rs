@@ -1,4 +1,5 @@
 use anyhow::{anyhow, Context};
+use bytes::{BufMut, Bytes, BytesMut};
 use http::header::{HeaderName, HeaderValue};
 use std::{ops::Deref, str::FromStr};
 
@@ -14,7 +15,7 @@ impl DefaultClient {
         Self { options }
     }
 
-    pub fn handle(&self, req: http::Request<Vec<u8>>) -> anyhow::Result<http::Response<Vec<u8>>> {
+    pub fn handle(&self, req: http::Request<Bytes>) -> anyhow::Result<http::Response<Bytes>> {
         let req = Request::try_from(req)
             .context("converting http request")?
             .to_owned();
@@ -38,10 +39,10 @@ impl Deref for Request {
     }
 }
 
-impl TryFrom<http::Request<Vec<u8>>> for Request {
+impl TryFrom<http::Request<Bytes>> for Request {
     type Error = anyhow::Error;
 
-    fn try_from(value: http::Request<Vec<u8>>) -> Result<Self, Self::Error> {
+    fn try_from(value: http::Request<Bytes>) -> Result<Self, Self::Error> {
         let (parts, body) = value.into_parts();
         let path = parts.uri.path();
         let query = parts.uri.query();
@@ -121,7 +122,7 @@ impl Deref for Response {
     }
 }
 
-impl TryFrom<Response> for http::Response<Vec<u8>> {
+impl TryFrom<Response> for http::Response<Bytes> {
     type Error = anyhow::Error;
 
     fn try_from(value: Response) -> Result<Self, Self::Error> {
@@ -143,18 +144,18 @@ impl TryFrom<Response> for http::Response<Vec<u8>> {
             .map_err(|_| anyhow!("consuming incoming response"))?;
         http_types::drop_incoming_response(incoming_response);
 
-        let mut body = Vec::new();
+        let mut body = BytesMut::new();
         let mut eof = false;
         while !eof {
-            let (mut body_chunk, stream_ended) = streams::read(body_stream, u64::MAX)
+            let (body_chunk, stream_ended) = streams::read(body_stream, u64::MAX)
                 .map_err(|_| anyhow!("reading response body"))?;
             eof = stream_ended;
-            body.append(&mut body_chunk);
+            body.put(body_chunk.as_slice());
         }
         streams::drop_input_stream(body_stream);
         let mut res = http::Response::builder()
             .status(status)
-            .body(body)
+            .body(body.freeze())
             .map_err(|_| anyhow!("building http response"))?;
 
         let headers_map = res.headers_mut();
