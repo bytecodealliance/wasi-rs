@@ -161,7 +161,7 @@ impl TryFrom<Response> for http::Response<Bytes> {
         let headers_map = res.headers_mut();
         for (name, value) in headers {
             headers_map.insert(
-                HeaderName::from_str(name.as_ref())
+                HeaderName::from_bytes(name.as_bytes())
                     .map_err(|_| anyhow!("converting response header name"))?,
                 HeaderValue::from_str(value.as_str())
                     .map_err(|_| anyhow!("converting response header value"))?,
