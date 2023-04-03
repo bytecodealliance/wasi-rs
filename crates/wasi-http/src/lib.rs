@@ -69,10 +69,14 @@ impl TryFrom<http::Request<Vec<u8>>> for Request {
             .map_err(|_| anyhow!("outgoing request write failed"))?;
 
         let mut body_cursor = 0;
-        while body_cursor < body.len() {
-            let written = streams::write(request_body, &body[body_cursor..])
-                .map_err(|_| anyhow!("writing request body"))?;
-            body_cursor += written as usize;
+        if body.is_empty() {
+            streams::write(request_body, &body).map_err(|_| anyhow!("writing request body"))?;
+        } else {
+            while body_cursor < body.len() {
+                let written = streams::write(request_body, &body[body_cursor..])
+                    .map_err(|_| anyhow!("writing request body"))?;
+                body_cursor += written as usize;
+            }
         }
         streams::drop_output_stream(request_body);
 
@@ -121,15 +125,15 @@ impl TryFrom<Response> for http::Response<Vec<u8>> {
     type Error = anyhow::Error;
 
     fn try_from(value: Response) -> Result<Self, Self::Error> {
-        let res_pointer = value.to_owned();
+        let future_response = value.to_owned();
         // TODO: we could create a pollable from the future_response and
         // poll on it here to test that its available immediately
-        // poll::drop_pollable(res_pointer);
+        // poll::drop_pollable(future_response);
 
-        let incoming_response = http_types::future_incoming_response_get(res_pointer)
+        let incoming_response = http_types::future_incoming_response_get(future_response)
             .ok_or_else(|| anyhow!("incoming response is available immediately"))?
             .map_err(|e| anyhow!("incoming response error: {e:?}"))?;
-        http_types::drop_future_incoming_response(res_pointer);
+        http_types::drop_future_incoming_response(future_response);
 
         let status = http_types::incoming_response_status(incoming_response);
         let headers_handle = http_types::incoming_response_headers(incoming_response);
@@ -137,7 +141,7 @@ impl TryFrom<Response> for http::Response<Vec<u8>> {
 
         let body_stream = http_types::incoming_response_consume(incoming_response)
             .map_err(|_| anyhow!("consuming incoming response"))?;
-        http_types::drop_incoming_response(res_pointer);
+        http_types::drop_incoming_response(incoming_response);
 
         let mut body = Vec::new();
         let mut eof = false;
