@@ -16,5 +16,9 @@ bytes = "1.4.0"
 http = { version = "0.2.9" }
 wasi = { git = "https://github.com/bytecodealliance/preview2-prototyping" }
 
+[features]
+default = ["std"]
+std = []
+
 [badges]
 maintenance = { status = "experimental" }

@@ -1,7 +1,8 @@
 use anyhow::{anyhow, Context};
 use bytes::{BufMut, Bytes, BytesMut};
 use http::header::{HeaderName, HeaderValue};
-use std::{ops::Deref, str::FromStr};
+#[cfg(feature = "std")]
+use std::ops::Deref;
 
 // Re-export HTTP related bindings
 pub use wasi::snapshots::preview_2::{default_outgoing_http, streams, types as http_types};
@@ -23,14 +24,17 @@ impl DefaultClient {
         let res = default_outgoing_http::handle(req, self.options);
         http_types::drop_outgoing_request(req);
 
-        let res = http::Response::try_from(Response(res)).context("converting http response")?;
+        let response =
+            http::Response::try_from(Response(res)).context("converting http response")?;
+        http_types::drop_incoming_response(res);
 
-        Ok(res)
+        Ok(response)
     }
 }
 
 pub struct Request(default_outgoing_http::OutgoingRequest);
 
+#[cfg(feature = "std")]
 impl Deref for Request {
     type Target = default_outgoing_http::OutgoingRequest;
 
@@ -71,7 +75,7 @@ impl TryFrom<http::Request<Bytes>> for Request {
 
         let mut body_cursor = 0;
         if body.is_empty() {
-            streams::write(request_body, &body).map_err(|_| anyhow!("writing request body"))?;
+            streams::write(request_body, &[]).map_err(|_| anyhow!("writing request body"))?;
         } else {
             while body_cursor < body.len() {
                 let written = streams::write(request_body, &body[body_cursor..])
@@ -79,7 +83,6 @@ impl TryFrom<http::Request<Bytes>> for Request {
                 body_cursor += written as usize;
             }
         }
-        streams::drop_output_stream(request_body);
 
         Ok(Request(request))
     }
@@ -87,6 +90,7 @@ impl TryFrom<http::Request<Bytes>> for Request {
 
 pub struct Method<'a>(http_types::MethodParam<'a>);
 
+#[cfg(feature = "std")]
 impl<'a> Deref for Method<'a> {
     type Target = http_types::MethodParam<'a>;
 
@@ -114,6 +118,7 @@ impl<'a> From<http::Method> for Method<'a> {
 
 pub struct Response(http_types::IncomingResponse);
 
+#[cfg(feature = "std")]
 impl Deref for Response {
     type Target = http_types::IncomingResponse;
 
@@ -138,11 +143,9 @@ impl TryFrom<Response> for http::Response<Bytes> {
 
         let status = http_types::incoming_response_status(incoming_response);
         let headers_handle = http_types::incoming_response_headers(incoming_response);
-        let headers = http_types::fields_entries(headers_handle);
 
         let body_stream = http_types::incoming_response_consume(incoming_response)
             .map_err(|_| anyhow!("consuming incoming response"))?;
-        http_types::drop_incoming_response(incoming_response);
 
         let mut body = BytesMut::new();
         let mut eof = false;
@@ -152,22 +155,22 @@ impl TryFrom<Response> for http::Response<Bytes> {
             eof = stream_ended;
             body.put(body_chunk.as_slice());
         }
-        streams::drop_input_stream(body_stream);
         let mut res = http::Response::builder()
             .status(status)
             .body(body.freeze())
             .map_err(|_| anyhow!("building http response"))?;
 
-        let headers_map = res.headers_mut();
-        for (name, value) in headers {
-            headers_map.insert(
-                HeaderName::from_bytes(name.as_bytes())
-                    .map_err(|_| anyhow!("converting response header name"))?,
-                HeaderValue::from_str(value.as_str())
-                    .map_err(|_| anyhow!("converting response header value"))?,
-            );
+        if headers_handle > 0 {
+            let headers_map = res.headers_mut();
+            for (name, value) in http_types::fields_entries(headers_handle) {
+                headers_map.insert(
+                    HeaderName::from_bytes(name.as_bytes())
+                        .map_err(|_| anyhow!("converting response header name"))?,
+                    HeaderValue::from_str(value.as_str())
+                        .map_err(|_| anyhow!("converting response header value"))?,
+                );
+            }
         }
-        http_types::drop_fields(headers_handle);
 
         Ok(res)
     }
@@ -175,6 +178,7 @@ impl TryFrom<Response> for http::Response<Bytes> {
 
 pub struct Headers(http_types::Fields);
 
+#[cfg(feature = "std")]
 impl Deref for Headers {
     type Target = http_types::Fields;
 
