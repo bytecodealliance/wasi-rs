@@ -1,1 +1,2 @@
 http = "https://github.com/WebAssembly/wasi-http/archive/1185b0a0224bc3e11274ad6298fd065cae472651.tar.gz"
+io = "https://github.com/WebAssembly/wasi-io/archive/e6bcf18ac5e2d2deee5016fc4b6e260fc14d4bdc.tar.gz"

@@ -2,11 +2,13 @@
 url = "https://github.com/WebAssembly/wasi-http/archive/1185b0a0224bc3e11274ad6298fd065cae472651.tar.gz"
 sha256 = "46ae826f1b094abd0dc2897cec784def95af12e5ba78fdb49d03231c29c6d319"
 sha512 = "c1f006e5b34656da4f6dbbb72dcc20744d59a34e80d87b1cf4c9c036f38f0c6380c318d6f5151ee1c7b681f51731fc2827c0c1e1ed5e7ee0b34467a53c0da67c"
-deps = ["io", "logging", "poll", "random"]
+deps = ["logging", "poll", "random"]
 
 [io]
-sha256 = "074b403823e0aced88aeb3fe7bafecdf3753080d2ca6919f1d18abf9c1d572ee"
-sha512 = "4a85629fde3cbaeb8923b5934f70c9bc2e58f3865699224d214b80fd3ea559cc8af0ae15d0b757011ee0e27c2470dd9a8b12302556a134d75eccb1929919a880"
+url = "https://github.com/WebAssembly/wasi-io/archive/e6bcf18ac5e2d2deee5016fc4b6e260fc14d4bdc.tar.gz"
+sha256 = "7450142aeb3f1688ee2b12853344e262caf6aee0718dc0296316f7f6b3afd91f"
+sha512 = "5cc0f60d190e16d6dd52a4ca2fc862f007465e7642e98061b41c90778e1f2b00aeb2543b6fadbb6a137dd548d86e9e55edcfb30388adcc6a160b4cdc29d378ec"
+deps = ["poll"]
 
 [logging]
 sha256 = "8c32c7f893c938e0b76cd42e3de97e268dfe8fd0e7525d1f42b7ad10a88b00bb"
