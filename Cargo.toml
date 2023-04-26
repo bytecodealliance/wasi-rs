@@ -14,6 +14,9 @@ documentation = "https://docs.rs/wasi"
 [workspace]
 members = ['crates/witx-bindgen', 'crates/wasi-ephemeral', 'crates/wasi-http']
 
+[workspace.dependencies]
+anyhow = "1.0.70"
+
 [dependencies]
 # When built as part of libstd
 compiler_builtins = { version = "0.1", optional = true }

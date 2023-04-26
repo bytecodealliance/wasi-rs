@@ -1,0 +1,3 @@
+default world proxy {
+    import default-outgoing-HTTP: http.outgoing-handler
+}

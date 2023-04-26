@@ -4,8 +4,15 @@ use http::header::{HeaderName, HeaderValue};
 #[cfg(feature = "std")]
 use std::ops::Deref;
 
-// Re-export HTTP related bindings
-pub use wasi::snapshots::preview_2::{default_outgoing_http, streams, types as http_types};
+mod snapshots {
+    pub mod preview_2 {
+        wit_bindgen::generate!({
+            world: "proxy",
+        });
+    }
+}
+
+use crate::snapshots::preview_2::{default_outgoing_http, streams, types as http_types};
 
 pub struct DefaultClient {
     options: Option<default_outgoing_http::RequestOptions>,
