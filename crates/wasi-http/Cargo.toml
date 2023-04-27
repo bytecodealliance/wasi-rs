@@ -11,14 +11,15 @@ keywords = ["webassembly", "wasm"]
 repository = "https://github.com/bytecodealliance/wasi"
 
 [dependencies]
-anyhow = { workspace = true }
-bytes = "1.4.0"
-http = { version = "0.2.9" }
+anyhow = { workspace = true, optional = true }
+bytes = { version = "1.4.0", optional = true }
+http = { version = "0.2.9", optional = true }
 wit-bindgen = { version = "0.4.0", default-features = false, features = ["macros", "realloc"] }
 
 [features]
 default = ["std"]
 std = []
+http-client = ["dep:anyhow", "dep:bytes", "dep:http"]
 
 [badges]
 maintenance = { status = "experimental" }
