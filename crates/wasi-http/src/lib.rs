@@ -4,6 +4,7 @@ use http::header::{HeaderName, HeaderValue};
 #[cfg(feature = "std")]
 use std::ops::Deref;
 
+// It will be imported from wasi crate eventually
 mod snapshots {
     pub mod preview_2 {
         wit_bindgen::generate!({
@@ -57,7 +58,7 @@ impl TryFrom<http::Request<Bytes>> for Request {
         let (parts, body) = value.into_parts();
         let path = parts.uri.path();
         let query = parts.uri.query();
-        let method = Method::from(parts.method);
+        let method = Method::try_from(parts.method)?;
         let headers = Headers::from(&parts.headers);
         let scheme = match parts.uri.scheme_str().unwrap_or("") {
             "http" => Some(http_types::SchemeParam::Http),
@@ -106,20 +107,22 @@ impl<'a> Deref for Method<'a> {
     }
 }
 
-impl<'a> From<http::Method> for Method<'a> {
-    fn from(method: http::Method) -> Self {
-        Self(match method {
-             http::Method::GET => http_types::MethodParam::Get,
-             http::Method::POST => http_types::MethodParam::Post,
-             http::Method::PUT => http_types::MethodParam::Put,
-             http::Method::DELETE => http_types::MethodParam::Delete,
-             http::Method::PATCH => http_types::MethodParam::Patch,
-             http::Method::CONNECT => http_types::MethodParam::Connect,
-             http::Method::TRACE => http_types::MethodParam::Trace,
-             http::Method::HEAD => http_types::MethodParam::Head,
-             http::Method::OPTIONS => http_types::MethodParam::Options,
-             _ => panic!("failed due to unsupported method, currently supported methods are: GET, POST, PUT, DELETE, PATCH, CONNECT, TRACE, HEAD, and OPTIONS"),
-         })
+impl<'a> TryFrom<http::Method> for Method<'a> {
+    type Error = anyhow::Error;
+
+    fn try_from(method: http::Method) -> Result<Self, Self::Error> {
+        Ok(Self(match method {
+            http::Method::GET => http_types::MethodParam::Get,
+            http::Method::POST => http_types::MethodParam::Post,
+            http::Method::PUT => http_types::MethodParam::Put,
+            http::Method::DELETE => http_types::MethodParam::Delete,
+            http::Method::PATCH => http_types::MethodParam::Patch,
+            http::Method::CONNECT => http_types::MethodParam::Connect,
+            http::Method::TRACE => http_types::MethodParam::Trace,
+            http::Method::HEAD => http_types::MethodParam::Head,
+            http::Method::OPTIONS => http_types::MethodParam::Options,
+            _ => return Err(anyhow!("failed due to unsupported method, currently supported methods are: GET, POST, PUT, DELETE, PATCH, CONNECT, TRACE, HEAD, and OPTIONS")),
+        }))
     }
 }
 
