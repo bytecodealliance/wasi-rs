@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -ex
+
 wit-bindgen rust wit --out-dir src --std-feature
 
 # rustfmt chokes on the raw output of wit-bindgen right now due to trailling

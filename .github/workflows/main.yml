@@ -23,7 +23,7 @@ jobs:
       uses: bytecodealliance/actions/wasm-tools/setup@v1
     - run: cargo build --examples --target wasm32-wasi
     - run: curl -LO https://github.com/bytecodealliance/wasmtime/releases/download/v17.0.0/wasi_snapshot_preview1.command.wasm
-    - run: wasm-tools component new ./target/wasm32-wasi/debug/examples/hello-world.wasm --adapt ./wasi_snapshot_preview1.command.wasm -o componet.wasm
+    - run: wasm-tools component new ./target/wasm32-wasi/debug/examples/hello-world.wasm --adapt ./wasi_snapshot_preview1.command.wasm -o component.wasm
     - run: wasmtime run component.wasm
 
 
