@@ -17,6 +17,15 @@ jobs:
     - run: cargo build --no-default-features
     - run: cargo build --target wasm32-wasi
     - run: cargo build --target wasm32-wasi --no-default-features
+    - name: Install Wasmtime
+      uses: bytecodealliance/actions/wasmtime/setup@v1
+    - name: Install wasm-tools
+      uses: bytecodealliance/actions/wasm-tools/setup@v1
+    - run: cargo build --examples --target wasm32-wasi
+    - run: curl -LO https://github.com/bytecodealliance/wasmtime/releases/download/v17.0.0/wasi_snapshot_preview1.command.wasm
+    - run: wasm-tools component new ./target/wasm32-wasi/debug/examples/hello-world.wasm --adapt ./wasi_snapshot_preview1.command.wasm -o componet.wasm
+    - run: wasmtime run component.wasm
+
 
   rustfmt:
     name: Rustfmt

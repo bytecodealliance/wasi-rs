@@ -123,6 +123,30 @@
 //! Note that [WIT] documentation is rendered as rustdoc documentation in these
 //! APIs as well.
 //!
+//! # Using this Crate
+//!
+//! This crate is intended to be easiest to use with a future
+//! `wasm32-wasi-preview2` target added to the Rust compiler. In the meantime
+//! it's recommended to use the `wasm32-wasi` target (soon to be renamed to
+//! `wasm32-wasi-preview1`) instead:
+//!
+//! ```sh
+//! $ cargo build --target wasm32-wasi
+//! ```
+//!
+//! Note that the output of the `wasm32-wasi` target is a core wasm module, not
+//! a component, so to turn it into a component you can use the [`wasm-tools`]
+//! CLI in combination with an "adapter module" for the `wasi_snapshot_preview1`
+//! APIs that the Rust standard library uses (example adapters can be found on
+//! [Wasmtime's release page][adapters] as
+//! [`wasi_snapshot_preview1.command.wasm`] for example)
+//!
+//! ```sh
+//! $ wasm-tools component new ./target/wasm32-wasi/debug/my-app.wasm \
+//!     --adapt ./wasi_snapshot_preview1.command.wasm \
+//!     -o my-component.wasm
+//! ```
+//!
 //! [worlds]: https://component-model.bytecodealliance.org/design/worlds.html
 //! [`wasi:cli/command`]: https://github.com/WebAssembly/wasi-cli/
 //! [`wasi:http/proxy`]: https://github.com/WebAssembly/wasi-http
@@ -137,6 +161,9 @@
 //! [`wasi:cli/environment`]: https://github.com/WebAssembly/wasi-cli/blob/main/wit/environment.wit
 //! [`wasi:random`]: https://github.com/WebAssembly/wasi-random
 //! [`wasi:random/insecure`]: https://github.com/WebAssembly/wasi-random/blob/main/wit/insecure.wit
+//! [`wasm-tools`]: https://github.com/bytecodealliance/wasm-tools
+//! [adapters]: https://github.com/bytecodealliance/wasmtime/releases
+//! [`wasi_snapshot_preview1.command.wasm`]: https://github.com/bytecodealliance/wasmtime/releases/download/v17.0.0/wasi_snapshot_preview1.command.wasm
 
 #![no_std]
 
