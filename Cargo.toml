@@ -3,8 +3,8 @@ name = "wasi"
 version = "0.12.0+wasi-0.2.0"
 authors = ["The Cranelift Project Developers"]
 license = "Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT"
-description = "Experimental WASI API bindings for Rust"
-edition = "2018"
+description = "WASI API bindings for Rust"
+edition = "2021"
 categories = ["no-std", "wasm"]
 keywords = ["webassembly", "wasm"]
 repository = "https://github.com/bytecodealliance/wasi"
@@ -12,11 +12,12 @@ readme = "README.md"
 documentation = "https://docs.rs/wasi"
 
 [dependencies]
+wit-bindgen = { version = "0.16", default-features = false, features = ['realloc'] }
+
 # When built as part of libstd
 compiler_builtins = { version = "0.1", optional = true }
 core = { version = "1.0", optional = true, package = "rustc-std-workspace-core" }
 rustc-std-workspace-alloc = { version = "1.0", optional = true }
-wit-bindgen = { version = "0.16", default-features = false, features = ['realloc'] }
 
 [features]
 default = ["std"]
