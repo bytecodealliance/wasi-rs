@@ -9,9 +9,7 @@ jobs:
       matrix:
         rust: [stable, beta, nightly]
     steps:
-    - uses: actions/checkout@v1
-      with:
-        submodules: true
+    - uses: actions/checkout@v4
     - name: Install Rust
       run: rustup update ${{ matrix.rust }} && rustup default ${{ matrix.rust }} && rustup component add rustfmt
     - run: rustup target add wasm32-wasi
@@ -19,26 +17,36 @@ jobs:
     - run: cargo build --no-default-features
     - run: cargo build --target wasm32-wasi
     - run: cargo build --target wasm32-wasi --no-default-features
-    - run: cargo build -p wasi-ephemeral
+    - name: Install Wasmtime
+      uses: bytecodealliance/actions/wasmtime/setup@v1
+      with:
+        version: "v17.0.0"
+    - name: Install wasm-tools
+      uses: bytecodealliance/actions/wasm-tools/setup@v1
+      with:
+        version: "1.0.57"
+    - run: cargo build --examples --target wasm32-wasi
+    - run: curl -LO https://github.com/bytecodealliance/wasmtime/releases/download/v17.0.0/wasi_snapshot_preview1.command.wasm
+    - run: wasm-tools component new ./target/wasm32-wasi/debug/examples/hello-world.wasm --adapt ./wasi_snapshot_preview1.command.wasm -o component.wasm
+    - run: wasmtime run component.wasm
+
 
   rustfmt:
     name: Rustfmt
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
-      with:
-        submodules: true
+    - uses: actions/checkout@v4
     - name: Install Rust
       run: rustup update stable && rustup default stable && rustup component add rustfmt
     - run: cargo fmt -- --check
 
   generate:
-    name: Test Generated Code
+    name: Ensure generated code up-to-date
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
-      with:
-        submodules: true
+    - uses: actions/checkout@v4
     - name: Install Rust
       run: rustup update stable && rustup default stable
-    - run: cargo test -p witx-bindgen
+    - run: cargo install wit-bindgen-cli@0.16.0
+    - run: ./ci/regenerate.sh
+    - run: git diff --exit-code
