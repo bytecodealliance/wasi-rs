@@ -2,7 +2,7 @@
 
 set -ex
 
-wit-bindgen rust wit --out-dir src --std-feature
+wit-bindgen rust wit --out-dir src --std-feature --type-section-suffix rust-wasi-from-crates-io
 
 # rustfmt chokes on the raw output of wit-bindgen right now due to trailling
 # whitespace (unsure as to why), so format it with some options first to get it
