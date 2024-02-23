@@ -15354,7 +15354,7 @@ pub mod wasi {
 }
 
 #[cfg(target_arch = "wasm32")]
-#[link_section = "component-type:bindings"]
+#[link_section = "component-type:bindingsrust-wasi-from-crates-io"]
 #[doc(hidden)]
 pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 15607] = [
     0, 97, 115, 109, 13, 0, 1, 0, 0, 25, 22, 119, 105, 116, 45, 99, 111, 109, 112, 111, 110, 101,
