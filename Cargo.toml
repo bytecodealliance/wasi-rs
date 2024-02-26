@@ -19,11 +19,25 @@ compiler_builtins = { version = "0.1", optional = true }
 core = { version = "1.0", optional = true, package = "rustc-std-workspace-core" }
 rustc-std-workspace-alloc = { version = "1.0", optional = true }
 
+[build-dependencies]
+quote = { version = "1.0", optional = true }
+
 [features]
 default = ["std"]
 std = []
+macros = ["quote", "wit-bindgen/macros"]
 # Unstable feature to support being a libstd dependency
 rustc-dep-of-std = ["compiler_builtins", "core", "rustc-std-workspace-alloc"]
+
+[[example]]
+name = "cli-run"
+crate-type = ["cdylib"]
+required-features = ["macros"]
+
+[[example]]
+name = "inbound-http"
+crate-type = ["cdylib"]
+required-features = ["macros"]
 
 [badges]
 maintenance = { status = "experimental" }

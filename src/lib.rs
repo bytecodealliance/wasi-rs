@@ -173,3 +173,67 @@ extern crate std;
 mod bindings;
 
 pub use bindings::wasi::*;
+
+#[cfg(feature = "macros")]
+#[doc(hidden)]
+pub mod macros {
+    pub use wit_bindgen;
+}
+
+pub mod cli {
+    pub use super::bindings::wasi::cli::*;
+
+    #[cfg(feature = "macros")]
+    pub mod run {
+        include!(concat!(env!("OUT_DIR"), "/cli_run_export.rs"));
+
+        /// Generate export bindings for the `wasi:cli/run` interface.
+        ///
+        /// This macro will generate a trait `exports::wasi::cli::run::Guest`
+        /// which must be implemented by the type passed to the macro:
+        ///
+        /// ```
+        /// wasi::cli::run::export!(MyCliRunner);
+        ///
+        /// struct MyCliRunner;
+        ///
+        /// impl exports::wasi::cli::run::Guest for MyCliRunner {
+        ///     fn run() -> Result<(), ()> {
+        ///         ...
+        ///     }
+        /// }
+        /// ```
+        #[doc(inline)]
+        pub use cli_run_export as export;
+    }
+}
+
+pub mod http {
+    pub use super::bindings::wasi::http::*;
+
+    #[cfg(feature = "macros")]
+    pub mod incoming_handler {
+        include!(concat!(env!("OUT_DIR"), "/http_incoming_handler_export.rs"));
+
+        /// Generate export bindings for the `wasi:http/incoming-handler` interface.
+        ///
+        /// This macro will generate a trait `exports::wasi::http::incoming_handler::Guest`
+        /// which must be implemented by the type passed to the macro:
+        ///
+        /// ```
+        /// wasi::http::incoming_handler::export!(MyIncomingHandler);
+        ///
+        /// use wasi::http::types::{IncomingRequest, ResponseOutparam};
+        ///
+        /// struct MyIncomingHandler;
+        ///
+        /// impl Guest for exports::wasi::http::incoming_handler::MyIncomingHandler {
+        ///     fn handle(request: IncomingRequest, response_out: ResponseOutparam) {
+        ///         ...
+        ///     }
+        /// }
+        /// ```
+        #[doc(inline)]
+        pub use http_incoming_handler_export as export;
+    }
+}
