@@ -30,12 +30,12 @@ macros = ["quote", "wit-bindgen/macros"]
 rustc-dep-of-std = ["compiler_builtins", "core", "rustc-std-workspace-alloc"]
 
 [[example]]
-name = "cli-run"
+name = "cli-command"
 crate-type = ["cdylib"]
 required-features = ["macros"]
 
 [[example]]
-name = "inbound-http"
+name = "http-proxy"
 crate-type = ["cdylib"]
 required-features = ["macros"]
 
