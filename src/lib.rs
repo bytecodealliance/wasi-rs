@@ -126,9 +126,9 @@
 //! # Using this Crate
 //!
 //! This crate is intended to be easiest to use with a future
-//! `wasm32-wasi-preview2` target added to the Rust compiler. In the meantime
+//! `wasm32-wasip2` target added to the Rust compiler. In the meantime
 //! it's recommended to use the `wasm32-wasi` target (soon to be renamed to
-//! `wasm32-wasi-preview1`) instead:
+//! `wasm32-wasip1`) instead:
 //!
 //! ```sh
 //! $ cargo build --target wasm32-wasi
