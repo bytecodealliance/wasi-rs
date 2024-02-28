@@ -211,6 +211,12 @@ pub mod cli {
         ///     }
         /// }
         /// ```
+        ///
+        /// ## Compatibility with `wasm32-wasi` targets
+        ///
+        /// This macro is not compatible with `wasm32-wasi` `bin` targets which
+        /// instead use a `fn main()` with the `wasi_snapshot_preview1.command.wasm`
+        /// adapter. This macro _can_ be used with the `reactor` or `proxy` adapters.
         #[doc(inline)]
         pub use cli_run_export as export;
     }
