@@ -29,6 +29,9 @@ macros = ["quote", "wit-bindgen/macros"]
 # Unstable feature to support being a libstd dependency
 rustc-dep-of-std = ["compiler_builtins", "core", "rustc-std-workspace-alloc"]
 
+[package.metadata.docs.rs]
+features = ["macros"]
+
 [[example]]
 name = "cli-command"
 crate-type = ["cdylib"]

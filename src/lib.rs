@@ -147,6 +147,14 @@
 //!     -o my-component.wasm
 //! ```
 //!
+//! ## Export Macros
+//!
+//! With the `macros` feature enabled, this crate provides macros to aid in
+//! implementing WASI exports. See their documentation for details:
+//!
+//! - [`wasi::cli::run::export!`](crate::cli::run::export)
+//! - [`wasi::http::inbound_handler::export!`](crate::cli::run::export)
+//!
 //! [worlds]: https://component-model.bytecodealliance.org/design/worlds.html
 //! [`wasi:cli/command`]: https://github.com/WebAssembly/wasi-cli/
 //! [`wasi:http/proxy`]: https://github.com/WebAssembly/wasi-http
