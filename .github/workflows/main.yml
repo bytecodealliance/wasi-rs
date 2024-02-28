@@ -12,7 +12,7 @@ jobs:
     - uses: actions/checkout@v4
     - name: Install Rust
       run: rustup update ${{ matrix.rust }} && rustup default ${{ matrix.rust }} && rustup component add rustfmt
-    - run: rustup target add wasm32-wasi
+    - run: rustup target add wasm32-wasi wasm32-unknown-unknown
     - run: cargo build
     - run: cargo build --no-default-features
     - run: cargo build --target wasm32-wasi
