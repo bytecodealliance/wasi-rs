@@ -149,11 +149,12 @@
 //!
 //! ## Export Macros
 //!
-//! With the `macros` feature enabled, this crate provides macros to aid in
-//! implementing WASI exports. See their documentation for details:
+//! In addition to providing bindings for imports this crate also provides
+//! macros to export the `wasi:cli/run` and `wasi:http/proxy` worlds, see their
+//! respective documentation for more information:
 //!
-//! - [`wasi::cli::run::export!`](crate::cli::run::export)
-//! - [`wasi::http::inbound_handler::export!`](crate::cli::run::export)
+//! - [`wasi::export_command!`](crate::export_command)
+//! - [`wasi::export_proxy!`](crate::export_proxy)
 //!
 //! [worlds]: https://component-model.bytecodealliance.org/design/worlds.html
 //! [`wasi:cli/command`]: https://github.com/WebAssembly/wasi-cli/
@@ -179,75 +180,77 @@
 extern crate std;
 
 mod bindings;
+#[allow(unused_imports)]
+mod command;
+#[allow(unused_imports)]
+mod proxy;
 
 pub use bindings::wasi::*;
 
-#[cfg(feature = "macros")]
-#[doc(hidden)]
-pub mod macros {
-    pub use wit_bindgen;
-}
-
-pub mod cli {
-    pub use super::bindings::wasi::cli::*;
-
-    #[cfg(feature = "macros")]
-    pub mod run {
-        include!(concat!(env!("OUT_DIR"), "/cli_run_export.rs"));
-
-        /// Generate export bindings for the `wasi:cli/run` interface.
-        ///
-        /// This macro will generate a trait `exports::wasi::cli::run::Guest`
-        /// which must be implemented by the type passed to the macro:
-        ///
-        /// ```
-        /// wasi::cli::run::export!(MyCliRunner);
-        ///
-        /// struct MyCliRunner;
-        ///
-        /// impl exports::wasi::cli::run::Guest for MyCliRunner {
-        ///     fn run() -> Result<(), ()> {
-        ///         ...
-        ///     }
-        /// }
-        /// ```
-        ///
-        /// ## Compatibility with `wasm32-wasi` targets
-        ///
-        /// This macro is not compatible with `wasm32-wasi` `bin` targets which
-        /// instead use a `fn main()` with the `wasi_snapshot_preview1.command.wasm`
-        /// adapter. This macro _can_ be used with the `reactor` or `proxy` adapters.
-        #[doc(inline)]
-        pub use cli_run_export as export;
+pub mod exports {
+    #[doc(hidden)]
+    pub mod wasi {
+        pub use crate::command::exports::wasi::*;
+        pub use crate::proxy::exports::wasi::*;
     }
+    pub use crate::command::exports::wasi::cli;
+    pub use crate::proxy::exports::wasi::http;
 }
 
-pub mod http {
-    pub use super::bindings::wasi::http::*;
+/// Generate an exported instance of the `wasi:cli/run` interface.
+///
+/// This macro generate the `#[no_mangle]` functions necessary to export this
+/// interface. It takes an argument which is a type that must implement the
+/// [`exports::cli::run::Guest`] trait.
+///
+/// ```
+/// wasi::export_command!(MyCliRunner);
+///
+/// struct MyCliRunner;
+///
+/// impl wasi::exports::cli::run::Guest for MyCliRunner {
+///     fn run() -> Result<(), ()> {
+///         // ...
+/// # panic!();
+///     }
+/// }
+/// ```
+///
+/// ## Compatibility with `wasm32-wasi` targets
+///
+/// This macro is not compatible with `wasm32-wasi` `bin` targets which
+/// instead use a `fn main()` with the `wasi_snapshot_preview1.command.wasm`
+/// adapter. This macro _can_ be used with the `reactor` or `proxy` adapters.
+///
+/// <!--
+/// The marker above hides the generated documentation by wit-bindgen for this
+/// macro.
+#[doc(inline)]
+pub use crate::command::export_command;
 
-    #[cfg(feature = "macros")]
-    pub mod incoming_handler {
-        include!(concat!(env!("OUT_DIR"), "/http_incoming_handler_export.rs"));
-
-        /// Generate export bindings for the `wasi:http/incoming-handler` interface.
-        ///
-        /// This macro will generate a trait `exports::wasi::http::incoming_handler::Guest`
-        /// which must be implemented by the type passed to the macro:
-        ///
-        /// ```
-        /// wasi::http::incoming_handler::export!(MyIncomingHandler);
-        ///
-        /// use wasi::http::types::{IncomingRequest, ResponseOutparam};
-        ///
-        /// struct MyIncomingHandler;
-        ///
-        /// impl Guest for exports::wasi::http::incoming_handler::MyIncomingHandler {
-        ///     fn handle(request: IncomingRequest, response_out: ResponseOutparam) {
-        ///         ...
-        ///     }
-        /// }
-        /// ```
-        #[doc(inline)]
-        pub use http_incoming_handler_export as export;
-    }
-}
+/// Generate an exported instance of the `wasi:http/incoming-handler` interface.
+///
+/// This macro will generate `#[no_mangle]` functions as necessary to export
+/// an implementation of the [`exports::http::incoming_handler::Guest`] trait.
+/// This macro takes an argument which is a type that implements this trait:
+///
+/// ```
+/// use wasi::http::types::{IncomingRequest, ResponseOutparam};
+///
+/// struct MyIncomingHandler;
+///
+/// wasi::export_proxy!(MyIncomingHandler);
+///
+/// impl wasi::exports::http::incoming_handler::Guest for MyIncomingHandler {
+///     fn handle(request: IncomingRequest, response_out: ResponseOutparam) {
+///         // ...
+/// # panic!();
+///     }
+/// }
+/// ```
+///
+/// <!--
+/// The marker above hides the generated documentation by wit-bindgen for this
+/// macro.
+#[doc(inline)]
+pub use crate::proxy::export_proxy;
