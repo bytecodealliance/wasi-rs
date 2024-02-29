@@ -2,7 +2,7 @@ use wasi::http::types::{
     Fields, IncomingRequest, OutgoingBody, OutgoingResponse, ResponseOutparam,
 };
 
-wasi::export_proxy!(Example);
+wasi::http::proxy::export!(Example);
 
 struct Example;
 

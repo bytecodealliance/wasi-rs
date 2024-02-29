@@ -1,4 +1,4 @@
-wasi::export_command!(Example);
+wasi::cli::run::export!(Example);
 
 struct Example;
 

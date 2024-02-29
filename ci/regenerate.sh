@@ -59,7 +59,7 @@ generate src/command.rs \
   --type-section-suffix rust-wasi-from-crates-io-command-world \
   --default-bindings-module wasi \
   --pub-export-macro \
-  --export-macro-name export_command
+  --export-macro-name _export_command
 
 # Same as the `command` world, but for the proxy world.
 with="wasi:cli/stdin@0.2.0=crate::cli::stdin"
@@ -79,4 +79,4 @@ generate src/proxy.rs \
   --type-section-suffix rust-wasi-from-crates-io-proxy-world \
   --default-bindings-module wasi \
   --pub-export-macro \
-  --export-macro-name export_proxy
+  --export-macro-name _export_proxy

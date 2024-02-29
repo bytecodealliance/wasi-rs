@@ -3,7 +3,7 @@
 //   * std_feature
 //   * with [("wasi:cli/environment@0.2.0", "crate::cli::environment"), ("wasi:cli/exit@0.2.0", "crate::cli::exit"), ("wasi:cli/stderr@0.2.0", "crate::cli::stderr"), ("wasi:cli/stdin@0.2.0", "crate::cli::stdin"), ("wasi:cli/stdout@0.2.0", "crate::cli::stdout"), ("wasi:cli/terminal-input@0.2.0", "crate::cli::terminal_input"), ("wasi:cli/terminal-output@0.2.0", "crate::cli::terminal_output"), ("wasi:cli/terminal-stderr@0.2.0", "crate::cli::terminal_stderr"), ("wasi:cli/terminal-stdin@0.2.0", "crate::cli::terminal_stdin"), ("wasi:cli/terminal-stdout@0.2.0", "crate::cli::terminal_stdout"), ("wasi:clocks/monotonic-clock@0.2.0", "crate::clocks::monotonic_clock"), ("wasi:clocks/wall-clock@0.2.0", "crate::clocks::wall_clock"), ("wasi:filesystem/preopens@0.2.0", "crate::filesystem::preopens"), ("wasi:filesystem/types@0.2.0", "crate::filesystem::types"), ("wasi:io/error@0.2.0", "crate::io::error"), ("wasi:io/poll@0.2.0", "crate::io::poll"), ("wasi:io/streams@0.2.0", "crate::io::streams"), ("wasi:random/insecure-seed@0.2.0", "crate::random::insecure_seed"), ("wasi:random/insecure@0.2.0", "crate::random::insecure"), ("wasi:random/random@0.2.0", "crate::random::random"), ("wasi:sockets/instance-network@0.2.0", "crate::sockets::instance_network"), ("wasi:sockets/ip-name-lookup@0.2.0", "crate::sockets::ip_name_lookup"), ("wasi:sockets/network@0.2.0", "crate::sockets::network"), ("wasi:sockets/tcp-create-socket@0.2.0", "crate::sockets::tcp_create_socket"), ("wasi:sockets/tcp@0.2.0", "crate::sockets::tcp"), ("wasi:sockets/udp-create-socket@0.2.0", "crate::sockets::udp_create_socket"), ("wasi:sockets/udp@0.2.0", "crate::sockets::udp")]
 //   * default-bindings-module: "wasi"
-//   * export-macro-name: export_command
+//   * export-macro-name: _export_command
 //   * pub-export-macro
 use crate::cli::environment as __with_name0;
 use crate::cli::exit as __with_name1;
@@ -83,7 +83,7 @@ pub mod exports {
 /// For more information see the documentation of `wit_bindgen::generate!`.
 ///
 /// ```rust
-/// # macro_rules! export_command{ ($($t:tt)*) => (); }
+/// # macro_rules! _export_command{ ($($t:tt)*) => (); }
 /// # trait Guest {}
 /// struct MyType;
 ///
@@ -91,13 +91,13 @@ pub mod exports {
 ///     // ...
 /// }
 ///
-/// export_command!(MyType);
+/// _export_command!(MyType);
 /// ```
 #[allow(unused_macros)]
 #[doc(hidden)]
 #[macro_export]
 macro_rules! __export_command_impl {
-  ($ty:ident) => (wasi::export_command!($ty with_types_in wasi););
+  ($ty:ident) => (wasi::_export_command!($ty with_types_in wasi););
   ($ty:ident with_types_in $($path_to_types_root:tt)*) => (
   $($path_to_types_root)*::exports::wasi::cli::run::__export_wasi_cli_run_0_2_0_cabi!($ty with_types_in $($path_to_types_root)*::exports::wasi::cli::run);
   const _: () = {
@@ -328,7 +328,7 @@ processed-by\x02\x0dwit-component\x070.201.0\x10wit-bindgen-rust\x060.20.0";
   )
 }
 #[doc(inline)]
-pub use __export_command_impl as export_command;
+pub use __export_command_impl as _export_command;
 
 #[cfg(target_arch = "wasm32")]
 #[link_section = "component-type:wit-bindgen:0.20.0:command-with-all-of-its-exports-removed:encoded worldrust-wasi-from-crates-io-command-world"]

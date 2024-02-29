@@ -3,7 +3,7 @@
 //   * std_feature
 //   * with [("wasi:cli/stderr@0.2.0", "crate::cli::stderr"), ("wasi:cli/stdin@0.2.0", "crate::cli::stdin"), ("wasi:cli/stdout@0.2.0", "crate::cli::stdout"), ("wasi:clocks/monotonic-clock@0.2.0", "crate::clocks::monotonic_clock"), ("wasi:clocks/wall-clock@0.2.0", "crate::clocks::wall_clock"), ("wasi:http/outgoing-handler@0.2.0", "crate::http::outgoing_handler"), ("wasi:http/types@0.2.0", "crate::http::types"), ("wasi:io/error@0.2.0", "crate::io::error"), ("wasi:io/poll@0.2.0", "crate::io::poll"), ("wasi:io/streams@0.2.0", "crate::io::streams"), ("wasi:random/random@0.2.0", "crate::random::random")]
 //   * default-bindings-module: "wasi"
-//   * export-macro-name: export_proxy
+//   * export-macro-name: _export_proxy
 //   * pub-export-macro
 use crate::cli::stderr as __with_name5;
 use crate::cli::stdin as __with_name6;
@@ -82,7 +82,7 @@ pub mod exports {
 /// For more information see the documentation of `wit_bindgen::generate!`.
 ///
 /// ```rust
-/// # macro_rules! export_proxy{ ($($t:tt)*) => (); }
+/// # macro_rules! _export_proxy{ ($($t:tt)*) => (); }
 /// # trait Guest {}
 /// struct MyType;
 ///
@@ -90,13 +90,13 @@ pub mod exports {
 ///     // ...
 /// }
 ///
-/// export_proxy!(MyType);
+/// _export_proxy!(MyType);
 /// ```
 #[allow(unused_macros)]
 #[doc(hidden)]
 #[macro_export]
 macro_rules! __export_proxy_impl {
-  ($ty:ident) => (wasi::export_proxy!($ty with_types_in wasi););
+  ($ty:ident) => (wasi::_export_proxy!($ty with_types_in wasi););
   ($ty:ident with_types_in $($path_to_types_root:tt)*) => (
   $($path_to_types_root)*::exports::wasi::http::incoming_handler::__export_wasi_http_incoming_handler_0_2_0_cabi!($ty with_types_in $($path_to_types_root)*::exports::wasi::http::incoming_handler);
   const _: () = {
@@ -251,7 +251,7 @@ ducers\x01\x0cprocessed-by\x02\x0dwit-component\x070.201.0\x10wit-bindgen-rust\x
   )
 }
 #[doc(inline)]
-pub use __export_proxy_impl as export_proxy;
+pub use __export_proxy_impl as _export_proxy;
 
 #[cfg(target_arch = "wasm32")]
 #[link_section = "component-type:wit-bindgen:0.20.0:proxy-with-all-of-its-exports-removed:encoded worldrust-wasi-from-crates-io-proxy-world"]
