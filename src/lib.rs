@@ -153,7 +153,7 @@
 //! macros to export the `wasi:cli/run` and `wasi:http/proxy` worlds, see their
 //! respective documentation for more information:
 //!
-//! - [`wasi::cli::run::export!`](crate::cli::run::export)
+//! - [`wasi::cli::command::export!`](crate::cli::command::export)
 //! - [`wasi::http::proxy::export!`](crate::http::proxy::export)
 //!
 //! [worlds]: https://component-model.bytecodealliance.org/design/worlds.html
@@ -197,24 +197,26 @@ pub use bindings::wasi::*;
 pub mod cli {
     pub use super::bindings::wasi::cli::*;
 
-    pub mod run {
-        /// Generate an exported instance of the `wasi:cli/run` interface.
+    pub mod command {
+        /// Generate an exported instance of the `wasi:cli/command` world.
         ///
         /// This macro generate the `#[no_mangle]` functions necessary to
         /// export this interface. It takes an argument which is a type that
-        /// must implement the [`exports::cli::run::Guest`] trait.
+        /// must implement the
+        /// [`exports::cli::run::Guest`](crate::exports::cli::run::Guest)
+        /// trait.
         ///
         /// ```
         /// struct MyCliRunner;
         ///
-        /// impl wasi::exports::cli::run::Guest for MyCliRunner {
+        /// impl wasi::exports::cli::command::Guest for MyCliRunner {
         ///     fn run() -> Result<(), ()> {
         ///         // ...
         /// # panic!();
         ///     }
         /// }
         ///
-        /// wasi::cli::run::export!(MyCliRunner);
+        /// wasi::cli::command::export!(MyCliRunner);
         /// ```
         ///
         /// ## Compatibility with `wasm32-wasi` targets
@@ -236,12 +238,12 @@ pub mod http {
     pub use super::bindings::wasi::http::*;
 
     pub mod proxy {
-        /// Generate an exported instance of the `wasi:http/incoming-handler`
-        /// interface.
+        /// Generate an exported instance of the `wasi:http/proxy` world.
         ///
         /// This macro will generate `#[no_mangle]` functions as necessary to
         /// export an implementation of the
-        /// [`exports::http::incoming_handler::Guest`] trait.  This macro takes
+        /// [`exports::http::incoming_handler::Guest`](crate::exports::http::incoming_handler::Guest)
+        /// trait.  This macro takes
         /// an argument which is a type that implements this trait:
         ///
         /// ```
