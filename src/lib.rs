@@ -209,7 +209,7 @@ pub mod cli {
         /// ```
         /// struct MyCliRunner;
         ///
-        /// impl wasi::exports::cli::command::Guest for MyCliRunner {
+        /// impl wasi::exports::cli::run::Guest for MyCliRunner {
         ///     fn run() -> Result<(), ()> {
         ///         // ...
         /// # panic!();
