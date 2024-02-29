@@ -261,15 +261,23 @@ pub mod http {
 }
 
 pub mod exports {
+    // This is required by the `export!` macros of this crate which assume that
+    // the types it's referring to show up as `exports::wasi::...`.
+    //
+    // This isn't part of the public interface, though, so hide this.
     #[doc(hidden)]
     pub mod wasi {
         pub use crate::command::exports::wasi::*;
         pub use crate::proxy::exports::wasi::*;
     }
+
+    // These are the restructured public interface of this crate.
     pub use crate::command::exports::wasi::cli;
     pub use crate::proxy::exports::wasi::http;
 }
 
+// These macros are used by recursive invocations of the macro, but they're
+// `#[doc(hidden)]` as it's not part of the public interface.
 #[doc(hidden)]
 pub use crate::command::_export_command;
 #[doc(hidden)]
