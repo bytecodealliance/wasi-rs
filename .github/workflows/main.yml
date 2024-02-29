@@ -30,7 +30,7 @@ jobs:
     - run: curl -LO https://github.com/bytecodealliance/wasmtime/releases/download/v17.0.0/wasi_snapshot_preview1.command.wasm
     - run: wasm-tools component new ./target/wasm32-wasi/debug/examples/hello-world.wasm --adapt ./wasi_snapshot_preview1.command.wasm -o component.wasm
     - run: wasmtime run component.wasm
-    - run: cargo build --examples --target wasm32-unknown-unknown --features macros
+    - run: cargo build --examples --target wasm32-unknown-unknown
     - run: wasm-tools component new ./target/wasm32-unknown-unknown/debug/examples/cli_command.wasm -o component.wasm
     - run: wasmtime run component.wasm
     - run: wasm-tools component new ./target/wasm32-unknown-unknown/debug/examples/http_proxy.wasm -o component.wasm
