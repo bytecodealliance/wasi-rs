@@ -1,8 +1,8 @@
-wasi::cli::run::export!(Example);
+wasi::cli::command::export!(Example);
 
 struct Example;
 
-impl exports::wasi::cli::run::Guest for Example {
+impl wasi::exports::cli::run::Guest for Example {
     fn run() -> Result<(), ()> {
         let stdout = wasi::cli::stdout::get_stdout();
         stdout.blocking_write_and_flush(b"Hello, WASI!").unwrap();

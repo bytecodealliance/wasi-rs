@@ -2,11 +2,11 @@ use wasi::http::types::{
     Fields, IncomingRequest, OutgoingBody, OutgoingResponse, ResponseOutparam,
 };
 
-wasi::http::incoming_handler::export!(Example);
+wasi::http::proxy::export!(Example);
 
 struct Example;
 
-impl exports::wasi::http::incoming_handler::Guest for Example {
+impl wasi::exports::http::incoming_handler::Guest for Example {
     fn handle(_request: IncomingRequest, response_out: ResponseOutparam) {
         let resp = OutgoingResponse::new(Fields::new());
         let body = resp.body().unwrap();
