@@ -31,11 +31,10 @@ This crate is procedurally generated from [WIT] files using [`wit-bindgen`].
 
 # Usage
 
-First you can depend on this crate via `Cargo.toml`:
+Depending on this crate can be done by adding it to your dependencies:
 
-```toml
-[dependencies]
-wasi = "0.12.0"
+```sh
+$ cargo add wasi
 ```
 
 Next you can use the APIs in the root of the module like so:
@@ -148,7 +147,7 @@ This project is triple licenced under the Apache 2/ Apache 2 with LLVM exception
 - Apache 2/ MIT is used in the rust standard library, and some of this code may be migrated there.
 - Some of this code may be used in compiler output, and the Apache 2 with LLVM exceptions licence is useful for this.
 
-For more details see 
+For more details see
 - [Apache 2 Licence](LICENSE-APACHE)
 - [Apache 2 Licence with LLVM exceptions](LICENSE-Apache-2.0_WITH_LLVM-exception)
 - [MIT Licence](LICENSE-MIT)
