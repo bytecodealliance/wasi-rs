@@ -1,6 +1,6 @@
 [package]
 name = "wasi"
-version = "0.12.1+wasi-0.2.0"
+version = "0.13.0+wasi-0.2.0"
 authors = ["The Cranelift Project Developers"]
 license = "Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT"
 description = "WASI API bindings for Rust"
@@ -12,7 +12,8 @@ readme = "README.md"
 documentation = "https://docs.rs/wasi"
 
 [dependencies]
-wit-bindgen = { version = "0.20.0", default-features = false, features = ['realloc'] }
+wit-bindgen-rt = "0.21.0"
+bitflags = "2.4.2"
 
 # When built as part of libstd
 compiler_builtins = { version = "0.1", optional = true }

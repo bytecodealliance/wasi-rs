@@ -53,6 +53,6 @@ jobs:
     - uses: actions/checkout@v4
     - name: Install Rust
       run: rustup update stable && rustup default stable
-    - run: cargo install wit-bindgen-cli@0.20.0 --locked
+    - run: cargo install wit-bindgen-cli@0.21.0 --locked
     - run: ./ci/regenerate.sh
     - run: git diff --exit-code
