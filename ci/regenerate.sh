@@ -6,7 +6,6 @@ generate() {
   file="$1"
   shift
   wit-bindgen rust wit --out-dir src --std-feature "$@" --rustfmt \
-    --bitflags-path bitflags \
     --runtime-path wit_bindgen_rt
 }
 
