@@ -799,7 +799,7 @@ pub mod wasi {
                 }
             }
 
-            bitflags::bitflags! {
+            wit_bindgen_rt::bitflags::bitflags! {
               /// Descriptor flags.
               ///
               /// Note: This was called `fdflags` in earlier versions of WASI.
@@ -844,7 +844,7 @@ pub mod wasi {
                 const MUTATE_DIRECTORY = 1 << 5;
               }
             }
-            bitflags::bitflags! {
+            wit_bindgen_rt::bitflags::bitflags! {
               /// Flags determining the method of how paths are resolved.
               #[derive(PartialEq, Eq, PartialOrd, Ord, Hash, Debug, Clone, Copy)]
               pub struct PathFlags: u8 {
@@ -853,7 +853,7 @@ pub mod wasi {
                 const SYMLINK_FOLLOW = 1 << 0;
               }
             }
-            bitflags::bitflags! {
+            wit_bindgen_rt::bitflags::bitflags! {
               /// Open flags used by `open-at`.
               #[derive(PartialEq, Eq, PartialOrd, Ord, Hash, Debug, Clone, Copy)]
               pub struct OpenFlags: u8 {
