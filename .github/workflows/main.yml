@@ -21,13 +21,13 @@ jobs:
     - name: Install Wasmtime
       uses: bytecodealliance/actions/wasmtime/setup@v1
       with:
-        version: "v17.0.0"
+        version: "v19.0.0"
     - name: Install wasm-tools
       uses: bytecodealliance/actions/wasm-tools/setup@v1
       with:
-        version: "1.0.57"
+        version: "1.202.0"
     - run: cargo build --examples --target wasm32-wasi
-    - run: curl -LO https://github.com/bytecodealliance/wasmtime/releases/download/v17.0.0/wasi_snapshot_preview1.command.wasm
+    - run: curl -LO https://github.com/bytecodealliance/wasmtime/releases/download/v19.0.0/wasi_snapshot_preview1.command.wasm
     - run: wasm-tools component new ./target/wasm32-wasi/debug/examples/hello-world.wasm --adapt ./wasi_snapshot_preview1.command.wasm -o component.wasm
     - run: wasmtime run component.wasm
     - run: cargo build --examples --target wasm32-unknown-unknown
@@ -53,6 +53,6 @@ jobs:
     - uses: actions/checkout@v4
     - name: Install Rust
       run: rustup update stable && rustup default stable
-    - run: cargo install wit-bindgen-cli@0.21.0 --locked
+    - run: cargo install wit-bindgen-cli@0.23.0 --locked
     - run: ./ci/regenerate.sh
     - run: git diff --exit-code
