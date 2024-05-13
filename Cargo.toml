@@ -19,6 +19,9 @@ compiler_builtins = { version = "0.1", optional = true }
 core = { version = "1.0", optional = true, package = "rustc-std-workspace-core" }
 rustc-std-workspace-alloc = { version = "1.0", optional = true }
 
+# When built with `rand` crate integration
+rand = { version = "0.8.5", default-features = false, optional = true }
+
 [features]
 default = ["std"]
 std = []
@@ -32,3 +35,7 @@ crate-type = ["cdylib"]
 [[example]]
 name = "http-proxy"
 crate-type = ["cdylib"]
+
+[[example]]
+name = "rand"
+required-features = ["rand"]
