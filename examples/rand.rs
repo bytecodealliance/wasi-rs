@@ -7,14 +7,10 @@ fn main() {
     let mut stdout = wasi::cli::stdout::get_stdout();
 
     let r: u64 = HostRng.gen();
-    stdout
-        .write_all(format!("Cryptographically-secure random u64 is {r}\n").as_bytes())
-        .unwrap();
+    writeln!(stdout, "Cryptographically-secure random u64 is {r}").unwrap();
 
     let r: u64 = HostInsecureRng.gen();
-    stdout
-        .write_all(format!("Pseudo-random u64 is {r}\n").as_bytes())
-        .unwrap();
+    writeln!(stdout, "Pseudo-random u64 is {r}").unwrap();
 
     stdout.flush().unwrap();
 }
