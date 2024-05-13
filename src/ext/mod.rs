@@ -1,6 +1,9 @@
 #[cfg(feature = "std")]
 mod std;
 
+#[cfg(feature = "http")]
+pub mod http;
+
 #[cfg(feature = "rand")]
 pub mod rand;
 
