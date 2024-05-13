@@ -29,13 +29,31 @@ std = []
 rustc-dep-of-std = ["compiler_builtins", "core", "rustc-std-workspace-alloc"]
 
 [[example]]
+name = "cli-command-no_std"
+crate-type = ["cdylib"]
+
+[[example]]
 name = "cli-command"
+crate-type = ["cdylib"]
+required-features = ["std"]
+
+[[example]]
+name = "hello-world"
+required-features = ["std"]
+
+[[example]]
+name = "http-proxy-no_std"
 crate-type = ["cdylib"]
 
 [[example]]
 name = "http-proxy"
 crate-type = ["cdylib"]
+required-features = ["std"]
+
+[[example]]
+name = "rand-no_std"
+required-features = ["rand"]
 
 [[example]]
 name = "rand"
-required-features = ["rand"]
+required-features = ["std", "rand"]
