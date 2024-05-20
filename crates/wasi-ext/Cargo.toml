@@ -1,0 +1,21 @@
+[package]
+name = "wasi-ext"
+version = "0.1.0"
+authors = ["Roman Volosatovs <rvolosatovs@riseup.net>"]
+description = "Third-party crate integrations for WASI"
+
+license.workspace = true
+edition.workspace = true
+repository.workspace = true
+
+[features]
+default = ["std"]
+std = ["wasi/std"]
+
+[dependencies]
+rand = { workspace = true, optional = true }
+wasi = { workspace = true }
+
+[[example]]
+name = "rand"
+required-features = ["rand", "std"]

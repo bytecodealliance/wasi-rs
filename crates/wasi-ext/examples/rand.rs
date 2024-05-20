@@ -1,7 +1,7 @@
 use std::io::Write as _;
 
-use wasi::ext::rand::rand::Rng as _;
-use wasi::ext::rand::{HostInsecureRng, HostRng};
+use wasi_ext::rand::rand::Rng as _;
+use wasi_ext::rand::{HostInsecureRng, HostRng};
 
 fn main() {
     let mut stdout = wasi::cli::stdout::get_stdout();

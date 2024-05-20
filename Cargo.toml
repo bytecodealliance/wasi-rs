@@ -2,14 +2,26 @@
 name = "wasi"
 version = "0.13.0+wasi-0.2.0"
 authors = ["The Cranelift Project Developers"]
-license = "Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT"
 description = "WASI API bindings for Rust"
-edition = "2021"
 categories = ["no-std", "wasm"]
 keywords = ["webassembly", "wasm"]
-repository = "https://github.com/bytecodealliance/wasi-rs"
 readme = "README.md"
 documentation = "https://docs.rs/wasi"
+license.workspace = true
+edition.workspace = true
+repository.workspace = true
+
+[workspace.package]
+edition = "2021"
+license = "Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT"
+repository = "https://github.com/bytecodealliance/wasi-rs"
+
+[workspace.dependencies]
+rand = { version = "0.8.5", default-features = false }
+wasi = { version = "0.13", path = ".", default-features = false }
+
+[workspace]
+members = ["./crates/*"]
 
 [dependencies]
 wit-bindgen-rt = { version = "0.23.0", features = ["bitflags"] }
@@ -18,9 +30,6 @@ wit-bindgen-rt = { version = "0.23.0", features = ["bitflags"] }
 compiler_builtins = { version = "0.1", optional = true }
 core = { version = "1.0", optional = true, package = "rustc-std-workspace-core" }
 rustc-std-workspace-alloc = { version = "1.0", optional = true }
-
-# When built with `rand` crate integration
-rand = { version = "0.8.5", default-features = false, optional = true }
 
 [features]
 default = ["std"]
@@ -49,11 +58,3 @@ crate-type = ["cdylib"]
 name = "http-proxy"
 crate-type = ["cdylib"]
 required-features = ["std"]
-
-[[example]]
-name = "rand-no_std"
-required-features = ["rand"]
-
-[[example]]
-name = "rand"
-required-features = ["std", "rand"]

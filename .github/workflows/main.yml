@@ -54,12 +54,7 @@ jobs:
     - run: wasm-tools component new ./target/wasm32-unknown-unknown/debug/examples/http_proxy.wasm -o component.wasm
     - run: wasm-tools component targets wit component.wasm -w wasi:http/proxy
 
-    - run: cargo build --examples --target wasm32-wasi --no-default-features --features rand
-
-    - run: wasm-tools component new ./target/wasm32-wasi/debug/examples/rand-no_std.wasm --adapt ./wasi_snapshot_preview1.command.wasm -o component.wasm
-    - run: wasmtime run component.wasm
-
-    - run: cargo build --examples --target wasm32-wasi --features rand
+    - run: cargo build --examples --workspace --target wasm32-wasi --features rand
 
     - run: wasm-tools component new ./target/wasm32-wasi/debug/examples/rand.wasm --adapt ./wasi_snapshot_preview1.command.wasm -o component.wasm
     - run: wasmtime run component.wasm
