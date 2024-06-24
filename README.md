@@ -47,11 +47,11 @@ fn main() {
 ```
 
 This crate is intended to target [components] but today you need to go through
-the intermediate build step of a core WebAssembly module using the `wasm32-wasi`
+the intermediate build step of a core WebAssembly module using the `wasm32-wasip1`
 target:
 
 ```
-$ cargo build --target wasm32-wasi
+$ cargo build --target wasm32-wasip1
 ```
 
 Next you'll want an "adapter" to convert the Rust standard library's usage of
@@ -67,7 +67,7 @@ component:
 
 ```
 $ cargo install wasm-tools
-$ wasm-tools component new target/wasm32-wasi/debug/foo.wasm \
+$ wasm-tools component new target/wasm32-wasip1/debug/foo.wasm \
     --adapt ./wasi_snapshot_preview1.command.wasm \
     -o component.wasm
 ```
@@ -109,19 +109,17 @@ want to support. Rust WebAssembly targets include:
 
 * `wasm32-unknown-unknown` - do not use this crate because this target indicates
   that WASI is not desired.
-* `wasm32-wasi` or `wasm32-wasip1` - this target has been present in Rust for
-  quite some time and is recently being renamed from `wasm32-wasi` to
-  `wasm32-wasip1`. The two targets have the same definition, it's just the name
-  that's changing. For this target you probably want the 0.11.0 track of this
-  crate.
+* `wasm32-wasip1` - this target has been present in Rust for quite some time and
+  was previously known as `wasm32-wasi`. For this target you probably want the
+  0.11.0 track of this crate.
 * `wasm32-wasip2` - this target is a recent addition to rustc (as of the time of
   this writing it's not merged yet into rustc). This is what the 0.12.0 version
   of the crate is intended for.
 
-Note that if you use `wasm32-wasi` or `wasm32-wasip1` it's not necessarily
-guaranteed you want 0.11.0 of this crate. If your users are producing components
-then you probably want 0.12.0 instead. If you don't know what your users are
-producing then you should probably stick with 0.11.0.
+Note that if you use `wasm32-wasip1` it's not necessarily guaranteed you want
+0.11.0 of this crate. If your users are producing components then you probably
+want 0.12.0 instead. If you don't know what your users are producing then you
+should probably stick with 0.11.0.
 
 Long story short, it's a bit complicated. We're in a transition period from
 WASIp1 to WASIp2 and things aren't going to be perfect every step of the way, so
