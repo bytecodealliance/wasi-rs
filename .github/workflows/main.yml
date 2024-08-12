@@ -21,12 +21,12 @@ jobs:
     - name: Install Wasmtime
       uses: bytecodealliance/actions/wasmtime/setup@v1
       with:
-        version: "v19.0.0"
+        version: "v23.0.1"
     - name: Install wasm-tools
       uses: bytecodealliance/actions/wasm-tools/setup@v1
       with:
-        version: "1.202.0"
-    - run: curl -LO https://github.com/bytecodealliance/wasmtime/releases/download/v19.0.0/wasi_snapshot_preview1.command.wasm
+        version: "1.215.0"
+    - run: curl -LO https://github.com/bytecodealliance/wasmtime/releases/download/v23.0.1/wasi_snapshot_preview1.command.wasm
 
     - run: cargo build --examples --target wasm32-wasip1 --no-default-features
 
@@ -59,15 +59,6 @@ jobs:
     - run: wasm-tools component new ./target/wasm32-wasip1/debug/examples/rand.wasm --adapt ./wasi_snapshot_preview1.command.wasm -o component.wasm
     - run: wasmtime run component.wasm
 
-  rustfmt:
-    name: Rustfmt
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-    - name: Install Rust
-      run: rustup update stable && rustup default stable && rustup component add rustfmt
-    - run: cargo fmt -- --check
-
   generate:
     name: Ensure generated code up-to-date
     runs-on: ubuntu-latest
@@ -75,6 +66,12 @@ jobs:
     - uses: actions/checkout@v4
     - name: Install Rust
       run: rustup update stable && rustup default stable
-    - run: cargo install wit-bindgen-cli@0.24.0 --locked
+    # Re-vendor all WIT files and ensure that they're all up-to-date by ensuring
+    # that there's no git changes.
+    - name: Re-vendor WIT
+      run: |
+        ./ci/vendor-wit.sh
+        git diff --exit-code
+    - run: cargo install wit-bindgen-cli@0.29.0 --locked
     - run: ./ci/regenerate.sh
     - run: git diff --exit-code

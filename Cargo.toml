@@ -1,6 +1,6 @@
 [package]
 name = "wasi"
-version = "0.13.1+wasi-0.2.0"
+version = "0.13.2+wasi-0.2.1"
 authors = ["The Cranelift Project Developers"]
 description = "WASI API bindings for Rust"
 categories = ["no-std", "wasm"]
@@ -24,7 +24,7 @@ wasi = { version = "0.13", path = ".", default-features = false }
 members = ["./crates/*"]
 
 [dependencies]
-wit-bindgen-rt = { version = "0.24.0", features = ["bitflags"] }
+wit-bindgen-rt = { version = "0.29.0", features = ["bitflags"] }
 
 # When built as part of libstd
 compiler_builtins = { version = "0.1", optional = true }
