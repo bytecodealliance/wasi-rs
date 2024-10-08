@@ -14,7 +14,7 @@ set -ex
 # and every repository has a tag `v$tag` here. That is currently done as part
 # of the WASI release process.
 repos="cli clocks filesystem http io random sockets"
-tag=0.2.1
+tag=0.2.2
 dst=wit/deps
 
 rm -rf $dst
