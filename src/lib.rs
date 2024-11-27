@@ -230,6 +230,7 @@ pub mod cli {
         /// <!--
         /// The marker above hides the generated documentation by wit-bindgen for this
         /// macro.
+        /// -->
         #[doc(inline)]
         pub use crate::command::_export_command as export;
     }
@@ -265,6 +266,7 @@ pub mod http {
         /// <!--
         /// The marker above hides the generated documentation by wit-bindgen
         /// for this macro.
+        /// -->
         #[doc(inline)]
         pub use crate::proxy::_export_proxy as export;
     }
