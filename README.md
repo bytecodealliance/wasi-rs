@@ -48,7 +48,7 @@ fn main() {
 
 This crate can currently be used in three main ways.
 
-- One is to use it and compile for the [`wasm32-wasip2` target] in Rust 1.82.
+- One is to use it and compile for the [`wasm32-wasip2` target] in Rust 1.82 and later.
   This is the simplest approach, as all the tools needed are included in the
   Rust tooling, however it doesn't yet support some of the features of the
   other approaches.
