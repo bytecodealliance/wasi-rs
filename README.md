@@ -46,9 +46,30 @@ fn main() {
 }
 ```
 
-This crate is intended to target [components] but today you need to go through
-the intermediate build step of a core WebAssembly module using the `wasm32-wasip1`
-target:
+This crate can currently be used in three main ways.
+
+- One is to use it and compile for the [`wasm32-wasip2` target] in Rust 1.82 and later.
+  This is the simplest approach, as all the tools needed are included in the
+  Rust tooling, however it doesn't yet support some of the features of the
+  other approaches.
+
+- Another is to use it and compile using [`cargo component`]. This is essentially
+  the same as the next option, except that `cargo component` handles most of the
+  steps for you. `cargo component` also has a number of additional features for
+  working with dependencies and custom WIT interfaces.
+
+- And the third is to compile for the `wasm32-wasip1` target, and then adapt
+  the resulting modules into component using `wasm-tools component new`; see
+  the next section here for details.
+
+[`wasm32-wasip2` target]: https://blog.rust-lang.org/2024/11/26/wasip2-tier-2.html
+[`cargo component`]: https://github.com/bytecodealliance/cargo-component
+
+## Building with wasm32-wasip1 and `cargo component new`.
+
+The `wasm32-wasip2` target works with a simple `cargo build --target=wasm32-wasip2`
+and doesn't need a lot of documentation here, and `cargo component` has its own
+documentation, so here we have some documentation for the `wasm32-wasip1` way.
 
 ```
 $ cargo build --target wasm32-wasip1
