@@ -2,33 +2,33 @@
 // Options used:
 //   * std_feature
 //   * runtime_path: "wit_bindgen_rt"
-//   * with "wasi:cli/environment@0.2.2" = "crate::cli::environment"
-//   * with "wasi:cli/exit@0.2.2" = "crate::cli::exit"
-//   * with "wasi:cli/stdin@0.2.2" = "crate::cli::stdin"
-//   * with "wasi:cli/stdout@0.2.2" = "crate::cli::stdout"
-//   * with "wasi:cli/stderr@0.2.2" = "crate::cli::stderr"
-//   * with "wasi:cli/terminal-input@0.2.2" = "crate::cli::terminal_input"
-//   * with "wasi:cli/terminal-output@0.2.2" = "crate::cli::terminal_output"
-//   * with "wasi:cli/terminal-stdin@0.2.2" = "crate::cli::terminal_stdin"
-//   * with "wasi:cli/terminal-stdout@0.2.2" = "crate::cli::terminal_stdout"
-//   * with "wasi:cli/terminal-stderr@0.2.2" = "crate::cli::terminal_stderr"
-//   * with "wasi:clocks/monotonic-clock@0.2.2" = "crate::clocks::monotonic_clock"
-//   * with "wasi:clocks/wall-clock@0.2.2" = "crate::clocks::wall_clock"
-//   * with "wasi:filesystem/types@0.2.2" = "crate::filesystem::types"
-//   * with "wasi:filesystem/preopens@0.2.2" = "crate::filesystem::preopens"
-//   * with "wasi:io/error@0.2.2" = "crate::io::error"
-//   * with "wasi:io/poll@0.2.2" = "crate::io::poll"
-//   * with "wasi:io/streams@0.2.2" = "crate::io::streams"
-//   * with "wasi:random/random@0.2.2" = "crate::random::random"
-//   * with "wasi:random/insecure@0.2.2" = "crate::random::insecure"
-//   * with "wasi:random/insecure-seed@0.2.2" = "crate::random::insecure_seed"
-//   * with "wasi:sockets/network@0.2.2" = "crate::sockets::network"
-//   * with "wasi:sockets/instance-network@0.2.2" = "crate::sockets::instance_network"
-//   * with "wasi:sockets/tcp@0.2.2" = "crate::sockets::tcp"
-//   * with "wasi:sockets/tcp-create-socket@0.2.2" = "crate::sockets::tcp_create_socket"
-//   * with "wasi:sockets/udp@0.2.2" = "crate::sockets::udp"
-//   * with "wasi:sockets/udp-create-socket@0.2.2" = "crate::sockets::udp_create_socket"
-//   * with "wasi:sockets/ip-name-lookup@0.2.2" = "crate::sockets::ip_name_lookup"
+//   * with "wasi:cli/environment@0.2.3" = "crate::cli::environment"
+//   * with "wasi:cli/exit@0.2.3" = "crate::cli::exit"
+//   * with "wasi:cli/stdin@0.2.3" = "crate::cli::stdin"
+//   * with "wasi:cli/stdout@0.2.3" = "crate::cli::stdout"
+//   * with "wasi:cli/stderr@0.2.3" = "crate::cli::stderr"
+//   * with "wasi:cli/terminal-input@0.2.3" = "crate::cli::terminal_input"
+//   * with "wasi:cli/terminal-output@0.2.3" = "crate::cli::terminal_output"
+//   * with "wasi:cli/terminal-stdin@0.2.3" = "crate::cli::terminal_stdin"
+//   * with "wasi:cli/terminal-stdout@0.2.3" = "crate::cli::terminal_stdout"
+//   * with "wasi:cli/terminal-stderr@0.2.3" = "crate::cli::terminal_stderr"
+//   * with "wasi:clocks/monotonic-clock@0.2.3" = "crate::clocks::monotonic_clock"
+//   * with "wasi:clocks/wall-clock@0.2.3" = "crate::clocks::wall_clock"
+//   * with "wasi:filesystem/types@0.2.3" = "crate::filesystem::types"
+//   * with "wasi:filesystem/preopens@0.2.3" = "crate::filesystem::preopens"
+//   * with "wasi:io/error@0.2.3" = "crate::io::error"
+//   * with "wasi:io/poll@0.2.3" = "crate::io::poll"
+//   * with "wasi:io/streams@0.2.3" = "crate::io::streams"
+//   * with "wasi:random/random@0.2.3" = "crate::random::random"
+//   * with "wasi:random/insecure@0.2.3" = "crate::random::insecure"
+//   * with "wasi:random/insecure-seed@0.2.3" = "crate::random::insecure_seed"
+//   * with "wasi:sockets/network@0.2.3" = "crate::sockets::network"
+//   * with "wasi:sockets/instance-network@0.2.3" = "crate::sockets::instance_network"
+//   * with "wasi:sockets/tcp@0.2.3" = "crate::sockets::tcp"
+//   * with "wasi:sockets/tcp-create-socket@0.2.3" = "crate::sockets::tcp_create_socket"
+//   * with "wasi:sockets/udp@0.2.3" = "crate::sockets::udp"
+//   * with "wasi:sockets/udp-create-socket@0.2.3" = "crate::sockets::udp_create_socket"
+//   * with "wasi:sockets/ip-name-lookup@0.2.3" = "crate::sockets::ip_name_lookup"
 //   * type_section_suffix: "rust-wasi-from-crates-io-command-world"
 //   * default-bindings-module: "wasi"
 //   * export-macro-name: _export_command
@@ -88,15 +88,15 @@ pub mod exports {
                 }
                 #[doc(hidden)]
                 #[macro_export]
-                macro_rules! __export_wasi_cli_run_0_2_2_cabi {
+                macro_rules! __export_wasi_cli_run_0_2_3_cabi {
                     ($ty:ident with_types_in $($path_to_types:tt)*) => {
-                        const _ : () = { #[export_name = "wasi:cli/run@0.2.2#run"] unsafe
+                        const _ : () = { #[export_name = "wasi:cli/run@0.2.3#run"] unsafe
                         extern "C" fn export_run() -> i32 { $($path_to_types)*::
                         _export_run_cabi::<$ty > () } };
                     };
                 }
                 #[doc(hidden)]
-                pub use __export_wasi_cli_run_0_2_2_cabi;
+                pub use __export_wasi_cli_run_0_2_3_cabi;
             }
         }
     }
@@ -133,22 +133,22 @@ macro_rules! __export_command_impl {
     };
     ($ty:ident with_types_in $($path_to_types_root:tt)*) => {
         $($path_to_types_root)*::
-        exports::wasi::cli::run::__export_wasi_cli_run_0_2_2_cabi!($ty with_types_in
+        exports::wasi::cli::run::__export_wasi_cli_run_0_2_3_cabi!($ty with_types_in
         $($path_to_types_root)*:: exports::wasi::cli::run); const _ : () = {
         #[cfg(target_arch = "wasm32")] #[link_section =
-        "component-type:wit-bindgen:0.36.0:wasi:cli@0.2.2:command:imports and exportsrust-wasi-from-crates-io-command-world"]
+        "component-type:wit-bindgen:0.36.0:wasi:cli@0.2.3:command:imports and exportsrust-wasi-from-crates-io-command-world"]
         #[doc(hidden)] pub static __WIT_BINDGEN_COMPONENT_TYPE : [u8; 10773] = *
         b"\
 \0asm\x0d\0\x01\0\0\x19\x16wit-component-encoding\x04\0\x07\x97S\x01A\x02\x01AI\x01\
 B\x0a\x01o\x02ss\x01p\0\x01@\0\0\x01\x04\0\x0fget-environment\x01\x02\x01ps\x01@\
 \0\0\x03\x04\0\x0dget-arguments\x01\x04\x01ks\x01@\0\0\x05\x04\0\x0binitial-cwd\x01\
-\x06\x03\0\x1awasi:cli/environment@0.2.2\x05\0\x01B\x03\x01j\0\0\x01@\x01\x06sta\
-tus\0\x01\0\x04\0\x04exit\x01\x01\x03\0\x13wasi:cli/exit@0.2.2\x05\x01\x01B\x04\x04\
+\x06\x03\0\x1awasi:cli/environment@0.2.3\x05\0\x01B\x03\x01j\0\0\x01@\x01\x06sta\
+tus\0\x01\0\x04\0\x04exit\x01\x01\x03\0\x13wasi:cli/exit@0.2.3\x05\x01\x01B\x04\x04\
 \0\x05error\x03\x01\x01h\0\x01@\x01\x04self\x01\0s\x04\0\x1d[method]error.to-deb\
-ug-string\x01\x02\x03\0\x13wasi:io/error@0.2.2\x05\x02\x01B\x0a\x04\0\x08pollabl\
+ug-string\x01\x02\x03\0\x13wasi:io/error@0.2.3\x05\x02\x01B\x0a\x04\0\x08pollabl\
 e\x03\x01\x01h\0\x01@\x01\x04self\x01\0\x7f\x04\0\x16[method]pollable.ready\x01\x02\
 \x01@\x01\x04self\x01\x01\0\x04\0\x16[method]pollable.block\x01\x03\x01p\x01\x01\
-py\x01@\x01\x02in\x04\0\x05\x04\0\x04poll\x01\x06\x03\0\x12wasi:io/poll@0.2.2\x05\
+py\x01@\x01\x02in\x04\0\x05\x04\0\x04poll\x01\x06\x03\0\x12wasi:io/poll@0.2.3\x05\
 \x03\x02\x03\0\x02\x05error\x02\x03\0\x03\x08pollable\x01B(\x02\x03\x02\x01\x04\x04\
 \0\x05error\x03\0\0\x02\x03\x02\x01\x05\x04\0\x08pollable\x03\0\x02\x01i\x01\x01\
 q\x02\x15last-operation-failed\x01\x04\0\x06closed\0\0\x04\0\x0cstream-error\x03\
@@ -167,30 +167,30 @@ stream.subscribe\x01\x16\x01@\x02\x04self\x11\x03lenw\0\x13\x04\0\"[method]outpu
 t-stream.write-zeroes\x01\x17\x04\05[method]output-stream.blocking-write-zeroes-\
 and-flush\x01\x17\x01@\x03\x04self\x11\x03src\x09\x03lenw\0\x0d\x04\0\x1c[method\
 ]output-stream.splice\x01\x18\x04\0%[method]output-stream.blocking-splice\x01\x18\
-\x03\0\x15wasi:io/streams@0.2.2\x05\x06\x02\x03\0\x04\x0cinput-stream\x01B\x05\x02\
+\x03\0\x15wasi:io/streams@0.2.3\x05\x06\x02\x03\0\x04\x0cinput-stream\x01B\x05\x02\
 \x03\x02\x01\x07\x04\0\x0cinput-stream\x03\0\0\x01i\x01\x01@\0\0\x02\x04\0\x09ge\
-t-stdin\x01\x03\x03\0\x14wasi:cli/stdin@0.2.2\x05\x08\x02\x03\0\x04\x0doutput-st\
+t-stdin\x01\x03\x03\0\x14wasi:cli/stdin@0.2.3\x05\x08\x02\x03\0\x04\x0doutput-st\
 ream\x01B\x05\x02\x03\x02\x01\x09\x04\0\x0doutput-stream\x03\0\0\x01i\x01\x01@\0\
-\0\x02\x04\0\x0aget-stdout\x01\x03\x03\0\x15wasi:cli/stdout@0.2.2\x05\x0a\x01B\x05\
+\0\x02\x04\0\x0aget-stdout\x01\x03\x03\0\x15wasi:cli/stdout@0.2.3\x05\x0a\x01B\x05\
 \x02\x03\x02\x01\x09\x04\0\x0doutput-stream\x03\0\0\x01i\x01\x01@\0\0\x02\x04\0\x0a\
-get-stderr\x01\x03\x03\0\x15wasi:cli/stderr@0.2.2\x05\x0b\x01B\x01\x04\0\x0eterm\
-inal-input\x03\x01\x03\0\x1dwasi:cli/terminal-input@0.2.2\x05\x0c\x01B\x01\x04\0\
-\x0fterminal-output\x03\x01\x03\0\x1ewasi:cli/terminal-output@0.2.2\x05\x0d\x02\x03\
+get-stderr\x01\x03\x03\0\x15wasi:cli/stderr@0.2.3\x05\x0b\x01B\x01\x04\0\x0eterm\
+inal-input\x03\x01\x03\0\x1dwasi:cli/terminal-input@0.2.3\x05\x0c\x01B\x01\x04\0\
+\x0fterminal-output\x03\x01\x03\0\x1ewasi:cli/terminal-output@0.2.3\x05\x0d\x02\x03\
 \0\x08\x0eterminal-input\x01B\x06\x02\x03\x02\x01\x0e\x04\0\x0eterminal-input\x03\
 \0\0\x01i\x01\x01k\x02\x01@\0\0\x03\x04\0\x12get-terminal-stdin\x01\x04\x03\0\x1d\
-wasi:cli/terminal-stdin@0.2.2\x05\x0f\x02\x03\0\x09\x0fterminal-output\x01B\x06\x02\
+wasi:cli/terminal-stdin@0.2.3\x05\x0f\x02\x03\0\x09\x0fterminal-output\x01B\x06\x02\
 \x03\x02\x01\x10\x04\0\x0fterminal-output\x03\0\0\x01i\x01\x01k\x02\x01@\0\0\x03\
-\x04\0\x13get-terminal-stdout\x01\x04\x03\0\x1ewasi:cli/terminal-stdout@0.2.2\x05\
+\x04\0\x13get-terminal-stdout\x01\x04\x03\0\x1ewasi:cli/terminal-stdout@0.2.3\x05\
 \x11\x01B\x06\x02\x03\x02\x01\x10\x04\0\x0fterminal-output\x03\0\0\x01i\x01\x01k\
 \x02\x01@\0\0\x03\x04\0\x13get-terminal-stderr\x01\x04\x03\0\x1ewasi:cli/termina\
-l-stderr@0.2.2\x05\x12\x01B\x0f\x02\x03\x02\x01\x05\x04\0\x08pollable\x03\0\0\x01\
+l-stderr@0.2.3\x05\x12\x01B\x0f\x02\x03\x02\x01\x05\x04\0\x08pollable\x03\0\0\x01\
 w\x04\0\x07instant\x03\0\x02\x01w\x04\0\x08duration\x03\0\x04\x01@\0\0\x03\x04\0\
 \x03now\x01\x06\x01@\0\0\x05\x04\0\x0aresolution\x01\x07\x01i\x01\x01@\x01\x04wh\
 en\x03\0\x08\x04\0\x11subscribe-instant\x01\x09\x01@\x01\x04when\x05\0\x08\x04\0\
-\x12subscribe-duration\x01\x0a\x03\0!wasi:clocks/monotonic-clock@0.2.2\x05\x13\x01\
+\x12subscribe-duration\x01\x0a\x03\0!wasi:clocks/monotonic-clock@0.2.3\x05\x13\x01\
 B\x05\x01r\x02\x07secondsw\x0bnanosecondsy\x04\0\x08datetime\x03\0\0\x01@\0\0\x01\
 \x04\0\x03now\x01\x02\x04\0\x0aresolution\x01\x02\x03\0\x1cwasi:clocks/wall-cloc\
-k@0.2.2\x05\x14\x02\x03\0\x04\x05error\x02\x03\0\x0e\x08datetime\x01Br\x02\x03\x02\
+k@0.2.3\x05\x14\x02\x03\0\x04\x05error\x02\x03\0\x0e\x08datetime\x01Br\x02\x03\x02\
 \x01\x07\x04\0\x0cinput-stream\x03\0\0\x02\x03\x02\x01\x09\x04\0\x0doutput-strea\
 m\x03\0\x02\x02\x03\x02\x01\x15\x04\0\x05error\x03\0\x04\x02\x03\x02\x01\x16\x04\
 \0\x08datetime\x03\0\x06\x01w\x04\0\x08filesize\x03\0\x08\x01m\x08\x07unknown\x0c\
@@ -249,9 +249,9 @@ flags\x0f\x04paths\0\xcb\0\x04\0#[method]descriptor.metadata-hash-at\x01M\x01h\"
 \x01k\x1a\x01j\x01\xcf\0\x01\x1c\x01@\x01\x04self\xce\0\0\xd0\0\x04\03[method]di\
 rectory-entry-stream.read-directory-entry\x01Q\x01h\x05\x01k\x1c\x01@\x01\x03err\
 \xd2\0\0\xd3\0\x04\0\x15filesystem-error-code\x01T\x03\0\x1bwasi:filesystem/type\
-s@0.2.2\x05\x17\x02\x03\0\x0f\x0adescriptor\x01B\x07\x02\x03\x02\x01\x18\x04\0\x0a\
+s@0.2.3\x05\x17\x02\x03\0\x0f\x0adescriptor\x01B\x07\x02\x03\x02\x01\x18\x04\0\x0a\
 descriptor\x03\0\0\x01i\x01\x01o\x02\x02s\x01p\x03\x01@\0\0\x04\x04\0\x0fget-dir\
-ectories\x01\x05\x03\0\x1ewasi:filesystem/preopens@0.2.2\x05\x19\x01B\x11\x04\0\x07\
+ectories\x01\x05\x03\0\x1ewasi:filesystem/preopens@0.2.3\x05\x19\x01B\x11\x04\0\x07\
 network\x03\x01\x01m\x15\x07unknown\x0daccess-denied\x0dnot-supported\x10invalid\
 -argument\x0dout-of-memory\x07timeout\x14concurrency-conflict\x0fnot-in-progress\
 \x0bwould-block\x0dinvalid-state\x10new-socket-limit\x14address-not-bindable\x0e\
@@ -264,9 +264,9 @@ ipv4\x01\x06\0\x04ipv6\x01\x08\0\x04\0\x0aip-address\x03\0\x09\x01r\x02\x04port{
 \x07address\x06\x04\0\x13ipv4-socket-address\x03\0\x0b\x01r\x04\x04port{\x09flow\
 -infoy\x07address\x08\x08scope-idy\x04\0\x13ipv6-socket-address\x03\0\x0d\x01q\x02\
 \x04ipv4\x01\x0c\0\x04ipv6\x01\x0e\0\x04\0\x11ip-socket-address\x03\0\x0f\x03\0\x1a\
-wasi:sockets/network@0.2.2\x05\x1a\x02\x03\0\x11\x07network\x01B\x05\x02\x03\x02\
+wasi:sockets/network@0.2.3\x05\x1a\x02\x03\0\x11\x07network\x01B\x05\x02\x03\x02\
 \x01\x1b\x04\0\x07network\x03\0\0\x01i\x01\x01@\0\0\x02\x04\0\x10instance-networ\
-k\x01\x03\x03\0#wasi:sockets/instance-network@0.2.2\x05\x1c\x02\x03\0\x11\x0aerr\
+k\x01\x03\x03\0#wasi:sockets/instance-network@0.2.3\x05\x1c\x02\x03\0\x11\x0aerr\
 or-code\x02\x03\0\x11\x11ip-socket-address\x02\x03\0\x11\x11ip-address-family\x01\
 BD\x02\x03\x02\x01\x05\x04\0\x08pollable\x03\0\0\x02\x03\x02\x01\x1b\x04\0\x07ne\
 twork\x03\0\x02\x02\x03\x02\x01\x1d\x04\0\x0aerror-code\x03\0\x04\x02\x03\x02\x01\
@@ -294,12 +294,12 @@ ram-stream.receive\x01+\x01@\x01\x04self(\0&\x04\0*[method]incoming-datagram-str
 eam.subscribe\x01,\x01h\x12\x01@\x01\x04self-\0#\x04\0+[method]outgoing-datagram\
 -stream.check-send\x01.\x01p\x0f\x01@\x02\x04self-\x09datagrams/\0#\x04\0%[metho\
 d]outgoing-datagram-stream.send\x010\x01@\x01\x04self-\0&\x04\0*[method]outgoing\
--datagram-stream.subscribe\x011\x03\0\x16wasi:sockets/udp@0.2.2\x05\x20\x02\x03\0\
+-datagram-stream.subscribe\x011\x03\0\x16wasi:sockets/udp@0.2.3\x05\x20\x02\x03\0\
 \x13\x0audp-socket\x01B\x0c\x02\x03\x02\x01\x1b\x04\0\x07network\x03\0\0\x02\x03\
 \x02\x01\x1d\x04\0\x0aerror-code\x03\0\x02\x02\x03\x02\x01\x1f\x04\0\x11ip-addre\
 ss-family\x03\0\x04\x02\x03\x02\x01!\x04\0\x0audp-socket\x03\0\x06\x01i\x07\x01j\
 \x01\x08\x01\x03\x01@\x01\x0eaddress-family\x05\0\x09\x04\0\x11create-udp-socket\
-\x01\x0a\x03\0$wasi:sockets/udp-create-socket@0.2.2\x05\"\x02\x03\0\x0d\x08durat\
+\x01\x0a\x03\0$wasi:sockets/udp-create-socket@0.2.3\x05\"\x02\x03\0\x0d\x08durat\
 ion\x01BT\x02\x03\x02\x01\x07\x04\0\x0cinput-stream\x03\0\0\x02\x03\x02\x01\x09\x04\
 \0\x0doutput-stream\x03\0\x02\x02\x03\x02\x01\x05\x04\0\x08pollable\x03\0\x04\x02\
 \x03\x02\x01#\x04\0\x08duration\x03\0\x06\x02\x03\x02\x01\x1b\x04\0\x07network\x03\
@@ -334,12 +334,12 @@ cp-socket.set-keep-alive-count\x01/\x01j\x01}\x01\x0b\x01@\x01\x04self\x13\00\x0
 et-receive-buffer-size\x01&\x04\0#[method]tcp-socket.send-buffer-size\x014\x04\0\
 '[method]tcp-socket.set-send-buffer-size\x01&\x01i\x05\x01@\x01\x04self\x13\05\x04\
 \0\x1c[method]tcp-socket.subscribe\x016\x01@\x02\x04self\x13\x0dshutdown-type\x11\
-\0\x15\x04\0\x1b[method]tcp-socket.shutdown\x017\x03\0\x16wasi:sockets/tcp@0.2.2\
+\0\x15\x04\0\x1b[method]tcp-socket.shutdown\x017\x03\0\x16wasi:sockets/tcp@0.2.3\
 \x05$\x02\x03\0\x15\x0atcp-socket\x01B\x0c\x02\x03\x02\x01\x1b\x04\0\x07network\x03\
 \0\0\x02\x03\x02\x01\x1d\x04\0\x0aerror-code\x03\0\x02\x02\x03\x02\x01\x1f\x04\0\
 \x11ip-address-family\x03\0\x04\x02\x03\x02\x01%\x04\0\x0atcp-socket\x03\0\x06\x01\
 i\x07\x01j\x01\x08\x01\x03\x01@\x01\x0eaddress-family\x05\0\x09\x04\0\x11create-\
-tcp-socket\x01\x0a\x03\0$wasi:sockets/tcp-create-socket@0.2.2\x05&\x02\x03\0\x11\
+tcp-socket\x01\x0a\x03\0$wasi:sockets/tcp-create-socket@0.2.3\x05&\x02\x03\0\x11\
 \x0aip-address\x01B\x16\x02\x03\x02\x01\x05\x04\0\x08pollable\x03\0\0\x02\x03\x02\
 \x01\x1b\x04\0\x07network\x03\0\x02\x02\x03\x02\x01\x1d\x04\0\x0aerror-code\x03\0\
 \x04\x02\x03\x02\x01'\x04\0\x0aip-address\x03\0\x06\x04\0\x16resolve-address-str\
@@ -347,14 +347,14 @@ eam\x03\x01\x01h\x08\x01k\x07\x01j\x01\x0a\x01\x05\x01@\x01\x04self\x09\0\x0b\x0
 \03[method]resolve-address-stream.resolve-next-address\x01\x0c\x01i\x01\x01@\x01\
 \x04self\x09\0\x0d\x04\0([method]resolve-address-stream.subscribe\x01\x0e\x01h\x03\
 \x01i\x08\x01j\x01\x10\x01\x05\x01@\x02\x07network\x0f\x04names\0\x11\x04\0\x11r\
-esolve-addresses\x01\x12\x03\0!wasi:sockets/ip-name-lookup@0.2.2\x05(\x01B\x05\x01\
+esolve-addresses\x01\x12\x03\0!wasi:sockets/ip-name-lookup@0.2.3\x05(\x01B\x05\x01\
 p}\x01@\x01\x03lenw\0\0\x04\0\x10get-random-bytes\x01\x01\x01@\0\0w\x04\0\x0eget\
--random-u64\x01\x02\x03\0\x18wasi:random/random@0.2.2\x05)\x01B\x05\x01p}\x01@\x01\
+-random-u64\x01\x02\x03\0\x18wasi:random/random@0.2.3\x05)\x01B\x05\x01p}\x01@\x01\
 \x03lenw\0\0\x04\0\x19get-insecure-random-bytes\x01\x01\x01@\0\0w\x04\0\x17get-i\
-nsecure-random-u64\x01\x02\x03\0\x1awasi:random/insecure@0.2.2\x05*\x01B\x03\x01\
+nsecure-random-u64\x01\x02\x03\0\x1awasi:random/insecure@0.2.3\x05*\x01B\x03\x01\
 o\x02ww\x01@\0\0\0\x04\0\x0dinsecure-seed\x01\x01\x03\0\x1fwasi:random/insecure-\
-seed@0.2.2\x05+\x01B\x03\x01j\0\0\x01@\0\0\0\x04\0\x03run\x01\x01\x04\0\x12wasi:\
-cli/run@0.2.2\x05,\x04\0\x16wasi:cli/command@0.2.2\x04\0\x0b\x0d\x01\0\x07comman\
+seed@0.2.3\x05+\x01B\x03\x01j\0\0\x01@\0\0\0\x04\0\x03run\x01\x01\x04\0\x12wasi:\
+cli/run@0.2.3\x05,\x04\0\x16wasi:cli/command@0.2.3\x04\0\x0b\x0d\x01\0\x07comman\
 d\x03\0\0\0G\x09producers\x01\x0cprocessed-by\x02\x0dwit-component\x070.220.0\x10\
 wit-bindgen-rust\x060.36.0";
         };
@@ -363,19 +363,19 @@ wit-bindgen-rust\x060.36.0";
 #[doc(inline)]
 pub use __export_command_impl as _export_command;
 #[cfg(target_arch = "wasm32")]
-#[link_section = "component-type:wit-bindgen:0.36.0:wasi:cli@0.2.2:command-with-all-of-its-exports-removed:encoded worldrust-wasi-from-crates-io-command-world"]
+#[link_section = "component-type:wit-bindgen:0.36.0:wasi:cli@0.2.3:command-with-all-of-its-exports-removed:encoded worldrust-wasi-from-crates-io-command-world"]
 #[doc(hidden)]
 pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 10794] = *b"\
 \0asm\x0d\0\x01\0\0\x19\x16wit-component-encoding\x04\0\x07\x8cS\x01A\x02\x01AG\x01\
 B\x0a\x01o\x02ss\x01p\0\x01@\0\0\x01\x04\0\x0fget-environment\x01\x02\x01ps\x01@\
 \0\0\x03\x04\0\x0dget-arguments\x01\x04\x01ks\x01@\0\0\x05\x04\0\x0binitial-cwd\x01\
-\x06\x03\0\x1awasi:cli/environment@0.2.2\x05\0\x01B\x03\x01j\0\0\x01@\x01\x06sta\
-tus\0\x01\0\x04\0\x04exit\x01\x01\x03\0\x13wasi:cli/exit@0.2.2\x05\x01\x01B\x04\x04\
+\x06\x03\0\x1awasi:cli/environment@0.2.3\x05\0\x01B\x03\x01j\0\0\x01@\x01\x06sta\
+tus\0\x01\0\x04\0\x04exit\x01\x01\x03\0\x13wasi:cli/exit@0.2.3\x05\x01\x01B\x04\x04\
 \0\x05error\x03\x01\x01h\0\x01@\x01\x04self\x01\0s\x04\0\x1d[method]error.to-deb\
-ug-string\x01\x02\x03\0\x13wasi:io/error@0.2.2\x05\x02\x01B\x0a\x04\0\x08pollabl\
+ug-string\x01\x02\x03\0\x13wasi:io/error@0.2.3\x05\x02\x01B\x0a\x04\0\x08pollabl\
 e\x03\x01\x01h\0\x01@\x01\x04self\x01\0\x7f\x04\0\x16[method]pollable.ready\x01\x02\
 \x01@\x01\x04self\x01\x01\0\x04\0\x16[method]pollable.block\x01\x03\x01p\x01\x01\
-py\x01@\x01\x02in\x04\0\x05\x04\0\x04poll\x01\x06\x03\0\x12wasi:io/poll@0.2.2\x05\
+py\x01@\x01\x02in\x04\0\x05\x04\0\x04poll\x01\x06\x03\0\x12wasi:io/poll@0.2.3\x05\
 \x03\x02\x03\0\x02\x05error\x02\x03\0\x03\x08pollable\x01B(\x02\x03\x02\x01\x04\x04\
 \0\x05error\x03\0\0\x02\x03\x02\x01\x05\x04\0\x08pollable\x03\0\x02\x01i\x01\x01\
 q\x02\x15last-operation-failed\x01\x04\0\x06closed\0\0\x04\0\x0cstream-error\x03\
@@ -394,30 +394,30 @@ stream.subscribe\x01\x16\x01@\x02\x04self\x11\x03lenw\0\x13\x04\0\"[method]outpu
 t-stream.write-zeroes\x01\x17\x04\05[method]output-stream.blocking-write-zeroes-\
 and-flush\x01\x17\x01@\x03\x04self\x11\x03src\x09\x03lenw\0\x0d\x04\0\x1c[method\
 ]output-stream.splice\x01\x18\x04\0%[method]output-stream.blocking-splice\x01\x18\
-\x03\0\x15wasi:io/streams@0.2.2\x05\x06\x02\x03\0\x04\x0cinput-stream\x01B\x05\x02\
+\x03\0\x15wasi:io/streams@0.2.3\x05\x06\x02\x03\0\x04\x0cinput-stream\x01B\x05\x02\
 \x03\x02\x01\x07\x04\0\x0cinput-stream\x03\0\0\x01i\x01\x01@\0\0\x02\x04\0\x09ge\
-t-stdin\x01\x03\x03\0\x14wasi:cli/stdin@0.2.2\x05\x08\x02\x03\0\x04\x0doutput-st\
+t-stdin\x01\x03\x03\0\x14wasi:cli/stdin@0.2.3\x05\x08\x02\x03\0\x04\x0doutput-st\
 ream\x01B\x05\x02\x03\x02\x01\x09\x04\0\x0doutput-stream\x03\0\0\x01i\x01\x01@\0\
-\0\x02\x04\0\x0aget-stdout\x01\x03\x03\0\x15wasi:cli/stdout@0.2.2\x05\x0a\x01B\x05\
+\0\x02\x04\0\x0aget-stdout\x01\x03\x03\0\x15wasi:cli/stdout@0.2.3\x05\x0a\x01B\x05\
 \x02\x03\x02\x01\x09\x04\0\x0doutput-stream\x03\0\0\x01i\x01\x01@\0\0\x02\x04\0\x0a\
-get-stderr\x01\x03\x03\0\x15wasi:cli/stderr@0.2.2\x05\x0b\x01B\x01\x04\0\x0eterm\
-inal-input\x03\x01\x03\0\x1dwasi:cli/terminal-input@0.2.2\x05\x0c\x01B\x01\x04\0\
-\x0fterminal-output\x03\x01\x03\0\x1ewasi:cli/terminal-output@0.2.2\x05\x0d\x02\x03\
+get-stderr\x01\x03\x03\0\x15wasi:cli/stderr@0.2.3\x05\x0b\x01B\x01\x04\0\x0eterm\
+inal-input\x03\x01\x03\0\x1dwasi:cli/terminal-input@0.2.3\x05\x0c\x01B\x01\x04\0\
+\x0fterminal-output\x03\x01\x03\0\x1ewasi:cli/terminal-output@0.2.3\x05\x0d\x02\x03\
 \0\x08\x0eterminal-input\x01B\x06\x02\x03\x02\x01\x0e\x04\0\x0eterminal-input\x03\
 \0\0\x01i\x01\x01k\x02\x01@\0\0\x03\x04\0\x12get-terminal-stdin\x01\x04\x03\0\x1d\
-wasi:cli/terminal-stdin@0.2.2\x05\x0f\x02\x03\0\x09\x0fterminal-output\x01B\x06\x02\
+wasi:cli/terminal-stdin@0.2.3\x05\x0f\x02\x03\0\x09\x0fterminal-output\x01B\x06\x02\
 \x03\x02\x01\x10\x04\0\x0fterminal-output\x03\0\0\x01i\x01\x01k\x02\x01@\0\0\x03\
-\x04\0\x13get-terminal-stdout\x01\x04\x03\0\x1ewasi:cli/terminal-stdout@0.2.2\x05\
+\x04\0\x13get-terminal-stdout\x01\x04\x03\0\x1ewasi:cli/terminal-stdout@0.2.3\x05\
 \x11\x01B\x06\x02\x03\x02\x01\x10\x04\0\x0fterminal-output\x03\0\0\x01i\x01\x01k\
 \x02\x01@\0\0\x03\x04\0\x13get-terminal-stderr\x01\x04\x03\0\x1ewasi:cli/termina\
-l-stderr@0.2.2\x05\x12\x01B\x0f\x02\x03\x02\x01\x05\x04\0\x08pollable\x03\0\0\x01\
+l-stderr@0.2.3\x05\x12\x01B\x0f\x02\x03\x02\x01\x05\x04\0\x08pollable\x03\0\0\x01\
 w\x04\0\x07instant\x03\0\x02\x01w\x04\0\x08duration\x03\0\x04\x01@\0\0\x03\x04\0\
 \x03now\x01\x06\x01@\0\0\x05\x04\0\x0aresolution\x01\x07\x01i\x01\x01@\x01\x04wh\
 en\x03\0\x08\x04\0\x11subscribe-instant\x01\x09\x01@\x01\x04when\x05\0\x08\x04\0\
-\x12subscribe-duration\x01\x0a\x03\0!wasi:clocks/monotonic-clock@0.2.2\x05\x13\x01\
+\x12subscribe-duration\x01\x0a\x03\0!wasi:clocks/monotonic-clock@0.2.3\x05\x13\x01\
 B\x05\x01r\x02\x07secondsw\x0bnanosecondsy\x04\0\x08datetime\x03\0\0\x01@\0\0\x01\
 \x04\0\x03now\x01\x02\x04\0\x0aresolution\x01\x02\x03\0\x1cwasi:clocks/wall-cloc\
-k@0.2.2\x05\x14\x02\x03\0\x04\x05error\x02\x03\0\x0e\x08datetime\x01Br\x02\x03\x02\
+k@0.2.3\x05\x14\x02\x03\0\x04\x05error\x02\x03\0\x0e\x08datetime\x01Br\x02\x03\x02\
 \x01\x07\x04\0\x0cinput-stream\x03\0\0\x02\x03\x02\x01\x09\x04\0\x0doutput-strea\
 m\x03\0\x02\x02\x03\x02\x01\x15\x04\0\x05error\x03\0\x04\x02\x03\x02\x01\x16\x04\
 \0\x08datetime\x03\0\x06\x01w\x04\0\x08filesize\x03\0\x08\x01m\x08\x07unknown\x0c\
@@ -476,9 +476,9 @@ flags\x0f\x04paths\0\xcb\0\x04\0#[method]descriptor.metadata-hash-at\x01M\x01h\"
 \x01k\x1a\x01j\x01\xcf\0\x01\x1c\x01@\x01\x04self\xce\0\0\xd0\0\x04\03[method]di\
 rectory-entry-stream.read-directory-entry\x01Q\x01h\x05\x01k\x1c\x01@\x01\x03err\
 \xd2\0\0\xd3\0\x04\0\x15filesystem-error-code\x01T\x03\0\x1bwasi:filesystem/type\
-s@0.2.2\x05\x17\x02\x03\0\x0f\x0adescriptor\x01B\x07\x02\x03\x02\x01\x18\x04\0\x0a\
+s@0.2.3\x05\x17\x02\x03\0\x0f\x0adescriptor\x01B\x07\x02\x03\x02\x01\x18\x04\0\x0a\
 descriptor\x03\0\0\x01i\x01\x01o\x02\x02s\x01p\x03\x01@\0\0\x04\x04\0\x0fget-dir\
-ectories\x01\x05\x03\0\x1ewasi:filesystem/preopens@0.2.2\x05\x19\x01B\x11\x04\0\x07\
+ectories\x01\x05\x03\0\x1ewasi:filesystem/preopens@0.2.3\x05\x19\x01B\x11\x04\0\x07\
 network\x03\x01\x01m\x15\x07unknown\x0daccess-denied\x0dnot-supported\x10invalid\
 -argument\x0dout-of-memory\x07timeout\x14concurrency-conflict\x0fnot-in-progress\
 \x0bwould-block\x0dinvalid-state\x10new-socket-limit\x14address-not-bindable\x0e\
@@ -491,9 +491,9 @@ ipv4\x01\x06\0\x04ipv6\x01\x08\0\x04\0\x0aip-address\x03\0\x09\x01r\x02\x04port{
 \x07address\x06\x04\0\x13ipv4-socket-address\x03\0\x0b\x01r\x04\x04port{\x09flow\
 -infoy\x07address\x08\x08scope-idy\x04\0\x13ipv6-socket-address\x03\0\x0d\x01q\x02\
 \x04ipv4\x01\x0c\0\x04ipv6\x01\x0e\0\x04\0\x11ip-socket-address\x03\0\x0f\x03\0\x1a\
-wasi:sockets/network@0.2.2\x05\x1a\x02\x03\0\x11\x07network\x01B\x05\x02\x03\x02\
+wasi:sockets/network@0.2.3\x05\x1a\x02\x03\0\x11\x07network\x01B\x05\x02\x03\x02\
 \x01\x1b\x04\0\x07network\x03\0\0\x01i\x01\x01@\0\0\x02\x04\0\x10instance-networ\
-k\x01\x03\x03\0#wasi:sockets/instance-network@0.2.2\x05\x1c\x02\x03\0\x11\x0aerr\
+k\x01\x03\x03\0#wasi:sockets/instance-network@0.2.3\x05\x1c\x02\x03\0\x11\x0aerr\
 or-code\x02\x03\0\x11\x11ip-socket-address\x02\x03\0\x11\x11ip-address-family\x01\
 BD\x02\x03\x02\x01\x05\x04\0\x08pollable\x03\0\0\x02\x03\x02\x01\x1b\x04\0\x07ne\
 twork\x03\0\x02\x02\x03\x02\x01\x1d\x04\0\x0aerror-code\x03\0\x04\x02\x03\x02\x01\
@@ -521,12 +521,12 @@ ram-stream.receive\x01+\x01@\x01\x04self(\0&\x04\0*[method]incoming-datagram-str
 eam.subscribe\x01,\x01h\x12\x01@\x01\x04self-\0#\x04\0+[method]outgoing-datagram\
 -stream.check-send\x01.\x01p\x0f\x01@\x02\x04self-\x09datagrams/\0#\x04\0%[metho\
 d]outgoing-datagram-stream.send\x010\x01@\x01\x04self-\0&\x04\0*[method]outgoing\
--datagram-stream.subscribe\x011\x03\0\x16wasi:sockets/udp@0.2.2\x05\x20\x02\x03\0\
+-datagram-stream.subscribe\x011\x03\0\x16wasi:sockets/udp@0.2.3\x05\x20\x02\x03\0\
 \x13\x0audp-socket\x01B\x0c\x02\x03\x02\x01\x1b\x04\0\x07network\x03\0\0\x02\x03\
 \x02\x01\x1d\x04\0\x0aerror-code\x03\0\x02\x02\x03\x02\x01\x1f\x04\0\x11ip-addre\
 ss-family\x03\0\x04\x02\x03\x02\x01!\x04\0\x0audp-socket\x03\0\x06\x01i\x07\x01j\
 \x01\x08\x01\x03\x01@\x01\x0eaddress-family\x05\0\x09\x04\0\x11create-udp-socket\
-\x01\x0a\x03\0$wasi:sockets/udp-create-socket@0.2.2\x05\"\x02\x03\0\x0d\x08durat\
+\x01\x0a\x03\0$wasi:sockets/udp-create-socket@0.2.3\x05\"\x02\x03\0\x0d\x08durat\
 ion\x01BT\x02\x03\x02\x01\x07\x04\0\x0cinput-stream\x03\0\0\x02\x03\x02\x01\x09\x04\
 \0\x0doutput-stream\x03\0\x02\x02\x03\x02\x01\x05\x04\0\x08pollable\x03\0\x04\x02\
 \x03\x02\x01#\x04\0\x08duration\x03\0\x06\x02\x03\x02\x01\x1b\x04\0\x07network\x03\
@@ -561,12 +561,12 @@ cp-socket.set-keep-alive-count\x01/\x01j\x01}\x01\x0b\x01@\x01\x04self\x13\00\x0
 et-receive-buffer-size\x01&\x04\0#[method]tcp-socket.send-buffer-size\x014\x04\0\
 '[method]tcp-socket.set-send-buffer-size\x01&\x01i\x05\x01@\x01\x04self\x13\05\x04\
 \0\x1c[method]tcp-socket.subscribe\x016\x01@\x02\x04self\x13\x0dshutdown-type\x11\
-\0\x15\x04\0\x1b[method]tcp-socket.shutdown\x017\x03\0\x16wasi:sockets/tcp@0.2.2\
+\0\x15\x04\0\x1b[method]tcp-socket.shutdown\x017\x03\0\x16wasi:sockets/tcp@0.2.3\
 \x05$\x02\x03\0\x15\x0atcp-socket\x01B\x0c\x02\x03\x02\x01\x1b\x04\0\x07network\x03\
 \0\0\x02\x03\x02\x01\x1d\x04\0\x0aerror-code\x03\0\x02\x02\x03\x02\x01\x1f\x04\0\
 \x11ip-address-family\x03\0\x04\x02\x03\x02\x01%\x04\0\x0atcp-socket\x03\0\x06\x01\
 i\x07\x01j\x01\x08\x01\x03\x01@\x01\x0eaddress-family\x05\0\x09\x04\0\x11create-\
-tcp-socket\x01\x0a\x03\0$wasi:sockets/tcp-create-socket@0.2.2\x05&\x02\x03\0\x11\
+tcp-socket\x01\x0a\x03\0$wasi:sockets/tcp-create-socket@0.2.3\x05&\x02\x03\0\x11\
 \x0aip-address\x01B\x16\x02\x03\x02\x01\x05\x04\0\x08pollable\x03\0\0\x02\x03\x02\
 \x01\x1b\x04\0\x07network\x03\0\x02\x02\x03\x02\x01\x1d\x04\0\x0aerror-code\x03\0\
 \x04\x02\x03\x02\x01'\x04\0\x0aip-address\x03\0\x06\x04\0\x16resolve-address-str\
@@ -574,13 +574,13 @@ eam\x03\x01\x01h\x08\x01k\x07\x01j\x01\x0a\x01\x05\x01@\x01\x04self\x09\0\x0b\x0
 \03[method]resolve-address-stream.resolve-next-address\x01\x0c\x01i\x01\x01@\x01\
 \x04self\x09\0\x0d\x04\0([method]resolve-address-stream.subscribe\x01\x0e\x01h\x03\
 \x01i\x08\x01j\x01\x10\x01\x05\x01@\x02\x07network\x0f\x04names\0\x11\x04\0\x11r\
-esolve-addresses\x01\x12\x03\0!wasi:sockets/ip-name-lookup@0.2.2\x05(\x01B\x05\x01\
+esolve-addresses\x01\x12\x03\0!wasi:sockets/ip-name-lookup@0.2.3\x05(\x01B\x05\x01\
 p}\x01@\x01\x03lenw\0\0\x04\0\x10get-random-bytes\x01\x01\x01@\0\0w\x04\0\x0eget\
--random-u64\x01\x02\x03\0\x18wasi:random/random@0.2.2\x05)\x01B\x05\x01p}\x01@\x01\
+-random-u64\x01\x02\x03\0\x18wasi:random/random@0.2.3\x05)\x01B\x05\x01p}\x01@\x01\
 \x03lenw\0\0\x04\0\x19get-insecure-random-bytes\x01\x01\x01@\0\0w\x04\0\x17get-i\
-nsecure-random-u64\x01\x02\x03\0\x1awasi:random/insecure@0.2.2\x05*\x01B\x03\x01\
+nsecure-random-u64\x01\x02\x03\0\x1awasi:random/insecure@0.2.3\x05*\x01B\x03\x01\
 o\x02ww\x01@\0\0\0\x04\0\x0dinsecure-seed\x01\x01\x03\0\x1fwasi:random/insecure-\
-seed@0.2.2\x05+\x04\06wasi:cli/command-with-all-of-its-exports-removed@0.2.2\x04\
+seed@0.2.3\x05+\x04\06wasi:cli/command-with-all-of-its-exports-removed@0.2.3\x04\
 \0\x0b-\x01\0'command-with-all-of-its-exports-removed\x03\0\0\0G\x09producers\x01\
 \x0cprocessed-by\x02\x0dwit-component\x070.220.0\x10wit-bindgen-rust\x060.36.0";
 #[inline(never)]
