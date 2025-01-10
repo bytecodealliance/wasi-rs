@@ -5,7 +5,7 @@ set -ex
 generate() {
   file="$1"
   shift
-  wit-bindgen rust wit --out-dir src --std-feature "$@" --format \
+  wit-bindgen rust wit --async none --out-dir src --std-feature "$@" --format \
     --runtime-path wit_bindgen_rt
 }
 
