@@ -2,17 +2,17 @@
 // Options used:
 //   * std_feature
 //   * runtime_path: "wit_bindgen_rt"
-//   * with "wasi:cli/stdin@0.2.3" = "crate::cli::stdin"
-//   * with "wasi:cli/stdout@0.2.3" = "crate::cli::stdout"
-//   * with "wasi:cli/stderr@0.2.3" = "crate::cli::stderr"
-//   * with "wasi:clocks/monotonic-clock@0.2.3" = "crate::clocks::monotonic_clock"
-//   * with "wasi:clocks/wall-clock@0.2.3" = "crate::clocks::wall_clock"
-//   * with "wasi:io/error@0.2.3" = "crate::io::error"
-//   * with "wasi:io/poll@0.2.3" = "crate::io::poll"
-//   * with "wasi:io/streams@0.2.3" = "crate::io::streams"
-//   * with "wasi:random/random@0.2.3" = "crate::random::random"
-//   * with "wasi:http/types@0.2.3" = "crate::http::types"
-//   * with "wasi:http/outgoing-handler@0.2.3" = "crate::http::outgoing_handler"
+//   * with "wasi:cli/stdin@0.2.4" = "crate::cli::stdin"
+//   * with "wasi:cli/stdout@0.2.4" = "crate::cli::stdout"
+//   * with "wasi:cli/stderr@0.2.4" = "crate::cli::stderr"
+//   * with "wasi:clocks/monotonic-clock@0.2.4" = "crate::clocks::monotonic_clock"
+//   * with "wasi:clocks/wall-clock@0.2.4" = "crate::clocks::wall_clock"
+//   * with "wasi:io/error@0.2.4" = "crate::io::error"
+//   * with "wasi:io/poll@0.2.4" = "crate::io::poll"
+//   * with "wasi:io/streams@0.2.4" = "crate::io::streams"
+//   * with "wasi:random/random@0.2.4" = "crate::random::random"
+//   * with "wasi:http/types@0.2.4" = "crate::http::types"
+//   * with "wasi:http/outgoing-handler@0.2.4" = "crate::http::outgoing_handler"
 //   * type_section_suffix: "rust-wasi-from-crates-io-proxy-world"
 //   * default-bindings-module: "wasi"
 //   * export-macro-name: _export_proxy
@@ -74,16 +74,16 @@ pub mod exports {
                 }
                 #[doc(hidden)]
                 #[macro_export]
-                macro_rules! __export_wasi_http_incoming_handler_0_2_3_cabi {
+                macro_rules! __export_wasi_http_incoming_handler_0_2_4_cabi {
                     ($ty:ident with_types_in $($path_to_types:tt)*) => {
                         const _ : () = { #[unsafe (export_name =
-                        "wasi:http/incoming-handler@0.2.3#handle")] unsafe extern "C" fn
+                        "wasi:http/incoming-handler@0.2.4#handle")] unsafe extern "C" fn
                         export_handle(arg0 : i32, arg1 : i32,) { $($path_to_types)*::
                         _export_handle_cabi::<$ty > (arg0, arg1) } };
                     };
                 }
                 #[doc(hidden)]
-                pub use __export_wasi_http_incoming_handler_0_2_3_cabi;
+                pub use __export_wasi_http_incoming_handler_0_2_4_cabi;
             }
         }
     }
@@ -121,10 +121,10 @@ macro_rules! __export_proxy_impl {
     };
     ($ty:ident with_types_in $($path_to_types_root:tt)*) => {
         $($path_to_types_root)*::
-        exports::wasi::http::incoming_handler::__export_wasi_http_incoming_handler_0_2_3_cabi!($ty
+        exports::wasi::http::incoming_handler::__export_wasi_http_incoming_handler_0_2_4_cabi!($ty
         with_types_in $($path_to_types_root)*:: exports::wasi::http::incoming_handler);
         const _ : () = { #[cfg(target_arch = "wasm32")] #[unsafe (link_section =
-        "component-type:wit-bindgen:0.39.0:wasi:http@0.2.3:proxy:imports and exportsrust-wasi-from-crates-io-proxy-world")]
+        "component-type:wit-bindgen:0.39.0:wasi:http@0.2.4:proxy:imports and exportsrust-wasi-from-crates-io-proxy-world")]
         #[doc(hidden)] #[allow(clippy::octal_escapes)] pub static
         __WIT_BINDGEN_COMPONENT_TYPE : [u8; 7040] = *
         b"\
@@ -132,18 +132,18 @@ macro_rules! __export_proxy_impl {
 B\x0a\x04\0\x08pollable\x03\x01\x01h\0\x01@\x01\x04self\x01\0\x7f\x04\0\x16[meth\
 od]pollable.ready\x01\x02\x01@\x01\x04self\x01\x01\0\x04\0\x16[method]pollable.b\
 lock\x01\x03\x01p\x01\x01py\x01@\x01\x02in\x04\0\x05\x04\0\x04poll\x01\x06\x03\0\
-\x12wasi:io/poll@0.2.3\x05\0\x02\x03\0\0\x08pollable\x01B\x0f\x02\x03\x02\x01\x01\
+\x12wasi:io/poll@0.2.4\x05\0\x02\x03\0\0\x08pollable\x01B\x0f\x02\x03\x02\x01\x01\
 \x04\0\x08pollable\x03\0\0\x01w\x04\0\x07instant\x03\0\x02\x01w\x04\0\x08duratio\
 n\x03\0\x04\x01@\0\0\x03\x04\0\x03now\x01\x06\x01@\0\0\x05\x04\0\x0aresolution\x01\
 \x07\x01i\x01\x01@\x01\x04when\x03\0\x08\x04\0\x11subscribe-instant\x01\x09\x01@\
 \x01\x04when\x05\0\x08\x04\0\x12subscribe-duration\x01\x0a\x03\0!wasi:clocks/mon\
-otonic-clock@0.2.3\x05\x02\x01B\x05\x01r\x02\x07secondsw\x0bnanosecondsy\x04\0\x08\
+otonic-clock@0.2.4\x05\x02\x01B\x05\x01r\x02\x07secondsw\x0bnanosecondsy\x04\0\x08\
 datetime\x03\0\0\x01@\0\0\x01\x04\0\x03now\x01\x02\x04\0\x0aresolution\x01\x02\x03\
-\0\x1cwasi:clocks/wall-clock@0.2.3\x05\x03\x01B\x05\x01p}\x01@\x01\x03lenw\0\0\x04\
+\0\x1cwasi:clocks/wall-clock@0.2.4\x05\x03\x01B\x05\x01p}\x01@\x01\x03lenw\0\0\x04\
 \0\x10get-random-bytes\x01\x01\x01@\0\0w\x04\0\x0eget-random-u64\x01\x02\x03\0\x18\
-wasi:random/random@0.2.3\x05\x04\x01B\x04\x04\0\x05error\x03\x01\x01h\0\x01@\x01\
+wasi:random/random@0.2.4\x05\x04\x01B\x04\x04\0\x05error\x03\x01\x01h\0\x01@\x01\
 \x04self\x01\0s\x04\0\x1d[method]error.to-debug-string\x01\x02\x03\0\x13wasi:io/\
-error@0.2.3\x05\x05\x02\x03\0\x04\x05error\x01B(\x02\x03\x02\x01\x06\x04\0\x05er\
+error@0.2.4\x05\x05\x02\x03\0\x04\x05error\x01B(\x02\x03\x02\x01\x06\x04\0\x05er\
 ror\x03\0\0\x02\x03\x02\x01\x01\x04\0\x08pollable\x03\0\x02\x01i\x01\x01q\x02\x15\
 last-operation-failed\x01\x04\0\x06closed\0\0\x04\0\x0cstream-error\x03\0\x05\x04\
 \0\x0cinput-stream\x03\x01\x04\0\x0doutput-stream\x03\x01\x01h\x07\x01p}\x01j\x01\
@@ -161,13 +161,13 @@ ribe\x01\x16\x01@\x02\x04self\x11\x03lenw\0\x13\x04\0\"[method]output-stream.wri
 te-zeroes\x01\x17\x04\05[method]output-stream.blocking-write-zeroes-and-flush\x01\
 \x17\x01@\x03\x04self\x11\x03src\x09\x03lenw\0\x0d\x04\0\x1c[method]output-strea\
 m.splice\x01\x18\x04\0%[method]output-stream.blocking-splice\x01\x18\x03\0\x15wa\
-si:io/streams@0.2.3\x05\x07\x02\x03\0\x05\x0doutput-stream\x01B\x05\x02\x03\x02\x01\
+si:io/streams@0.2.4\x05\x07\x02\x03\0\x05\x0doutput-stream\x01B\x05\x02\x03\x02\x01\
 \x08\x04\0\x0doutput-stream\x03\0\0\x01i\x01\x01@\0\0\x02\x04\0\x0aget-stdout\x01\
-\x03\x03\0\x15wasi:cli/stdout@0.2.3\x05\x09\x01B\x05\x02\x03\x02\x01\x08\x04\0\x0d\
+\x03\x03\0\x15wasi:cli/stdout@0.2.4\x05\x09\x01B\x05\x02\x03\x02\x01\x08\x04\0\x0d\
 output-stream\x03\0\0\x01i\x01\x01@\0\0\x02\x04\0\x0aget-stderr\x01\x03\x03\0\x15\
-wasi:cli/stderr@0.2.3\x05\x0a\x02\x03\0\x05\x0cinput-stream\x01B\x05\x02\x03\x02\
+wasi:cli/stderr@0.2.4\x05\x0a\x02\x03\0\x05\x0cinput-stream\x01B\x05\x02\x03\x02\
 \x01\x0b\x04\0\x0cinput-stream\x03\0\0\x01i\x01\x01@\0\0\x02\x04\0\x09get-stdin\x01\
-\x03\x03\0\x14wasi:cli/stdin@0.2.3\x05\x0c\x02\x03\0\x01\x08duration\x01B\xc1\x01\
+\x03\x03\0\x14wasi:cli/stdin@0.2.4\x05\x0c\x02\x03\0\x01\x08duration\x01B\xc1\x01\
 \x02\x03\x02\x01\x0d\x04\0\x08duration\x03\0\0\x02\x03\x02\x01\x0b\x04\0\x0cinpu\
 t-stream\x03\0\x02\x02\x03\x02\x01\x08\x04\0\x0doutput-stream\x03\0\x04\x02\x03\x02\
 \x01\x06\x04\0\x08io-error\x03\0\x06\x02\x03\x02\x01\x01\x04\0\x08pollable\x03\0\
@@ -255,19 +255,19 @@ g-body.finish\x01\x83\x01\x01h1\x01@\x01\x04self\x84\x01\0\xf0\0\x04\0*[method]f
 uture-incoming-response.subscribe\x01\x85\x01\x01i,\x01j\x01\x86\x01\x01\x1b\x01\
 j\x01\x87\x01\0\x01k\x88\x01\x01@\x01\x04self\x84\x01\0\x89\x01\x04\0$[method]fu\
 ture-incoming-response.get\x01\x8a\x01\x01h\x07\x01k\x1b\x01@\x01\x03err\x8b\x01\
-\0\x8c\x01\x04\0\x0fhttp-error-code\x01\x8d\x01\x03\0\x15wasi:http/types@0.2.3\x05\
+\0\x8c\x01\x04\0\x0fhttp-error-code\x01\x8d\x01\x03\0\x15wasi:http/types@0.2.4\x05\
 \x0e\x02\x03\0\x09\x10outgoing-request\x02\x03\0\x09\x0frequest-options\x02\x03\0\
 \x09\x18future-incoming-response\x02\x03\0\x09\x0aerror-code\x01B\x0f\x02\x03\x02\
 \x01\x0f\x04\0\x10outgoing-request\x03\0\0\x02\x03\x02\x01\x10\x04\0\x0frequest-\
 options\x03\0\x02\x02\x03\x02\x01\x11\x04\0\x18future-incoming-response\x03\0\x04\
 \x02\x03\x02\x01\x12\x04\0\x0aerror-code\x03\0\x06\x01i\x01\x01i\x03\x01k\x09\x01\
 i\x05\x01j\x01\x0b\x01\x07\x01@\x02\x07request\x08\x07options\x0a\0\x0c\x04\0\x06\
-handle\x01\x0d\x03\0\x20wasi:http/outgoing-handler@0.2.3\x05\x13\x02\x03\0\x09\x10\
+handle\x01\x0d\x03\0\x20wasi:http/outgoing-handler@0.2.4\x05\x13\x02\x03\0\x09\x10\
 incoming-request\x02\x03\0\x09\x11response-outparam\x01B\x08\x02\x03\x02\x01\x14\
 \x04\0\x10incoming-request\x03\0\0\x02\x03\x02\x01\x15\x04\0\x11response-outpara\
 m\x03\0\x02\x01i\x01\x01i\x03\x01@\x02\x07request\x04\x0cresponse-out\x05\x01\0\x04\
-\0\x06handle\x01\x06\x04\0\x20wasi:http/incoming-handler@0.2.3\x05\x16\x04\0\x15\
-wasi:http/proxy@0.2.3\x04\0\x0b\x0b\x01\0\x05proxy\x03\0\0\0G\x09producers\x01\x0c\
+\0\x06handle\x01\x06\x04\0\x20wasi:http/incoming-handler@0.2.4\x05\x16\x04\0\x15\
+wasi:http/proxy@0.2.4\x04\0\x0b\x0b\x01\0\x05proxy\x03\0\0\0G\x09producers\x01\x0c\
 processed-by\x02\x0dwit-component\x070.225.0\x10wit-bindgen-rust\x060.39.0";
         };
     };
@@ -276,7 +276,7 @@ processed-by\x02\x0dwit-component\x070.225.0\x10wit-bindgen-rust\x060.39.0";
 pub use __export_proxy_impl as _export_proxy;
 #[cfg(target_arch = "wasm32")]
 #[unsafe(
-    link_section = "component-type:wit-bindgen:0.39.0:wasi:http@0.2.3:proxy-with-all-of-its-exports-removed:encoded worldrust-wasi-from-crates-io-proxy-world"
+    link_section = "component-type:wit-bindgen:0.39.0:wasi:http@0.2.4:proxy-with-all-of-its-exports-removed:encoded worldrust-wasi-from-crates-io-proxy-world"
 )]
 #[doc(hidden)]
 #[allow(clippy::octal_escapes)]
@@ -285,18 +285,18 @@ pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 6921] = *b"\
 \x01B\x0a\x04\0\x08pollable\x03\x01\x01h\0\x01@\x01\x04self\x01\0\x7f\x04\0\x16[\
 method]pollable.ready\x01\x02\x01@\x01\x04self\x01\x01\0\x04\0\x16[method]pollab\
 le.block\x01\x03\x01p\x01\x01py\x01@\x01\x02in\x04\0\x05\x04\0\x04poll\x01\x06\x03\
-\0\x12wasi:io/poll@0.2.3\x05\0\x02\x03\0\0\x08pollable\x01B\x0f\x02\x03\x02\x01\x01\
+\0\x12wasi:io/poll@0.2.4\x05\0\x02\x03\0\0\x08pollable\x01B\x0f\x02\x03\x02\x01\x01\
 \x04\0\x08pollable\x03\0\0\x01w\x04\0\x07instant\x03\0\x02\x01w\x04\0\x08duratio\
 n\x03\0\x04\x01@\0\0\x03\x04\0\x03now\x01\x06\x01@\0\0\x05\x04\0\x0aresolution\x01\
 \x07\x01i\x01\x01@\x01\x04when\x03\0\x08\x04\0\x11subscribe-instant\x01\x09\x01@\
 \x01\x04when\x05\0\x08\x04\0\x12subscribe-duration\x01\x0a\x03\0!wasi:clocks/mon\
-otonic-clock@0.2.3\x05\x02\x01B\x05\x01r\x02\x07secondsw\x0bnanosecondsy\x04\0\x08\
+otonic-clock@0.2.4\x05\x02\x01B\x05\x01r\x02\x07secondsw\x0bnanosecondsy\x04\0\x08\
 datetime\x03\0\0\x01@\0\0\x01\x04\0\x03now\x01\x02\x04\0\x0aresolution\x01\x02\x03\
-\0\x1cwasi:clocks/wall-clock@0.2.3\x05\x03\x01B\x05\x01p}\x01@\x01\x03lenw\0\0\x04\
+\0\x1cwasi:clocks/wall-clock@0.2.4\x05\x03\x01B\x05\x01p}\x01@\x01\x03lenw\0\0\x04\
 \0\x10get-random-bytes\x01\x01\x01@\0\0w\x04\0\x0eget-random-u64\x01\x02\x03\0\x18\
-wasi:random/random@0.2.3\x05\x04\x01B\x04\x04\0\x05error\x03\x01\x01h\0\x01@\x01\
+wasi:random/random@0.2.4\x05\x04\x01B\x04\x04\0\x05error\x03\x01\x01h\0\x01@\x01\
 \x04self\x01\0s\x04\0\x1d[method]error.to-debug-string\x01\x02\x03\0\x13wasi:io/\
-error@0.2.3\x05\x05\x02\x03\0\x04\x05error\x01B(\x02\x03\x02\x01\x06\x04\0\x05er\
+error@0.2.4\x05\x05\x02\x03\0\x04\x05error\x01B(\x02\x03\x02\x01\x06\x04\0\x05er\
 ror\x03\0\0\x02\x03\x02\x01\x01\x04\0\x08pollable\x03\0\x02\x01i\x01\x01q\x02\x15\
 last-operation-failed\x01\x04\0\x06closed\0\0\x04\0\x0cstream-error\x03\0\x05\x04\
 \0\x0cinput-stream\x03\x01\x04\0\x0doutput-stream\x03\x01\x01h\x07\x01p}\x01j\x01\
@@ -314,13 +314,13 @@ ribe\x01\x16\x01@\x02\x04self\x11\x03lenw\0\x13\x04\0\"[method]output-stream.wri
 te-zeroes\x01\x17\x04\05[method]output-stream.blocking-write-zeroes-and-flush\x01\
 \x17\x01@\x03\x04self\x11\x03src\x09\x03lenw\0\x0d\x04\0\x1c[method]output-strea\
 m.splice\x01\x18\x04\0%[method]output-stream.blocking-splice\x01\x18\x03\0\x15wa\
-si:io/streams@0.2.3\x05\x07\x02\x03\0\x05\x0doutput-stream\x01B\x05\x02\x03\x02\x01\
+si:io/streams@0.2.4\x05\x07\x02\x03\0\x05\x0doutput-stream\x01B\x05\x02\x03\x02\x01\
 \x08\x04\0\x0doutput-stream\x03\0\0\x01i\x01\x01@\0\0\x02\x04\0\x0aget-stdout\x01\
-\x03\x03\0\x15wasi:cli/stdout@0.2.3\x05\x09\x01B\x05\x02\x03\x02\x01\x08\x04\0\x0d\
+\x03\x03\0\x15wasi:cli/stdout@0.2.4\x05\x09\x01B\x05\x02\x03\x02\x01\x08\x04\0\x0d\
 output-stream\x03\0\0\x01i\x01\x01@\0\0\x02\x04\0\x0aget-stderr\x01\x03\x03\0\x15\
-wasi:cli/stderr@0.2.3\x05\x0a\x02\x03\0\x05\x0cinput-stream\x01B\x05\x02\x03\x02\
+wasi:cli/stderr@0.2.4\x05\x0a\x02\x03\0\x05\x0cinput-stream\x01B\x05\x02\x03\x02\
 \x01\x0b\x04\0\x0cinput-stream\x03\0\0\x01i\x01\x01@\0\0\x02\x04\0\x09get-stdin\x01\
-\x03\x03\0\x14wasi:cli/stdin@0.2.3\x05\x0c\x02\x03\0\x01\x08duration\x01B\xc1\x01\
+\x03\x03\0\x14wasi:cli/stdin@0.2.4\x05\x0c\x02\x03\0\x01\x08duration\x01B\xc1\x01\
 \x02\x03\x02\x01\x0d\x04\0\x08duration\x03\0\0\x02\x03\x02\x01\x0b\x04\0\x0cinpu\
 t-stream\x03\0\x02\x02\x03\x02\x01\x08\x04\0\x0doutput-stream\x03\0\x04\x02\x03\x02\
 \x01\x06\x04\0\x08io-error\x03\0\x06\x02\x03\x02\x01\x01\x04\0\x08pollable\x03\0\
@@ -408,15 +408,15 @@ g-body.finish\x01\x83\x01\x01h1\x01@\x01\x04self\x84\x01\0\xf0\0\x04\0*[method]f
 uture-incoming-response.subscribe\x01\x85\x01\x01i,\x01j\x01\x86\x01\x01\x1b\x01\
 j\x01\x87\x01\0\x01k\x88\x01\x01@\x01\x04self\x84\x01\0\x89\x01\x04\0$[method]fu\
 ture-incoming-response.get\x01\x8a\x01\x01h\x07\x01k\x1b\x01@\x01\x03err\x8b\x01\
-\0\x8c\x01\x04\0\x0fhttp-error-code\x01\x8d\x01\x03\0\x15wasi:http/types@0.2.3\x05\
+\0\x8c\x01\x04\0\x0fhttp-error-code\x01\x8d\x01\x03\0\x15wasi:http/types@0.2.4\x05\
 \x0e\x02\x03\0\x09\x10outgoing-request\x02\x03\0\x09\x0frequest-options\x02\x03\0\
 \x09\x18future-incoming-response\x02\x03\0\x09\x0aerror-code\x01B\x0f\x02\x03\x02\
 \x01\x0f\x04\0\x10outgoing-request\x03\0\0\x02\x03\x02\x01\x10\x04\0\x0frequest-\
 options\x03\0\x02\x02\x03\x02\x01\x11\x04\0\x18future-incoming-response\x03\0\x04\
 \x02\x03\x02\x01\x12\x04\0\x0aerror-code\x03\0\x06\x01i\x01\x01i\x03\x01k\x09\x01\
 i\x05\x01j\x01\x0b\x01\x07\x01@\x02\x07request\x08\x07options\x0a\0\x0c\x04\0\x06\
-handle\x01\x0d\x03\0\x20wasi:http/outgoing-handler@0.2.3\x05\x13\x04\05wasi:http\
-/proxy-with-all-of-its-exports-removed@0.2.3\x04\0\x0b+\x01\0%proxy-with-all-of-\
+handle\x01\x0d\x03\0\x20wasi:http/outgoing-handler@0.2.4\x05\x13\x04\05wasi:http\
+/proxy-with-all-of-its-exports-removed@0.2.4\x04\0\x0b+\x01\0%proxy-with-all-of-\
 its-exports-removed\x03\0\0\0G\x09producers\x01\x0cprocessed-by\x02\x0dwit-compo\
 nent\x070.225.0\x10wit-bindgen-rust\x060.39.0";
 #[inline(never)]
