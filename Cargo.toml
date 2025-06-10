@@ -1,6 +1,6 @@
 [package]
 name = "wasi"
-version = "0.11.0+wasi-snapshot-preview1"
+version = "0.11.1+wasi-snapshot-preview1"
 authors = ["The Cranelift Project Developers"]
 license = "Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT"
 description = "Experimental WASI API bindings for Rust"
