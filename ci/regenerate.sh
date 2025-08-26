@@ -5,8 +5,7 @@ set -ex
 generate() {
   file="$1"
   shift
-  wit-bindgen rust wit --async none --out-dir src --std-feature "$@" --format \
-    --runtime-path wit_bindgen_rt
+  wit-bindgen rust wit --out-dir src --std-feature "$@" --format
 }
 
 # Generate the main body of the bindings which includes all imports from the two
