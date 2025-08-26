@@ -1,6 +1,6 @@
 package rust:wasi;
 
 world bindings {
-  include wasi:cli/imports@0.2.4;
-  import wasi:http/outgoing-handler@0.2.4;
+  include wasi:cli/imports@0.3.0-rc-2025-08-15;
+  import wasi:http/handler@0.3.0-rc-2025-08-15;
 }

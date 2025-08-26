@@ -13,8 +13,8 @@ set -ex
 # https://github.com/WebAssembly/wasi-$repo
 # and every repository has a tag `v$tag` here. That is currently done as part
 # of the WASI release process.
-repos="cli clocks filesystem http io random sockets"
-tag=0.2.4
+repos="cli clocks filesystem http random sockets"
+tag=0.3.0-rc-2025-08-15
 dst=wit/deps
 
 rm -rf $dst
@@ -23,6 +23,6 @@ mkdir -p $dst
 for repo in $repos; do
   mkdir $dst/$repo
   curl -L https://github.com/WebAssembly/wasi-$repo/archive/refs/tags/v$tag.tar.gz | \
-    tar xzf - --strip-components=2 -C $dst/$repo wasi-$repo-$tag/wit
+    tar xzf - --strip-components=2 -C $dst/$repo wasi-$repo-$tag/wit-0.3.0-draft
   rm -rf $dst/$repo/deps*
 done

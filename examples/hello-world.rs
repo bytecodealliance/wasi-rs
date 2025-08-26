@@ -1,7 +1,8 @@
-use std::io::Write as _;
-
 fn main() {
-    let mut stdout = wasi::cli::stdout::get_stdout();
-    stdout.write_all(b"Hello, world!\n").unwrap();
-    stdout.flush().unwrap();
+    wasi::async_support::block_on(async {
+        let (mut tx, rx) = wasi::wit_stream::new::<u8>();
+        wasi::cli::stdout::set_stdout(rx);
+        let result = tx.write_all(b"Hello, WASI!\n".to_vec()).await;
+        assert!(result.is_empty());
+    })
 }
