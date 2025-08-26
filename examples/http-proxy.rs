@@ -1,25 +1,23 @@
-use std::io::Write as _;
-
-use wasi::http::types::{
-    Fields, IncomingRequest, OutgoingBody, OutgoingResponse, ResponseOutparam,
-};
+use wasi::http::types::{ErrorCode, Fields, Request, Response};
 
 wasi::http::proxy::export!(Example);
 
 struct Example;
 
-impl wasi::exports::http::incoming_handler::Guest for Example {
-    fn handle(_request: IncomingRequest, response_out: ResponseOutparam) {
-        let resp = OutgoingResponse::new(Fields::new());
-        let body = resp.body().unwrap();
+impl wasi::exports::http::handler::Guest for Example {
+    async fn handle(_request: Request) -> Result<Response, ErrorCode> {
+        let (trailers_tx, trailers_rx) = wasi::wit_future::new(|| Ok(None));
+        drop(trailers_tx);
+        let (mut body_tx, body_rx) = wasi::wit_stream::new();
+        let (response, io_rx) = Response::new(Fields::new(), Some(body_rx), trailers_rx);
 
-        ResponseOutparam::set(response_out, Ok(resp));
+        wasi::async_support::spawn(async move {
+            let remaining = body_tx.write_all(b"Hello, WASI!".to_vec()).await;
+            assert!(remaining.is_empty());
+            drop(body_tx);
+            io_rx.await.expect("sending the response failed");
+        });
 
-        let mut out = body.write().unwrap();
-        out.write_all(b"Hello, WASI!").unwrap();
-        out.flush().unwrap();
-        drop(out);
-
-        OutgoingBody::finish(body, None).unwrap();
+        Ok(response)
     }
 }

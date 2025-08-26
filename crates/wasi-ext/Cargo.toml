@@ -10,7 +10,7 @@ repository.workspace = true
 
 [features]
 default = ["std"]
-std = ["wasi/std"]
+std = []
 
 [dependencies]
 rand = { workspace = true, optional = true }

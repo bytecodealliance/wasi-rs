@@ -7,7 +7,9 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        rust: [stable, beta, nightly]
+        # Note that stable is currently excluded as wasm-component-ld isn't new
+        # enough to support async.
+        rust: [beta, nightly]
     steps:
     - uses: actions/checkout@v4
     - name: Install Rust
@@ -21,38 +23,21 @@ jobs:
     - name: Install Wasmtime
       uses: bytecodealliance/actions/wasmtime/setup@v1
       with:
-        version: "v30.0.2"
+        version: "dev"
     - name: Install wasm-tools
       uses: bytecodealliance/actions/wasm-tools/setup@v1
       with:
-        version: "1.224.0"
-    - run: curl -LO https://github.com/bytecodealliance/wasmtime/releases/download/v30.0.2/wasi_snapshot_preview1.command.wasm
-
-    - run: cargo build --examples --target wasm32-wasip1 --no-default-features
-
-    - run: wasm-tools component new ./target/wasm32-wasip1/debug/examples/hello-world-no_std.wasm --adapt ./wasi_snapshot_preview1.command.wasm -o component.wasm
-    - run: wasmtime run component.wasm
-
-    - run: cargo build --examples --target wasm32-unknown-unknown --no-default-features
-
-    - run: wasm-tools component new ./target/wasm32-unknown-unknown/debug/examples/cli_command_no_std.wasm -o component.wasm
-    - run: wasmtime run component.wasm
-
-    - run: wasm-tools component new ./target/wasm32-unknown-unknown/debug/examples/http_proxy_no_std.wasm -o component.wasm
-    - run: wasm-tools component targets wit component.wasm -w wasi:http/proxy
+        version: "1.237.0"
 
     - run: cargo build --examples --target wasm32-wasip1
-
-    - run: wasm-tools component new ./target/wasm32-wasip1/debug/examples/hello-world.wasm --adapt ./wasi_snapshot_preview1.command.wasm -o component.wasm
-    - run: wasmtime run component.wasm
-
+    - run: cargo build --examples --target wasm32-wasip2
     - run: cargo build --examples --target wasm32-unknown-unknown
 
-    - run: wasm-tools component new ./target/wasm32-unknown-unknown/debug/examples/cli_command.wasm -o component.wasm
-    - run: wasmtime run component.wasm
-
-    - run: wasm-tools component new ./target/wasm32-unknown-unknown/debug/examples/http_proxy.wasm -o component.wasm
-    - run: wasm-tools component targets wit component.wasm -w wasi:http/proxy
+    - run: wasmtime run ./target/wasm32-wasip2/debug/examples/cli_command.wasm
+    - run: wasmtime run ./target/wasm32-wasip2/debug/examples/hello-world.wasm
+    - run: wasm-tools component targets ./wit ./target/wasm32-wasip2/debug/examples/cli_command.wasm -w wasi:cli/command
+    - run: wasm-tools component targets ./wit ./target/wasm32-wasip2/debug/examples/hello-world.wasm -w wasi:cli/command
+    - run: wasm-tools component targets ./wit ./target/wasm32-wasip2/debug/examples/http_proxy.wasm -w wasi:http/proxy
 
     - run: cargo build --examples --workspace --target wasm32-wasip1 --features rand
 
@@ -72,6 +57,6 @@ jobs:
       run: |
         ./ci/vendor-wit.sh
         git diff --exit-code
-    - run: cargo install wit-bindgen-cli@0.39.0 --locked
+    - run: cargo install wit-bindgen-cli@0.44.0 --locked
     - run: ./ci/regenerate.sh
     - run: git diff --exit-code
