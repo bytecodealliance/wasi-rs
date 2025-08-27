@@ -24,7 +24,7 @@ wasi = { version = "0.14", path = ".", default-features = false }
 members = ["./crates/*"]
 
 [dependencies]
-wit-bindgen = { version = "0.44.0", default-features = false }
+wit-bindgen = { version = "0.45.0", default-features = false }
 
 # When built as part of libstd
 core = { version = "1.0", optional = true, package = "rustc-std-workspace-core" }
@@ -58,6 +58,3 @@ crate-type = ["cdylib"]
 name = "http-proxy"
 crate-type = ["cdylib"]
 required-features = ["std"]
-
-[patch.crates-io]
-wit-bindgen = { git = 'https://github.com/bytecodealliance/wit-bindgen' }
