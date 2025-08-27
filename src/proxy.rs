@@ -282,9 +282,10 @@ processed-by\x02\x0dwit-component\x070.238.0\x10wit-bindgen-rust\x060.44.0";
 pub use __export_proxy_impl as _export_proxy;
 #[rustfmt::skip]
 #[cfg(target_arch = "wasm32")]
-#[unsafe(
-    link_section = "component-type:wit-bindgen:0.44.0:wasi:http@0.2.4:proxy-with-all-of-its-exports-removed:encoded worldrust-wasi-from-crates-io-proxy-world"
-)]
+
+#[cfg_attr(feature = "rustc-dep-of-std", unsafe(link_section = "component-type:wit-bindgen:0.44.0:wasi:http@0.2.4:proxy-with-all-of-its-exports-removed:encoded worldrust-wasi-from-crates-io-proxy-world-in-libstd"))]
+#[cfg_attr(not(feature = "rustc-dep-of-std"), unsafe(link_section = "component-type:wit-bindgen:0.44.0:wasi:http@0.2.4:proxy-with-all-of-its-exports-removed:encoded worldrust-wasi-from-crates-io-proxy-world"))]
+
 #[doc(hidden)]
 #[allow(clippy::octal_escapes)]
 pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 6921] = *b"\

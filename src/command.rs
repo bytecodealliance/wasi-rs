@@ -369,9 +369,10 @@ wit-bindgen-rust\x060.44.0";
 pub use __export_command_impl as _export_command;
 #[rustfmt::skip]
 #[cfg(target_arch = "wasm32")]
-#[unsafe(
-    link_section = "component-type:wit-bindgen:0.44.0:wasi:cli@0.2.4:command-with-all-of-its-exports-removed:encoded worldrust-wasi-from-crates-io-command-world"
-)]
+
+#[cfg_attr(feature = "rustc-dep-of-std", unsafe(link_section = "component-type:wit-bindgen:0.44.0:wasi:cli@0.2.4:command-with-all-of-its-exports-removed:encoded worldrust-wasi-from-crates-io-command-world-in-libstd"))]
+#[cfg_attr(not(feature = "rustc-dep-of-std"), unsafe(link_section = "component-type:wit-bindgen:0.44.0:wasi:cli@0.2.4:command-with-all-of-its-exports-removed:encoded worldrust-wasi-from-crates-io-command-world"))]
+
 #[doc(hidden)]
 #[allow(clippy::octal_escapes)]
 pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 10794] = *b"\

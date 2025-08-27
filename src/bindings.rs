@@ -16817,9 +16817,10 @@ mod _rt {
 }
 #[rustfmt::skip]
 #[cfg(target_arch = "wasm32")]
-#[unsafe(
-    link_section = "component-type:wit-bindgen:0.44.0:rust:wasi:bindings:encoded worldrust-wasi-from-crates-io"
-)]
+
+#[cfg_attr(feature = "rustc-dep-of-std", unsafe(link_section = "component-type:wit-bindgen:0.44.0:rust:wasi:bindings:encoded worldrust-wasi-from-crates-io-in-libstd"))]
+#[cfg_attr(not(feature = "rustc-dep-of-std"), unsafe(link_section = "component-type:wit-bindgen:0.44.0:rust:wasi:bindings:encoded worldrust-wasi-from-crates-io"))]
+
 #[doc(hidden)]
 #[allow(clippy::octal_escapes)]
 pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 15623] = *b"\
