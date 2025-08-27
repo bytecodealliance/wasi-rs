@@ -72,6 +72,6 @@ jobs:
       run: |
         ./ci/vendor-wit.sh
         git diff --exit-code
-    - run: cargo install wit-bindgen-cli@0.39.0 --locked
+    - run: cargo install wit-bindgen-cli@0.45.0 --locked
     - run: ./ci/regenerate.sh
     - run: git diff --exit-code

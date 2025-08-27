@@ -5,8 +5,12 @@ set -ex
 generate() {
   file="$1"
   shift
-  wit-bindgen rust wit --async none --out-dir src --std-feature "$@" --format \
-    --runtime-path wit_bindgen_rt
+  wit-bindgen rust wit --out-dir src --std-feature "$@" --format
+
+  sed -z -i 's/#\[unsafe(\n    link_section = "\(.*\)"\n)\]/\
+#[cfg_attr(feature = "rustc-dep-of-std", unsafe(link_section = "\1-in-libstd"))]\
+#[cfg_attr(not(feature = "rustc-dep-of-std"), unsafe(link_section = "\1"))]\
+/' $file
 }
 
 # Generate the main body of the bindings which includes all imports from the two

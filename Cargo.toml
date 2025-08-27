@@ -24,17 +24,18 @@ wasi = { version = "0.14", path = ".", default-features = false }
 members = ["./crates/*"]
 
 [dependencies]
-wit-bindgen-rt = { version = "0.39.0", features = ["bitflags"] }
+wit-bindgen = { version = "0.45.0", default-features = false }
 
 # When built as part of libstd
 core = { version = "1.0", optional = true, package = "rustc-std-workspace-core" }
-rustc-std-workspace-alloc = { version = "1.0", optional = true }
+alloc = { version = "1.0", optional = true, package = "rustc-std-workspace-alloc" }
 
 [features]
-default = ["std"]
+default = ["std", "bitflags"]
 std = []
+bitflags = ["wit-bindgen/bitflags"]
 # Unstable feature to support being a libstd dependency
-rustc-dep-of-std = ["core", "rustc-std-workspace-alloc"]
+rustc-dep-of-std = ["core", "alloc", "wit-bindgen/rustc-dep-of-std"]
 
 [[example]]
 name = "cli-command-no_std"
