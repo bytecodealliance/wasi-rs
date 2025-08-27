@@ -1,6 +1,6 @@
 [package]
 name = "wasi"
-version = "0.14.2+wasi-0.2.4"
+version = "0.14.3+wasi-0.2.4"
 authors = ["The Cranelift Project Developers"]
 description = "WASI API bindings for Rust"
 categories = ["no-std", "wasm"]
