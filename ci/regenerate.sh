@@ -15,8 +15,9 @@ generate() {
 
 # Generate the main body of the bindings which includes all imports from the two
 # worlds below.
-generate src/bindings.rs --type-section-suffix rust-wasi-from-crates-io \
-  --generate-all
+generate src/imports.rs --type-section-suffix rust-wasi-from-crates-io \
+  --generate-all \
+  --world wasi:cli/imports
 
 # Generate bindings for the `wasi:cli/command` world specifically, namely the
 # macro `export_command`.
@@ -67,8 +68,6 @@ with="$with,wasi:io/error@0.2.4=crate::io::error"
 with="$with,wasi:io/poll@0.2.4=crate::io::poll"
 with="$with,wasi:io/streams@0.2.4=crate::io::streams"
 with="$with,wasi:random/random@0.2.4=crate::random::random"
-with="$with,wasi:http/types@0.2.4=crate::http::types"
-with="$with,wasi:http/outgoing-handler@0.2.4=crate::http::outgoing_handler"
 generate src/proxy.rs \
   --world wasi:http/proxy \
   --with "$with" \
