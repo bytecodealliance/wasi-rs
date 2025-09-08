@@ -86,7 +86,7 @@ jobs:
         ./ci/vendor-wit.sh
         git diff --exit-code
     - run: |
-        version=0.45.1
+        version=0.45.0
 
         mkdir wit-bindgen
         cd wit-bindgen
