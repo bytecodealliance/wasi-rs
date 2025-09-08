@@ -13,19 +13,28 @@ set -ex
 # https://github.com/WebAssembly/wasi-$repo
 # and every repository has a tag `v$tag` here. That is currently done as part
 # of the WASI release process.
-repos="cli clocks filesystem http io random sockets"
 tag=0.2.4
 dst=wit/deps
 
-rm -rf $dst
-mkdir -p $dst
+vendor() {
+  dst="$1"
+  tag="$2"
+  subdir="$3"
+  repos="$4"
 
-for repo in $repos; do
-  mkdir $dst/$repo
-  curl -L https://github.com/WebAssembly/wasi-$repo/archive/refs/tags/v$tag.tar.gz | \
-    tar xzf - --strip-components=2 -C $dst/$repo wasi-$repo-$tag/wit
-  rm -rf $dst/$repo/deps*
-done
+  rm -rf $dst
+  mkdir -p $dst
+
+  for repo in $repos; do
+    mkdir $dst/$repo
+    curl -L https://github.com/WebAssembly/wasi-$repo/archive/refs/tags/v$tag.tar.gz | \
+      tar xzf - --strip-components=2 -C $dst/$repo wasi-$repo-$tag/$subdir
+    rm -rf $dst/$repo/deps*
+  done
+}
+
+vendor crates/wasip2/wit/deps 0.2.4 wit "cli clocks filesystem http io random sockets"
+vendor crates/wasip3/wit/deps 0.3.0-rc-2025-08-15 wit-0.3.0-draft "cli clocks filesystem http random sockets"
 
 # WASIp1 vendoring logic
 wasip1_rev="0ba0c5e2"
