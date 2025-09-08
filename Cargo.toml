@@ -15,7 +15,7 @@ rust-version.workspace = true
 edition = "2021"
 license = "Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT"
 repository = "https://github.com/bytecodealliance/wasi-rs"
-rust-version = "1.76.0"
+rust-version = "1.78.0"
 
 [workspace.dependencies]
 rand = { version = "0.8.5", default-features = false }
