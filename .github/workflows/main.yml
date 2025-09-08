@@ -85,6 +85,14 @@ jobs:
       run: |
         ./ci/vendor-wit.sh
         git diff --exit-code
-    - run: cargo install wit-bindgen-cli@0.45.0 --locked
+    - run: |
+        version=0.45.1
+
+        mkdir wit-bindgen
+        cd wit-bindgen
+        curl -o wit-bindgen.tar.gz -L https://github.com/bytecodealliance/wit-bindgen/releases/download/v$version/wit-bindgen-$version-x86_64-linux.tar.gz
+        tar xf wit-bindgen.tar.gz
+        echo "PATH=$PATH:`pwd`/wit-bindgen-$version-x86_64-linux" >> $GITHUB_ENV
+      working-directory: ${{ runner.tool_cache }}
     - run: ./ci/regenerate.sh
     - run: git diff --exit-code
