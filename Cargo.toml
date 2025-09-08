@@ -35,3 +35,25 @@ wasip2 = { workspace = true }
 default = ["wasip2/default"]
 std = ["wasip2/std"]
 bitflags = ["wasip2/bitflags"]
+
+[[example]]
+name = "cli-command-no_std"
+crate-type = ["cdylib"]
+
+[[example]]
+name = "cli-command"
+crate-type = ["cdylib"]
+required-features = ["std"]
+
+[[example]]
+name = "hello-world"
+required-features = ["std"]
+
+[[example]]
+name = "http-proxy-no_std"
+crate-type = ["cdylib"]
+
+[[example]]
+name = "http-proxy"
+crate-type = ["cdylib"]
+required-features = ["std"]

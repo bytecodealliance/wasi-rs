@@ -210,14 +210,14 @@ pub mod cli {
         /// ```
         /// struct MyCliRunner;
         ///
-        /// impl wasi::exports::cli::run::Guest for MyCliRunner {
+        /// impl wasip2::exports::cli::run::Guest for MyCliRunner {
         ///     fn run() -> Result<(), ()> {
         ///         // ...
         /// # panic!();
         ///     }
         /// }
         ///
-        /// wasi::cli::command::export!(MyCliRunner);
+        /// wasip2::cli::command::export!(MyCliRunner);
         /// ```
         ///
         /// ## Compatibility with `wasm32-wasip1` targets
@@ -249,18 +249,18 @@ pub mod http {
         /// an argument which is a type that implements this trait:
         ///
         /// ```
-        /// use wasi::http::types::{IncomingRequest, ResponseOutparam};
+        /// use wasip2::http::types::{IncomingRequest, ResponseOutparam};
         ///
         /// struct MyIncomingHandler;
         ///
-        /// impl wasi::exports::http::incoming_handler::Guest for MyIncomingHandler {
+        /// impl wasip2::exports::http::incoming_handler::Guest for MyIncomingHandler {
         ///     fn handle(request: IncomingRequest, response_out: ResponseOutparam) {
         ///         // ...
         /// # panic!();
         ///     }
         /// }
         ///
-        /// wasi::http::proxy::export!(MyIncomingHandler);
+        /// wasip2::http::proxy::export!(MyIncomingHandler);
         /// ```
         ///
         /// <!--

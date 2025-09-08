@@ -3,7 +3,7 @@ on: [push, pull_request]
 
 jobs:
   test_wasip2:
-    name: Test WASIp2
+    name: Test WASIp2 on ${{ matrix.rust }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -13,14 +13,7 @@ jobs:
     - uses: ./.github/actions/install-rust
       with:
         toolchain: ${{ matrix.rust }}
-    - run: rustup target add wasm32-wasip1 wasm32-wasip2 wasm32-unknown-unknown
-    - run: cargo build -p wasip2
-    - run: cargo build -p wasip2 --no-default-features
-    - run: cargo build -p wasip2 --target wasm32-wasip1
-    - run: cargo build -p wasip2 --target wasm32-wasip1 --no-default-features
-    - run: cargo build -p wasip2 --target wasm32-wasip2
-    - run: cargo build -p wasip2 --target wasm32-wasip2 --no-default-features
-    - run: cargo test -p wasip2 --doc
+    - run: rustup target add wasm32-wasip2 wasm32-unknown-unknown
     - name: Install Wasmtime
       uses: bytecodealliance/actions/wasmtime/setup@v1
       with:
@@ -29,50 +22,50 @@ jobs:
       uses: bytecodealliance/actions/wasm-tools/setup@v1
       with:
         version: "1.224.0"
-    - run: curl -LO https://github.com/bytecodealliance/wasmtime/releases/download/v30.0.2/wasi_snapshot_preview1.command.wasm
 
-    - run: cargo build -p wasip2 --examples --target wasm32-wasip1 --no-default-features
+    - run: cargo build -p wasip2 --examples --target wasm32-wasip2 --no-default-features
+    - run: wasmtime run ./target/wasm32-wasip2/debug/examples/hello-world-no_std.wasm
+    - run: wasmtime run ./target/wasm32-wasip2/debug/examples/cli_command_no_std.wasm
 
-    - run: wasm-tools component new ./target/wasm32-wasip1/debug/examples/hello-world-no_std.wasm --adapt ./wasi_snapshot_preview1.command.wasm -o component.wasm
-    - run: wasmtime run component.wasm
+    - run: cargo build -p wasip2 --examples --target wasm32-wasip2
+    - run: wasmtime run ./target/wasm32-wasip2/debug/examples/hello-world.wasm
+    - run: wasmtime run ./target/wasm32-wasip2/debug/examples/cli_command.wasm
+
 
     - run: cargo build -p wasip2 --examples --target wasm32-unknown-unknown --no-default-features
-
-    - run: wasm-tools component new ./target/wasm32-unknown-unknown/debug/examples/cli_command_no_std.wasm -o component.wasm
-    - run: wasmtime run component.wasm
-
     - run: wasm-tools component new ./target/wasm32-unknown-unknown/debug/examples/http_proxy_no_std.wasm -o component.wasm
     - run: wasm-tools component targets wit component.wasm -w wasi:http/proxy
 
-    - run: cargo build -p wasip2 --examples --target wasm32-wasip1
-
-    - run: wasm-tools component new ./target/wasm32-wasip1/debug/examples/hello-world.wasm --adapt ./wasi_snapshot_preview1.command.wasm -o component.wasm
-    - run: wasmtime run component.wasm
-
     - run: cargo build -p wasip2 --examples --target wasm32-unknown-unknown
-
-    - run: wasm-tools component new ./target/wasm32-unknown-unknown/debug/examples/cli_command.wasm -o component.wasm
-    - run: wasmtime run component.wasm
-
     - run: wasm-tools component new ./target/wasm32-unknown-unknown/debug/examples/http_proxy.wasm -o component.wasm
     - run: wasm-tools component targets wit component.wasm -w wasi:http/proxy
 
-    - run: cargo build -p wasip2 --examples --workspace --target wasm32-wasip1 --features rand
+    - run: cargo build -p wasi-ext --examples --target wasm32-wasip2 --features rand
+    - run: wasmtime run ./target/wasm32-wasip2/debug/examples/rand.wasm
 
-    - run: wasm-tools component new ./target/wasm32-wasip1/debug/examples/rand.wasm --adapt ./wasi_snapshot_preview1.command.wasm -o component.wasm
-    - run: wasmtime run component.wasm
-
-  test_wasip1:
-    name: Test WASIp1
+  build:
+    name: Build ${{ matrix.crate }} on ${{ matrix.rust }}
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        rust: [msrv, stable, beta, nightly]
+        crate: [wasi, wasip1, wasip2]
     steps:
     - uses: actions/checkout@v5
     - uses: ./.github/actions/install-rust
-    - run: rustup target add wasm32-wasip1
-    - run: cargo build -p wasip1
-    - run: cargo build -p wasip1 --no-default-features
-    - run: cargo build -p wasip1 --target wasm32-wasip1
-    - run: cargo build -p wasip1 --target wasm32-wasip1 --no-default-features
+      with:
+        toolchain: ${{ matrix.rust }}
+    - run: rustup target add wasm32-wasip1 wasm32-wasip2
+
+    - run: cargo build -p ${{ matrix.crate }}
+    - run: cargo build -p ${{ matrix.crate }} --target wasm32-wasip1
+    - run: cargo build -p ${{ matrix.crate }} --target wasm32-wasip2
+
+    - run: cargo build --no-default-features -p ${{ matrix.crate }}
+    - run: cargo build --no-default-features -p ${{ matrix.crate }} --target wasm32-wasip1
+    - run: cargo build --no-default-features -p ${{ matrix.crate }} --target wasm32-wasip2
+
+    - run: cargo test -p ${{ matrix.crate }} --doc
 
   generate:
     name: Ensure generated code up-to-date
