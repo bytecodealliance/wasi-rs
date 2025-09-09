@@ -26,3 +26,10 @@ for repo in $repos; do
     tar xzf - --strip-components=2 -C $dst/$repo wasi-$repo-$tag/wit
   rm -rf $dst/$repo/deps*
 done
+
+# WASIp1 vendoring logic
+wasip1_rev="0ba0c5e2"
+curl -o crates/wasip1/typenames.witx -L \
+  https://raw.githubusercontent.com/WebAssembly/WASI/$wasip1_rev/phases/snapshot/witx/typenames.witx
+curl -o crates/wasip1/wasi_snapshot_preview1.witx -L \
+  https://raw.githubusercontent.com/WebAssembly/WASI/$wasip1_rev/phases/snapshot/witx/wasi_snapshot_preview1.witx

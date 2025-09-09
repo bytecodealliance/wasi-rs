@@ -29,7 +29,7 @@
 //   * with "wasi:sockets/udp-create-socket@0.2.4" = "crate::sockets::udp_create_socket"
 //   * with "wasi:sockets/ip-name-lookup@0.2.4" = "crate::sockets::ip_name_lookup"
 //   * type_section_suffix: "rust-wasi-from-crates-io-command-world"
-//   * default-bindings-module: "wasi"
+//   * default-bindings-module: "$crate"
 //   * export-macro-name: _export_command
 //   * pub-export-macro
 use crate::cli::environment as __with_name0;
@@ -133,7 +133,7 @@ mod _rt {
 #[macro_export]
 macro_rules! __export_command_impl {
     ($ty:ident) => {
-        wasi::_export_command!($ty with_types_in wasi);
+        $crate::_export_command!($ty with_types_in $crate);
     };
     ($ty:ident with_types_in $($path_to_types_root:tt)*) => {
         $($path_to_types_root)*::

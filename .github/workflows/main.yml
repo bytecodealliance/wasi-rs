@@ -1,23 +1,25 @@
 name: CI
 on: [push, pull_request]
 
+# Cancel any in-flight jobs for the same PR/branch so there's only one active
+# at a time
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  test:
-    name: Test
+  test_wasip2:
+    name: Test WASIp2 on ${{ matrix.rust }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
         rust: [stable, beta, nightly]
     steps:
-    - uses: actions/checkout@v4
-    - name: Install Rust
-      run: rustup update ${{ matrix.rust }} && rustup default ${{ matrix.rust }} && rustup component add rustfmt
-    - run: rustup target add wasm32-wasip1 wasm32-unknown-unknown
-    - run: cargo build --workspace
-    - run: cargo build --workspace --no-default-features
-    - run: cargo build --workspace --target wasm32-wasip1
-    - run: cargo build --workspace --target wasm32-wasip1 --no-default-features
-    - run: cargo test --workspace --doc
+    - uses: actions/checkout@v5
+    - uses: ./.github/actions/install-rust
+      with:
+        toolchain: ${{ matrix.rust }}
+    - run: rustup target add wasm32-wasip2 wasm32-unknown-unknown
     - name: Install Wasmtime
       uses: bytecodealliance/actions/wasmtime/setup@v1
       with:
@@ -26,52 +28,71 @@ jobs:
       uses: bytecodealliance/actions/wasm-tools/setup@v1
       with:
         version: "1.224.0"
-    - run: curl -LO https://github.com/bytecodealliance/wasmtime/releases/download/v30.0.2/wasi_snapshot_preview1.command.wasm
 
-    - run: cargo build --examples --target wasm32-wasip1 --no-default-features
+    - run: cargo build -p wasip2 --examples --target wasm32-wasip2 --no-default-features
+    - run: wasmtime run ./target/wasm32-wasip2/debug/examples/hello-world-no_std.wasm
+    - run: wasmtime run ./target/wasm32-wasip2/debug/examples/cli_command_no_std.wasm
 
-    - run: wasm-tools component new ./target/wasm32-wasip1/debug/examples/hello-world-no_std.wasm --adapt ./wasi_snapshot_preview1.command.wasm -o component.wasm
-    - run: wasmtime run component.wasm
+    - run: cargo build -p wasip2 --examples --target wasm32-wasip2
+    - run: wasmtime run ./target/wasm32-wasip2/debug/examples/hello-world.wasm
+    - run: wasmtime run ./target/wasm32-wasip2/debug/examples/cli_command.wasm
 
-    - run: cargo build --examples --target wasm32-unknown-unknown --no-default-features
 
-    - run: wasm-tools component new ./target/wasm32-unknown-unknown/debug/examples/cli_command_no_std.wasm -o component.wasm
-    - run: wasmtime run component.wasm
-
+    - run: cargo build -p wasip2 --examples --target wasm32-unknown-unknown --no-default-features
     - run: wasm-tools component new ./target/wasm32-unknown-unknown/debug/examples/http_proxy_no_std.wasm -o component.wasm
     - run: wasm-tools component targets wit component.wasm -w wasi:http/proxy
 
-    - run: cargo build --examples --target wasm32-wasip1
-
-    - run: wasm-tools component new ./target/wasm32-wasip1/debug/examples/hello-world.wasm --adapt ./wasi_snapshot_preview1.command.wasm -o component.wasm
-    - run: wasmtime run component.wasm
-
-    - run: cargo build --examples --target wasm32-unknown-unknown
-
-    - run: wasm-tools component new ./target/wasm32-unknown-unknown/debug/examples/cli_command.wasm -o component.wasm
-    - run: wasmtime run component.wasm
-
+    - run: cargo build -p wasip2 --examples --target wasm32-unknown-unknown
     - run: wasm-tools component new ./target/wasm32-unknown-unknown/debug/examples/http_proxy.wasm -o component.wasm
     - run: wasm-tools component targets wit component.wasm -w wasi:http/proxy
 
-    - run: cargo build --examples --workspace --target wasm32-wasip1 --features rand
+    - run: cargo build -p wasi-ext --examples --target wasm32-wasip2 --features rand
+    - run: wasmtime run ./target/wasm32-wasip2/debug/examples/rand.wasm
 
-    - run: wasm-tools component new ./target/wasm32-wasip1/debug/examples/rand.wasm --adapt ./wasi_snapshot_preview1.command.wasm -o component.wasm
-    - run: wasmtime run component.wasm
+  build:
+    name: Build ${{ matrix.crate }} on ${{ matrix.rust }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        rust: [msrv, stable, beta, nightly]
+        crate: [wasi, wasip1, wasip2]
+    steps:
+    - uses: actions/checkout@v5
+    - uses: ./.github/actions/install-rust
+      with:
+        toolchain: ${{ matrix.rust }}
+    - run: rustup target add wasm32-wasip1 wasm32-wasip2
+
+    - run: cargo build -p ${{ matrix.crate }}
+    - run: cargo build -p ${{ matrix.crate }} --target wasm32-wasip1
+    - run: cargo build -p ${{ matrix.crate }} --target wasm32-wasip2
+
+    - run: cargo build --no-default-features -p ${{ matrix.crate }}
+    - run: cargo build --no-default-features -p ${{ matrix.crate }} --target wasm32-wasip1
+    - run: cargo build --no-default-features -p ${{ matrix.crate }} --target wasm32-wasip2
+
+    - run: cargo test -p ${{ matrix.crate }} --doc
 
   generate:
     name: Ensure generated code up-to-date
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    - name: Install Rust
-      run: rustup update stable && rustup default stable
+    - uses: actions/checkout@v5
+    - uses: ./.github/actions/install-rust
     # Re-vendor all WIT files and ensure that they're all up-to-date by ensuring
     # that there's no git changes.
     - name: Re-vendor WIT
       run: |
         ./ci/vendor-wit.sh
         git diff --exit-code
-    - run: cargo install wit-bindgen-cli@0.45.0 --locked
+    - run: |
+        version=0.45.0
+
+        mkdir wit-bindgen
+        cd wit-bindgen
+        curl -o wit-bindgen.tar.gz -L https://github.com/bytecodealliance/wit-bindgen/releases/download/v$version/wit-bindgen-$version-x86_64-linux.tar.gz
+        tar xf wit-bindgen.tar.gz
+        echo "PATH=$PATH:`pwd`/wit-bindgen-$version-x86_64-linux" >> $GITHUB_ENV
+      working-directory: ${{ runner.tool_cache }}
     - run: ./ci/regenerate.sh
     - run: git diff --exit-code

@@ -11,7 +11,7 @@
 //   * with "wasi:io/streams@0.2.4" = "crate::io::streams"
 //   * with "wasi:random/random@0.2.4" = "crate::random::random"
 //   * type_section_suffix: "rust-wasi-from-crates-io-proxy-world"
-//   * default-bindings-module: "wasi"
+//   * default-bindings-module: "$crate"
 //   * export-macro-name: _export_proxy
 //   * pub-export-macro
 use crate::io::poll as __with_name0;
@@ -7126,7 +7126,7 @@ mod _rt {
 #[macro_export]
 macro_rules! __export_proxy_impl {
     ($ty:ident) => {
-        wasi::_export_proxy!($ty with_types_in wasi);
+        $crate::_export_proxy!($ty with_types_in $crate);
     };
     ($ty:ident with_types_in $($path_to_types_root:tt)*) => {
         $($path_to_types_root)*::
