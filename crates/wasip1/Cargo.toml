@@ -1,6 +1,6 @@
 [package]
 name = "wasip1"
-version = "1.0.0+wasi-snapshot-preview1"
+version = "1.0.0"
 license = "Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT"
 description = "WASIp1 API bindings for Rust"
 edition = "2018"
