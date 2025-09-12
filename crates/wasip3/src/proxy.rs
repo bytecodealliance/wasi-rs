@@ -6,7 +6,7 @@
 //   * with "wasi:clocks/monotonic-clock@0.3.0-rc-2025-08-15" = "crate::clocks::monotonic_clock"
 //   * with "wasi:clocks/wall-clock@0.3.0-rc-2025-08-15" = "crate::clocks::wall_clock"
 //   * with "wasi:random/random@0.3.0-rc-2025-08-15" = "crate::random::random"
-//   * type_section_suffix: "rust-wasip3-0.1.0+wasi-0.3.0-rc-2025-08-15-from-crates-io-proxy-world"
+//   * type_section_suffix: "rust-wasip3-0.1.1+wasi-0.3.0-rc-2025-08-15-from-crates-io-proxy-world"
 //   * default-bindings-module: "$crate"
 //   * export-macro-name: _export_proxy
 //   * pub-export-macro
@@ -7044,7 +7044,7 @@ macro_rules! __export_proxy_impl {
         exports::wasi::http::handler::__export_wasi_http_handler_0_3_0_rc_2025_08_15_cabi!($ty
         with_types_in $($path_to_types_root)*:: exports::wasi::http::handler); const _ :
         () = { #[rustfmt::skip] #[cfg(target_arch = "wasm32")] #[unsafe (link_section =
-        "component-type:wit-bindgen:0.45.1:wasi:http@0.3.0-rc-2025-08-15:proxy:imports and exportsrust-wasip3-0.1.0+wasi-0.3.0-rc-2025-08-15-from-crates-io-proxy-world")]
+        "component-type:wit-bindgen:0.45.1:wasi:http@0.3.0-rc-2025-08-15:proxy:imports and exportsrust-wasip3-0.1.1+wasi-0.3.0-rc-2025-08-15-from-crates-io-proxy-world")]
         #[doc(hidden)] #[allow(clippy::octal_escapes)] pub static
         __WIT_BINDGEN_COMPONENT_TYPE : [u8; 4657] = *
         b"\
@@ -7148,7 +7148,7 @@ pub use __export_proxy_impl as _export_proxy;
 #[rustfmt::skip]
 #[cfg(target_arch = "wasm32")]
 #[unsafe(
-    link_section = "component-type:wit-bindgen:0.45.1:wasi:http@0.3.0-rc-2025-08-15:proxy-with-all-of-its-exports-removed:encoded worldrust-wasip3-0.1.0+wasi-0.3.0-rc-2025-08-15-from-crates-io-proxy-world"
+    link_section = "component-type:wit-bindgen:0.45.1:wasi:http@0.3.0-rc-2025-08-15:proxy-with-all-of-its-exports-removed:encoded worldrust-wasip3-0.1.1+wasi-0.3.0-rc-2025-08-15-from-crates-io-proxy-world"
 )]
 #[doc(hidden)]
 #[allow(clippy::octal_escapes)]

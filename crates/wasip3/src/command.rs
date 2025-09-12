@@ -19,7 +19,7 @@
 //   * with "wasi:random/insecure-seed@0.3.0-rc-2025-08-15" = "crate::random::insecure_seed"
 //   * with "wasi:sockets/types@0.3.0-rc-2025-08-15" = "crate::sockets::types"
 //   * with "wasi:sockets/ip-name-lookup@0.3.0-rc-2025-08-15" = "crate::sockets::ip_name_lookup"
-//   * type_section_suffix: "rust-wasip3-0.1.0+wasi-0.3.0-rc-2025-08-15-from-crates-io-command-world"
+//   * type_section_suffix: "rust-wasip3-0.1.1+wasi-0.3.0-rc-2025-08-15-from-crates-io-command-world"
 //   * default-bindings-module: "$crate"
 //   * export-macro-name: _export_command
 //   * pub-export-macro
@@ -174,7 +174,7 @@ macro_rules! __export_command_impl {
         exports::wasi::cli::run::__export_wasi_cli_run_0_3_0_rc_2025_08_15_cabi!($ty
         with_types_in $($path_to_types_root)*:: exports::wasi::cli::run); const _ : () =
         { #[rustfmt::skip] #[cfg(target_arch = "wasm32")] #[unsafe (link_section =
-        "component-type:wit-bindgen:0.45.1:wasi:cli@0.3.0-rc-2025-08-15:command:imports and exportsrust-wasip3-0.1.0+wasi-0.3.0-rc-2025-08-15-from-crates-io-command-world")]
+        "component-type:wit-bindgen:0.45.1:wasi:cli@0.3.0-rc-2025-08-15:command:imports and exportsrust-wasip3-0.1.1+wasi-0.3.0-rc-2025-08-15-from-crates-io-command-world")]
         #[doc(hidden)] #[allow(clippy::octal_escapes)] pub static
         __WIT_BINDGEN_COMPONENT_TYPE : [u8; 7934] = *
         b"\
@@ -338,7 +338,7 @@ pub use __export_command_impl as _export_command;
 #[rustfmt::skip]
 #[cfg(target_arch = "wasm32")]
 #[unsafe(
-    link_section = "component-type:wit-bindgen:0.45.1:wasi:cli@0.3.0-rc-2025-08-15:command-with-all-of-its-exports-removed:encoded worldrust-wasip3-0.1.0+wasi-0.3.0-rc-2025-08-15-from-crates-io-command-world"
+    link_section = "component-type:wit-bindgen:0.45.1:wasi:cli@0.3.0-rc-2025-08-15:command-with-all-of-its-exports-removed:encoded worldrust-wasip3-0.1.1+wasi-0.3.0-rc-2025-08-15-from-crates-io-command-world"
 )]
 #[doc(hidden)]
 #[allow(clippy::octal_escapes)]
