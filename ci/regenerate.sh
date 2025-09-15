@@ -2,6 +2,13 @@
 
 set -ex
 
+suffix() {
+    name="$1"
+    extra="$2"
+    cargo metadata | jq -r \
+        ".packages.[] | select(.name==\"${name}\") | (\"rust-\" + .name + \"-\" + .version + \"-from-crates-io${extra}\")"
+}
+
 generate() {
   file="$1"
   shift
@@ -25,7 +32,7 @@ generate_p2() {
 # Generate the main body of the bindings which includes all imports from the two
 # worlds below.
 generate_p2 crates/wasip2/src/imports.rs \
-  --type-section-suffix rust-wasi-from-crates-io \
+  --type-section-suffix $(suffix "wasip2") \
   --generate-all \
   --world wasi:cli/imports
 
@@ -63,7 +70,7 @@ with="$with,wasi:sockets/ip-name-lookup@0.2.4=crate::sockets::ip_name_lookup"
 generate_p2 crates/wasip2/src/command.rs \
   --world wasi:cli/command \
   --with "$with" \
-  --type-section-suffix rust-wasi-from-crates-io-command-world \
+  --type-section-suffix $(suffix "wasip2" "-command-world") \
   --default-bindings-module '$crate' \
   --pub-export-macro \
   --export-macro-name _export_command
@@ -81,7 +88,7 @@ with="$with,wasi:random/random@0.2.4=crate::random::random"
 generate_p2 crates/wasip2/src/proxy.rs \
   --world wasi:http/proxy \
   --with "$with" \
-  --type-section-suffix rust-wasi-from-crates-io-proxy-world \
+  --type-section-suffix $(suffix "wasip2" "-proxy-world") \
   --default-bindings-module '$crate' \
   --pub-export-macro \
   --export-macro-name _export_proxy
@@ -94,7 +101,7 @@ generate_p3() {
 }
 
 generate_p3 crates/wasip3/src/imports.rs \
-  --type-section-suffix rust-wasi-from-crates-io \
+  --type-section-suffix $(suffix "wasip3") \
   --generate-all \
   --world wasi:cli/imports
 
@@ -120,7 +127,7 @@ with="$with,wasi:sockets/ip-name-lookup@0.3.0-rc-2025-08-15=crate::sockets::ip_n
 generate_p3 crates/wasip3/src/command.rs \
   --world wasi:cli/command \
   --with "$with" \
-  --type-section-suffix rust-wasi-from-crates-io-command-world \
+  --type-section-suffix $(suffix "wasip3" "-command-world") \
   --default-bindings-module '$crate' \
   --pub-export-macro \
   --async 'wasi:cli/run@0.3.0-rc-2025-08-15#run' \
@@ -135,7 +142,7 @@ with="$with,wasi:random/random@0.3.0-rc-2025-08-15=crate::random::random"
 generate_p3 crates/wasip3/src/proxy.rs \
   --world wasi:http/proxy \
   --with "$with" \
-  --type-section-suffix rust-wasi-from-crates-io-proxy-world \
+  --type-section-suffix $(suffix "wasip3" "-proxy-world") \
   --default-bindings-module '$crate' \
   --pub-export-macro \
   --export-macro-name _export_proxy
