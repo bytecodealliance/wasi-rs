@@ -11,6 +11,7 @@ impl wasip3::exports::cli::run::Guest for Example {
             async {
                 let remaining = tx.write_all(b"Hello, WASI!".to_vec()).await;
                 assert!(remaining.is_empty());
+                drop(tx);
             }
         );
         Ok(())
