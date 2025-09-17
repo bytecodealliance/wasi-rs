@@ -34,7 +34,7 @@ vendor() {
 }
 
 vendor crates/wasip2/wit/deps 0.2.4 wit "cli clocks filesystem http io random sockets"
-vendor crates/wasip3/wit/deps 0.3.0-rc-2025-08-15 wit-0.3.0-draft "cli clocks filesystem http random sockets"
+vendor crates/wasip3/wit/deps 0.3.0-rc-2025-09-16 wit-0.3.0-draft "cli clocks filesystem http random sockets"
 
 # WASIp1 vendoring logic
 wasip1_rev="0ba0c5e2"
