@@ -105,40 +105,43 @@ generate_p3 crates/wasip3/src/imports.rs \
   --generate-all \
   --world wasi:cli/imports
 
-with="wasi:cli/environment@0.3.0-rc-2025-08-15=crate::cli::environment"
-with="$with,wasi:cli/exit@0.3.0-rc-2025-08-15=crate::cli::exit"
-with="$with,wasi:cli/stdin@0.3.0-rc-2025-08-15=crate::cli::stdin"
-with="$with,wasi:cli/stdout@0.3.0-rc-2025-08-15=crate::cli::stdout"
-with="$with,wasi:cli/stderr@0.3.0-rc-2025-08-15=crate::cli::stderr"
-with="$with,wasi:cli/terminal-input@0.3.0-rc-2025-08-15=crate::cli::terminal_input"
-with="$with,wasi:cli/terminal-output@0.3.0-rc-2025-08-15=crate::cli::terminal_output"
-with="$with,wasi:cli/terminal-stdin@0.3.0-rc-2025-08-15=crate::cli::terminal_stdin"
-with="$with,wasi:cli/terminal-stdout@0.3.0-rc-2025-08-15=crate::cli::terminal_stdout"
-with="$with,wasi:cli/terminal-stderr@0.3.0-rc-2025-08-15=crate::cli::terminal_stderr"
-with="$with,wasi:clocks/monotonic-clock@0.3.0-rc-2025-08-15=crate::clocks::monotonic_clock"
-with="$with,wasi:clocks/wall-clock@0.3.0-rc-2025-08-15=crate::clocks::wall_clock"
-with="$with,wasi:filesystem/types@0.3.0-rc-2025-08-15=crate::filesystem::types"
-with="$with,wasi:filesystem/preopens@0.3.0-rc-2025-08-15=crate::filesystem::preopens"
-with="$with,wasi:random/random@0.3.0-rc-2025-08-15=crate::random::random"
-with="$with,wasi:random/insecure@0.3.0-rc-2025-08-15=crate::random::insecure"
-with="$with,wasi:random/insecure-seed@0.3.0-rc-2025-08-15=crate::random::insecure_seed"
-with="$with,wasi:sockets/types@0.3.0-rc-2025-08-15=crate::sockets::types"
-with="$with,wasi:sockets/ip-name-lookup@0.3.0-rc-2025-08-15=crate::sockets::ip_name_lookup"
+with="wasi:cli/environment@0.3.0-rc-2025-09-16=crate::cli::environment"
+with="$with,wasi:cli/exit@0.3.0-rc-2025-09-16=crate::cli::exit"
+with="$with,wasi:cli/stdin@0.3.0-rc-2025-09-16=crate::cli::stdin"
+with="$with,wasi:cli/stdout@0.3.0-rc-2025-09-16=crate::cli::stdout"
+with="$with,wasi:cli/stderr@0.3.0-rc-2025-09-16=crate::cli::stderr"
+with="$with,wasi:cli/types@0.3.0-rc-2025-09-16=crate::cli::types"
+with="$with,wasi:cli/terminal-input@0.3.0-rc-2025-09-16=crate::cli::terminal_input"
+with="$with,wasi:cli/terminal-output@0.3.0-rc-2025-09-16=crate::cli::terminal_output"
+with="$with,wasi:cli/terminal-stdin@0.3.0-rc-2025-09-16=crate::cli::terminal_stdin"
+with="$with,wasi:cli/terminal-stdout@0.3.0-rc-2025-09-16=crate::cli::terminal_stdout"
+with="$with,wasi:cli/terminal-stderr@0.3.0-rc-2025-09-16=crate::cli::terminal_stderr"
+with="$with,wasi:clocks/monotonic-clock@0.3.0-rc-2025-09-16=crate::clocks::monotonic_clock"
+with="$with,wasi:clocks/wall-clock@0.3.0-rc-2025-09-16=crate::clocks::wall_clock"
+with="$with,wasi:clocks/types@0.3.0-rc-2025-09-16=crate::clocks::types"
+with="$with,wasi:filesystem/types@0.3.0-rc-2025-09-16=crate::filesystem::types"
+with="$with,wasi:filesystem/preopens@0.3.0-rc-2025-09-16=crate::filesystem::preopens"
+with="$with,wasi:random/random@0.3.0-rc-2025-09-16=crate::random::random"
+with="$with,wasi:random/insecure@0.3.0-rc-2025-09-16=crate::random::insecure"
+with="$with,wasi:random/insecure-seed@0.3.0-rc-2025-09-16=crate::random::insecure_seed"
+with="$with,wasi:sockets/types@0.3.0-rc-2025-09-16=crate::sockets::types"
+with="$with,wasi:sockets/ip-name-lookup@0.3.0-rc-2025-09-16=crate::sockets::ip_name_lookup"
 generate_p3 crates/wasip3/src/command.rs \
   --world wasi:cli/command \
   --with "$with" \
   --type-section-suffix $(suffix "wasip3" "-command-world") \
   --default-bindings-module '$crate' \
   --pub-export-macro \
-  --async 'wasi:cli/run@0.3.0-rc-2025-08-15#run' \
   --export-macro-name _export_command
 
-with="wasi:cli/stdin@0.3.0-rc-2025-08-15=crate::cli::stdin"
-with="$with,wasi:cli/stdout@0.3.0-rc-2025-08-15=crate::cli::stdout"
-with="$with,wasi:cli/stderr@0.3.0-rc-2025-08-15=crate::cli::stderr"
-with="$with,wasi:clocks/monotonic-clock@0.3.0-rc-2025-08-15=crate::clocks::monotonic_clock"
-with="$with,wasi:clocks/wall-clock@0.3.0-rc-2025-08-15=crate::clocks::wall_clock"
-with="$with,wasi:random/random@0.3.0-rc-2025-08-15=crate::random::random"
+with="wasi:cli/stdin@0.3.0-rc-2025-09-16=crate::cli::stdin"
+with="$with,wasi:cli/stdout@0.3.0-rc-2025-09-16=crate::cli::stdout"
+with="$with,wasi:cli/stderr@0.3.0-rc-2025-09-16=crate::cli::stderr"
+with="$with,wasi:cli/types@0.3.0-rc-2025-09-16=crate::cli::types"
+with="$with,wasi:clocks/monotonic-clock@0.3.0-rc-2025-09-16=crate::clocks::monotonic_clock"
+with="$with,wasi:clocks/wall-clock@0.3.0-rc-2025-09-16=crate::clocks::wall_clock"
+with="$with,wasi:clocks/types@0.3.0-rc-2025-09-16=crate::clocks::types"
+with="$with,wasi:random/random@0.3.0-rc-2025-09-16=crate::random::random"
 generate_p3 crates/wasip3/src/proxy.rs \
   --world wasi:http/proxy \
   --with "$with" \

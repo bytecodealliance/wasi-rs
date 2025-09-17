@@ -1,6 +1,6 @@
 [package]
 name = "wasip3"
-version = "0.1.1+wasi-0.3.0-rc-2025-08-15"
+version = "0.2.0+wasi-0.3.0-rc-2025-09-16"
 description = "WASIp3 API bindings for Rust"
 categories = ["no-std", "wasm"]
 keywords = ["webassembly", "wasm"]
@@ -15,6 +15,9 @@ rust-version.workspace = true
 # NB: async bindings require `std` right now so this doesn't optionally disable
 # `std`, it's intentionally always enabled.
 wit-bindgen = { workspace = true, features = ['default', 'async'] }
+
+[dev-dependencies]
+futures = "0.3.31"
 
 [[example]]
 name = "cli-command"
