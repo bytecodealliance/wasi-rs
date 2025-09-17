@@ -16,6 +16,9 @@ rust-version.workspace = true
 # `std`, it's intentionally always enabled.
 wit-bindgen = { workspace = true, features = ['default', 'async'] }
 
+[dev-dependencies]
+futures = "0.3.31"
+
 [[example]]
 name = "cli-command"
 crate-type = ["cdylib"]
