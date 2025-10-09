@@ -39,7 +39,7 @@ $ cargo add wasip3
 
 Using this crate requires Rust 1.90.0. If you're using this before 2025-09-18
 you'll want to use the beta channel of Rust. You'll also want to use this crate
-with the `wasm32-wasip2` crate (the Rust compiler does not currently have a
+with the `wasm32-wasip2` target (the Rust compiler does not currently have a
 `wasm32-wasip3` target).
 
 # Development
