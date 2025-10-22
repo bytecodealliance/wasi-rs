@@ -1,7 +1,9 @@
 //! Extension types for wasip3::http
 
-pub mod body_writer;
+pub use body_writer::*;
+mod body_writer;
 
+pub use conversions::*;
 mod conversions;
 
 use crate::{
@@ -37,6 +39,36 @@ pub type IncomingRequestBody = IncomingBody<types::Request>;
 /// This type is typically used by components that handle HTTP
 /// responses and need to read or stream the response body.
 pub type IncomingResponseBody = IncomingBody<types::Response>;
+
+/// A type alias for an HTTP request with a customizable body type.
+///
+/// This is a convenience wrapper around [`http::Request`], parameterized
+/// by the body type `T`. By default, it uses [`IncomingRequestBody`],
+/// which represents the standard incoming body used by this runtime.
+///
+/// # Type Parameters
+///
+/// * `T` — The request body type. Defaults to [`IncomingRequestBody`].
+///
+/// # See also
+/// - [`IncomingRequestBody`]: The body type for inbound HTTP requests.
+/// - [`http::Request`]: The standard HTTP request type from the `http` crate.
+pub type Request<T = IncomingRequestBody> = http::Request<T>;
+
+/// A type alias for an HTTP response with a customizable body type.
+///
+/// This is a convenience wrapper around [`http::Response`], parameterized
+/// by the body type `T`. By default, it uses [`IncomingResponseBody`],
+/// which represents the standard incoming body type used by this runtime.
+///
+/// # Type Parameters
+///
+/// * `T` — The response body type. Defaults to [`IncomingResponseBody`].
+///
+/// # See also
+/// - [`IncomingResponseBody`]: The body type for inbound HTTP responses.
+/// - [`http::Response`]: The standard HTTP response type from the `http` crate.
+pub type Response<T = IncomingResponseBody> = http::Response<T>;
 
 /// A wrapper around [`types::RequestOptions`] that implements [`Clone`]
 pub struct RequestOptionsExtension(pub types::RequestOptions);
