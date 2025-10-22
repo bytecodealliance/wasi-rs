@@ -218,6 +218,9 @@ pub mod cli {
     }
 }
 
+#[cfg(feature = "http-compat")]
+pub mod http_compat;
+
 pub mod http {
     pub use super::proxy::wasi::http::*;
 
