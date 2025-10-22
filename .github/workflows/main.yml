@@ -138,3 +138,7 @@ jobs:
     - run: cargo build -p wasip3 --examples --target wasm32-unknown-unknown
     - run: wasm-tools component new ./target/wasm32-unknown-unknown/debug/examples/http_proxy.wasm -o component.wasm
     - run: wasm-tools component targets ./crates/wasip3/wit component.wasm -w wasi:http/proxy
+
+    - run: cargo build -p wasip3 --examples --target wasm32-unknown-unknown --features http-compat
+    - run: wasm-tools component new ./target/wasm32-unknown-unknown/debug/examples/http_proxy_compat.wasm -o component.wasm
+    - run: wasm-tools component targets ./crates/wasip3/wit component.wasm -w wasi:http/proxy
