@@ -28,27 +28,6 @@ use std::{
 /// serializing status codes, headers, and body data into their WebAssembly-compatible
 /// representations. It supports generic response body types and streams the response
 /// asynchronously into the WASI environment.
-///
-/// # Type Parameters
-///
-/// - `T`: The response body type.  
-///   Must implement [`http_body::Body`] and [`Any`], with:
-///   - `T::Data: Into<Vec<u8>>` — allowing conversion of body chunks into raw bytes.
-///   - `T::Error: Into<Box<dyn std::error::Error + Send + Sync + 'static>>` — allowing
-///     conversion of body errors into boxed, thread-safe errors.
-///
-/// # Behavior
-///
-/// - If the response can be downcast to an [`IncomingResponseBody`] that has not yet started,
-///   the unstarted response is immediately extracted and returned as a `WasiHttpResponse`.
-/// - Otherwise:
-///   - The response headers are cloned and converted into the WASI-compatible format.
-///   - A new [`BodyWriter`] is created to stream the body data into the WASI environment.
-///   - A [`WasiHttpResponse`] is constructed with the converted headers, body stream, and
-///     result channel.
-///   - The HTTP status code is set on the WASI response.
-///   - An asynchronous task is spawned to forward the body data from the host response
-///     into the WASI-side body writer.
 /// 
 /// # See Also
 ///
@@ -95,15 +74,7 @@ where
 /// This function performs the reverse operation of [`http_into_wasi_response`], translating
 /// the fields and body of a response from the WASI HTTP model into the conventional Rust
 /// `http` crate representation.
-///
-/// # Behavior
-///
-/// - Creates an HTTP response builder and sets its status code from the WASI response.
-/// - Iterates through all headers from the WASI response and adds them to the HTTP response builder.
-/// - Wraps the WASI response’s body in an [`IncomingResponseBody`] to provide a streaming interface
-///   compatible with host-side consumers.
-/// - Finalizes and returns the constructed [`HttpResponse`].
-///
+/// 
 /// # See Also
 ///
 /// - [`http_into_wasi_response`] — the inverse conversion.
@@ -125,25 +96,6 @@ pub fn http_from_wasi_response(resp: WasiHttpResponse) -> Result<HttpResponse, E
 /// This function bridges between the standard Rust `http` crate request types and the WASI HTTP
 /// request model used in WebAssembly components. It serializes headers, method, URI components,
 /// and body streams into their WASI equivalents while preserving request metadata.
-///
-/// # Type Parameters
-///
-/// - `T`: The body type of the HTTP request. It must implement [`http_body::Body`] and [`Any`],
-///   and its data must be convertible into a `Vec<u8>`. The body’s error type must also be convertible
-///   into a boxed error implementing [`std::error::Error`].
-///
-/// # Behavior
-///
-/// - If the input request can be downcast to an [`IncomingRequestBody`] that has not yet started,
-///   the unstarted request is immediately extracted and returned as a `WasiHttpRequest`.
-/// - Otherwise, the request is decomposed into its parts and body using [`HttpRequest::into_parts()`].
-/// - The headers are cloned and converted into the WASI format using `try_into()`.
-/// - Optional per-request configuration (such as timeouts or redirects) is extracted from
-///   [`RequestOptionsExtension`] if present in the request’s extensions.
-/// - A [`BodyWriter`] is created to stream the request body into the WASI component.
-/// - The method, scheme, authority, and path+query components are set on the WASI request,
-///   returning standardized [`ErrorCode`]s if invalid.
-/// - An asynchronous task is spawned to send the body data into the WASI-side body stream.
 ///
 /// # See Also
 ///
@@ -209,19 +161,7 @@ where
 /// from the WASI HTTP model into a conventional Rust `http` request type. It reconstructs
 /// the URI, method, headers, extensions, and body so that the request can be used directly
 /// by host HTTP clients, servers, or middleware.
-///
-/// # Behavior
-///
-/// - Builds a [`Uri`] using the scheme, authority, and path/query values retrieved from
-///   the WASI request.
-/// - Initializes an [`http::Request`] builder with the reconstructed URI and the request method.
-/// - Copies all headers from the WASI request into the new host request.
-/// - If the WASI request includes configuration options, wraps them in a
-///   [`RequestOptionsExtension`] and attaches them as an extension to the request.
-/// - Wraps the WASI request body in an [`IncomingRequestBody`] to provide an asynchronous
-///   stream interface for the host environment.
-/// - Returns the completed [`HttpRequest`] once construction succeeds.
-///
+/// 
 /// # See Also
 ///
 /// - [`http_into_wasi_request`] — converts from host HTTP requests into WASI requests.

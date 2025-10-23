@@ -46,10 +46,6 @@ pub type IncomingResponseBody = IncomingBody<types::Response>;
 /// by the body type `T`. By default, it uses [`IncomingRequestBody`],
 /// which represents the standard incoming body used by this runtime.
 ///
-/// # Type Parameters
-///
-/// * `T` — The request body type. Defaults to [`IncomingRequestBody`].
-///
 /// # See also
 /// - [`IncomingRequestBody`]: The body type for inbound HTTP requests.
 /// - [`http::Request`]: The standard HTTP request type from the `http` crate.
@@ -60,10 +56,6 @@ pub type Request<T = IncomingRequestBody> = http::Request<T>;
 /// This is a convenience wrapper around [`http::Response`], parameterized
 /// by the body type `T`. By default, it uses [`IncomingResponseBody`],
 /// which represents the standard incoming body type used by this runtime.
-///
-/// # Type Parameters
-///
-/// * `T` — The response body type. Defaults to [`IncomingResponseBody`].
 ///
 /// # See also
 /// - [`IncomingResponseBody`]: The body type for inbound HTTP responses.
