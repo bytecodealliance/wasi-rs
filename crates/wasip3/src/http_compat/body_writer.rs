@@ -99,6 +99,7 @@ impl BodyWriter {
                 None => break,
             }
         }
+        drop(self.stream_writer);
         let maybe_trailers = if self.trailers.is_empty() {
             None
         } else {
