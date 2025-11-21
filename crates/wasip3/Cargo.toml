@@ -22,7 +22,7 @@ http-compat = [
 [dependencies]
 # NB: async bindings require `std` right now so this doesn't optionally disable
 # `std`, it's intentionally always enabled.
-wit-bindgen = { workspace = true, features = ['default', 'async'] }
+wit-bindgen = { workspace = true, features = ['async'] }
 # Optional dependencies for extending http types.
 bytes = { version = "1.10.1", optional = true }
 http-body = { version = "1.0.1", optional = true }
