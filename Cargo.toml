@@ -21,7 +21,7 @@ rust-version = "1.82.0"
 [workspace.dependencies]
 rand = { version = "0.8.5", default-features = false }
 wasi = { version = "0.14.6", path = ".", default-features = false }
-wit-bindgen = { version = "0.48.0", default-features = false }
+wit-bindgen = { version = "0.48.1", default-features = false }
 wasip1 = { version = "1.0.0", path = "crates/wasip1", default-features = false }
 wasip2 = { version = "1.0.1", path = "crates/wasip2", default-features = false }
 wasip3 = { version = "0.1.1", path = "crates/wasip3", default-features = false }
