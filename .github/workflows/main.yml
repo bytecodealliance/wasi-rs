@@ -91,7 +91,7 @@ jobs:
         ./ci/vendor-wit.sh
         git diff --exit-code
     - run: |
-        version=0.46.0
+        version=0.48.0
 
         mkdir wit-bindgen
         cd wit-bindgen
@@ -120,17 +120,22 @@ jobs:
         toolchain: ${{ matrix.rust }}
     - run: rustup target add wasm32-wasip2 wasm32-unknown-unknown
     - run: |
-        version=dev
+        version=v0.5.19
 
-        mkdir wasmtime
-        cd wasmtime
-        curl -o wasmtime.tar.xz -L https://github.com/bytecodealliance/wasmtime/releases/download/$version/wasmtime-$version-x86_64-linux.tar.xz
-        tar xf wasmtime.tar.xz
-        echo "PATH=$PATH:`pwd`/wasmtime-$version-x86_64-linux" >> $GITHUB_ENV
+        mkdir ld
+        cd ld
+        curl -o ld.tar.gz -L https://github.com/bytecodealliance/wasm-component-ld/releases/download/$version/wasm-component-ld-$version-x86_64-linux.tar.gz
+        tar xf ld.tar.gz
+        echo "PATH=$PATH:`pwd`/wasm-component-ld-$version-x86_64-linux" >> $GITHUB_ENV
+        echo "CARGO_TARGET_WASM32_WASIP2_LINKER=`pwd`/wasm-component-ld-$version-x86_64-linux/wasm-component-ld" >> $GITHUB_ENV
+    - name: Install wasmtime
+      uses: bytecodealliance/actions/wasmtime/setup@v1
+      with:
+        version: "dev"
     - name: Install wasm-tools
       uses: bytecodealliance/actions/wasm-tools/setup@v1
       with:
-        version: "1.238.1"
+        version: "1.241.2"
 
     - run: cargo build -p wasip3 --examples --target wasm32-wasip2
     - run: wasmtime run -Sp3 -Wcomponent-model-async ./target/wasm32-wasip2/debug/examples/cli_command.wasm
