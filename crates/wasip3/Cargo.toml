@@ -17,6 +17,7 @@ http-compat = [
     "dep:http-body",
     "dep:http",
     "dep:thiserror",
+    "wit-bindgen/async-spawn",
 ]
 
 [dependencies]
