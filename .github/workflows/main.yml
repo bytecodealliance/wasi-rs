@@ -37,7 +37,6 @@ jobs:
     - run: wasmtime run ./target/wasm32-wasip2/debug/examples/hello-world.wasm
     - run: wasmtime run ./target/wasm32-wasip2/debug/examples/cli_command.wasm
 
-
     - run: cargo build -p wasip2 --examples --target wasm32-unknown-unknown --no-default-features
     - run: wasm-tools component new ./target/wasm32-unknown-unknown/debug/examples/http_proxy_no_std.wasm -o component.wasm
     - run: wasm-tools component targets ./crates/wasip2/wit component.wasm -w wasi:http/proxy
@@ -139,6 +138,10 @@ jobs:
 
     - run: cargo build -p wasip3 --examples --target wasm32-wasip2
     - run: wasmtime run -Sp3 -Wcomponent-model-async ./target/wasm32-wasip2/debug/examples/cli_command.wasm
+
+    - run: cargo build -p wasip3 --example http-proxy-compat --target wasm32-unknown-unknown --features http-compat
+    - run: wasm-tools component new ./target/wasm32-unknown-unknown/debug/examples/http_proxy_compat.wasm -o component.wasm
+    - run: wasm-tools component targets ./crates/wasip3/wit component.wasm -w wasi:http/proxy
 
     - run: cargo build -p wasip3 --examples --target wasm32-unknown-unknown
     - run: wasm-tools component new ./target/wasm32-unknown-unknown/debug/examples/http_proxy.wasm -o component.wasm
