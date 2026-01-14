@@ -123,7 +123,7 @@ jobs:
         toolchain: ${{ matrix.rust }}
     - run: rustup target add wasm32-wasip2 wasm32-unknown-unknown
     - run: |
-        version=v0.5.19
+        version=v0.5.20
 
         mkdir ld
         cd ld
@@ -134,11 +134,11 @@ jobs:
     - name: Install wasmtime
       uses: bytecodealliance/actions/wasmtime/setup@v1
       with:
-        version: "dev"
+        version: "40.0.2"
     - name: Install wasm-tools
       uses: bytecodealliance/actions/wasm-tools/setup@v1
       with:
-        version: "1.241.2"
+        version: "1.244.0"
 
     - run: cargo build -p wasip3 --examples --target wasm32-wasip2
     - run: wasmtime run -Sp3 -Wcomponent-model-async ./target/wasm32-wasip2/debug/examples/cli_command.wasm
