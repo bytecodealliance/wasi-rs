@@ -23,11 +23,11 @@ jobs:
     - name: Install Wasmtime
       uses: bytecodealliance/actions/wasmtime/setup@v1
       with:
-        version: "v30.0.2"
+        version: "v40.0.2"
     - name: Install wasm-tools
       uses: bytecodealliance/actions/wasm-tools/setup@v1
       with:
-        version: "1.224.0"
+        version: "1.244.0"
 
     - run: cargo build -p wasip2 --examples --target wasm32-wasip2 --no-default-features
     - run: wasmtime run ./target/wasm32-wasip2/debug/examples/hello-world-no_std.wasm
@@ -83,6 +83,10 @@ jobs:
     steps:
     - uses: actions/checkout@v5
     - uses: ./.github/actions/install-rust
+    - name: Install wkg
+      run: |
+        curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
+        cargo binstall --no-confirm wkg
     # Re-vendor all WIT files and ensure that they're all up-to-date by ensuring
     # that there's no git changes.
     - name: Re-vendor WIT
@@ -90,7 +94,7 @@ jobs:
         ./ci/vendor-wit.sh
         git diff --exit-code
     - run: |
-        version=0.48.0
+        version=0.51.0
 
         mkdir wit-bindgen
         cd wit-bindgen
@@ -119,7 +123,7 @@ jobs:
         toolchain: ${{ matrix.rust }}
     - run: rustup target add wasm32-wasip2 wasm32-unknown-unknown
     - run: |
-        version=v0.5.19
+        version=v0.5.20
 
         mkdir ld
         cd ld
@@ -130,11 +134,11 @@ jobs:
     - name: Install wasmtime
       uses: bytecodealliance/actions/wasmtime/setup@v1
       with:
-        version: "dev"
+        version: "40.0.2"
     - name: Install wasm-tools
       uses: bytecodealliance/actions/wasm-tools/setup@v1
       with:
-        version: "1.241.2"
+        version: "1.244.0"
 
     - run: cargo build -p wasip3 --examples --target wasm32-wasip2
     - run: wasmtime run -Sp3 -Wcomponent-model-async ./target/wasm32-wasip2/debug/examples/cli_command.wasm
