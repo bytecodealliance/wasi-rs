@@ -23,11 +23,11 @@ jobs:
     - name: Install Wasmtime
       uses: bytecodealliance/actions/wasmtime/setup@v1
       with:
-        version: "v30.0.2"
+        version: "v40.0.2"
     - name: Install wasm-tools
       uses: bytecodealliance/actions/wasm-tools/setup@v1
       with:
-        version: "1.224.0"
+        version: "1.244.0"
 
     - run: cargo build -p wasip2 --examples --target wasm32-wasip2 --no-default-features
     - run: wasmtime run ./target/wasm32-wasip2/debug/examples/hello-world-no_std.wasm
