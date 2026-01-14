@@ -154,7 +154,7 @@
 mod command;
 mod imports;
 #[allow(unused_imports)]
-mod proxy;
+mod service;
 
 // generated bindings start with the package namespace, which in this case is
 // `wasi`, but the crate is already called wasi, so lift everything up one level
@@ -168,7 +168,7 @@ pub use imports::{wit_future, wit_stream};
 // implementation here changes.
 impl<T> wit_future::FuturePayload for T
 where
-    T: proxy::wit_future::FuturePayload,
+    T: service::wit_future::FuturePayload,
 {
     const VTABLE: &'static wit_bindgen::rt::async_support::FutureVtable<Self> = T::VTABLE;
 }
@@ -222,10 +222,10 @@ pub mod cli {
 pub mod http_compat;
 
 pub mod http {
-    pub use super::proxy::wasi::http::*;
+    pub use super::service::wasi::http::*;
 
-    pub mod proxy {
-        /// Generate an exported instance of the `wasi:http/proxy` world.
+    pub mod service {
+        /// Generate an exported instance of the `wasi:http/service` world.
         ///
         /// This macro will generate `#[no_mangle]` functions as necessary to
         /// export an implementation of the
@@ -245,14 +245,14 @@ pub mod http {
         ///     }
         /// }
         ///
-        /// wasip3::http::proxy::export!(MyIncomingHandler);
+        /// wasip3::http::service::export!(MyIncomingHandler);
         /// ```
         ///
         /// <!--
         /// The marker above hides the generated documentation by wit-bindgen
         /// for this macro.
         #[doc(inline)]
-        pub use crate::proxy::_export_proxy as export;
+        pub use crate::service::_export_service as export;
     }
 }
 
@@ -264,12 +264,12 @@ pub mod exports {
     #[doc(hidden)]
     pub mod wasi {
         pub use crate::command::exports::wasi::*;
-        pub use crate::proxy::exports::wasi::*;
+        pub use crate::service::exports::wasi::*;
     }
 
     // These are the restructured public interface of this crate.
     pub use crate::command::exports::wasi::cli;
-    pub use crate::proxy::exports::wasi::http;
+    pub use crate::service::exports::wasi::http;
 }
 
 // These macros are used by recursive invocations of the macro, but they're
@@ -277,4 +277,4 @@ pub mod exports {
 #[doc(hidden)]
 pub use crate::command::_export_command;
 #[doc(hidden)]
-pub use crate::proxy::_export_proxy;
+pub use crate::service::_export_service;
