@@ -6,35 +6,29 @@
 # This script is executed on CI to ensure that everything is up-to-date.
 set -ex
 
-# Space-separated list of wasi proposals that are vendored here along with the
-# tag that they're all vendored at.
-#
-# This assumes that the repositories all have the pattern:
-# https://github.com/WebAssembly/wasi-$repo
-# and every repository has a tag `v$tag` here. That is currently done as part
-# of the WASI release process.
-tag=0.2.4
-dst=wit/deps
 
-vendor() {
-  dst="$1"
-  tag="$2"
-  subdir="$3"
-  repos="$4"
+rm -rf crates/wasip2/wit/deps
+mkdir -p crates/wasip2/wit/deps
 
-  rm -rf $dst
-  mkdir -p $dst
+p2=0.2.4
+wkg get --overwrite --format wit "wasi:cli@${p2}" -o crates/wasip2/wit/deps/cli.wit
+wkg get --overwrite --format wit "wasi:clocks@${p2}" -o crates/wasip2/wit/deps/clocks.wit
+wkg get --overwrite --format wit "wasi:filesystem@${p2}" -o crates/wasip2/wit/deps/filesystem.wit
+wkg get --overwrite --format wit "wasi:http@${p2}" -o crates/wasip2/wit/deps/http.wit
+wkg get --overwrite --format wit "wasi:io@${p2}" -o crates/wasip2/wit/deps/io.wit
+wkg get --overwrite --format wit "wasi:random@${p2}" -o crates/wasip2/wit/deps/random.wit
+wkg get --overwrite --format wit "wasi:sockets@${p2}" -o crates/wasip2/wit/deps/sockets.wit
 
-  for repo in $repos; do
-    mkdir $dst/$repo
-    curl -L https://github.com/WebAssembly/wasi-$repo/archive/refs/tags/v$tag.tar.gz | \
-      tar xzf - --strip-components=2 -C $dst/$repo wasi-$repo-$tag/$subdir
-    rm -rf $dst/$repo/deps*
-  done
-}
+rm -rf crates/wasip3/wit/deps
+mkdir -p crates/wasip3/wit/deps
 
-vendor crates/wasip2/wit/deps 0.2.4 wit "cli clocks filesystem http io random sockets"
-vendor crates/wasip3/wit/deps 0.3.0-rc-2025-09-16 wit-0.3.0-draft "cli clocks filesystem http random sockets"
+p3=0.3.0-rc-2025-09-16
+wkg get --overwrite --format wit "wasi:cli@${p3}" -o crates/wasip3/wit/deps/cli.wit
+wkg get --overwrite --format wit "wasi:clocks@${p3}" -o crates/wasip3/wit/deps/clocks.wit
+wkg get --overwrite --format wit "wasi:filesystem@${p3}" -o crates/wasip3/wit/deps/filesystem.wit
+wkg get --overwrite --format wit "wasi:http@${p3}" -o crates/wasip3/wit/deps/http.wit
+wkg get --overwrite --format wit "wasi:random@${p3}" -o crates/wasip3/wit/deps/random.wit
+wkg get --overwrite --format wit "wasi:sockets@${p3}" -o crates/wasip3/wit/deps/sockets.wit
 
 # WASIp1 vendoring logic
 wasip1_rev="0ba0c5e2"

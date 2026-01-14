@@ -83,6 +83,10 @@ jobs:
     steps:
     - uses: actions/checkout@v5
     - uses: ./.github/actions/install-rust
+    - name: Install wkg
+      run: |
+        curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
+        cargo binstall --no-confirm wkg
     # Re-vendor all WIT files and ensure that they're all up-to-date by ensuring
     # that there's no git changes.
     - name: Re-vendor WIT
@@ -90,7 +94,7 @@ jobs:
         ./ci/vendor-wit.sh
         git diff --exit-code
     - run: |
-        version=0.48.0
+        version=0.51.0
 
         mkdir wit-bindgen
         cd wit-bindgen
