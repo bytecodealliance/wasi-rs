@@ -1,7 +1,7 @@
 use wasip3::http::types::{ErrorCode, Fields, Request, Response};
 use wasip3::{wit_bindgen, wit_future, wit_stream};
 
-wasip3::http::proxy::export!(Example);
+wasip3::http::service::export!(Example);
 
 struct Example;
 

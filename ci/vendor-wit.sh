@@ -10,7 +10,7 @@ set -ex
 rm -rf crates/wasip2/wit/deps
 mkdir -p crates/wasip2/wit/deps
 
-p2=0.2.4
+p2=0.2.9
 wkg get --overwrite --format wit "wasi:cli@${p2}" -o crates/wasip2/wit/deps/cli.wit
 wkg get --overwrite --format wit "wasi:clocks@${p2}" -o crates/wasip2/wit/deps/clocks.wit
 wkg get --overwrite --format wit "wasi:filesystem@${p2}" -o crates/wasip2/wit/deps/filesystem.wit
@@ -22,7 +22,7 @@ wkg get --overwrite --format wit "wasi:sockets@${p2}" -o crates/wasip2/wit/deps/
 rm -rf crates/wasip3/wit/deps
 mkdir -p crates/wasip3/wit/deps
 
-p3=0.3.0-rc-2025-09-16
+p3=0.3.0-rc-2026-01-06
 wkg get --overwrite --format wit "wasi:cli@${p3}" -o crates/wasip3/wit/deps/cli.wit
 wkg get --overwrite --format wit "wasi:clocks@${p3}" -o crates/wasip3/wit/deps/clocks.wit
 wkg get --overwrite --format wit "wasi:filesystem@${p3}" -o crates/wasip3/wit/deps/filesystem.wit

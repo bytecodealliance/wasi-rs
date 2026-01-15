@@ -134,7 +134,7 @@ jobs:
     - name: Install wasmtime
       uses: bytecodealliance/actions/wasmtime/setup@v1
       with:
-        version: "40.0.2"
+        version: "dev"
     - name: Install wasm-tools
       uses: bytecodealliance/actions/wasm-tools/setup@v1
       with:
@@ -145,12 +145,12 @@ jobs:
 
     - run: cargo build -p wasip3 --example http-proxy-compat --target wasm32-unknown-unknown --features http-compat
     - run: wasm-tools component new ./target/wasm32-unknown-unknown/debug/examples/http_proxy_compat.wasm -o component.wasm
-    - run: wasm-tools component targets ./crates/wasip3/wit component.wasm -w wasi:http/proxy
+    - run: wasm-tools component targets ./crates/wasip3/wit component.wasm -w wasi:http/service
 
     - run: cargo build -p wasip3 --examples --target wasm32-unknown-unknown
     - run: wasm-tools component new ./target/wasm32-unknown-unknown/debug/examples/http_proxy.wasm -o component.wasm
-    - run: wasm-tools component targets ./crates/wasip3/wit component.wasm -w wasi:http/proxy
+    - run: wasm-tools component targets ./crates/wasip3/wit component.wasm -w wasi:http/service
 
     - run: cargo build -p wasip3 --examples --target wasm32-unknown-unknown --features http-compat
     - run: wasm-tools component new ./target/wasm32-unknown-unknown/debug/examples/http_proxy_compat.wasm -o component.wasm
-    - run: wasm-tools component targets ./crates/wasip3/wit component.wasm -w wasi:http/proxy
+    - run: wasm-tools component targets ./crates/wasip3/wit component.wasm -w wasi:http/service
