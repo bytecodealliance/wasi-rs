@@ -86,7 +86,7 @@ jobs:
     - name: Install wkg
       run: |
         curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
-        cargo binstall --no-confirm wkg@0.15.0
+        cargo binstall --no-confirm wkg@0.13.0
     # Re-vendor all WIT files and ensure that they're all up-to-date by ensuring
     # that there's no git changes.
     - name: Re-vendor WIT
