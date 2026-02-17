@@ -37,7 +37,7 @@ pub mod wasi {
                     let ptr0 = ret_area.0.as_mut_ptr().cast::<u8>();
                     #[cfg(target_arch = "wasm32")]
                     #[link(
-                        wasm_import_module = "wasi:cli/environment@0.3.0-rc-2026-01-06"
+                        wasm_import_module = "wasi:cli/environment@0.3.0-rc-2026-02-09"
                     )]
                     unsafe extern "C" {
                         #[link_name = "get-environment"]
@@ -105,7 +105,7 @@ pub mod wasi {
                     let ptr0 = ret_area.0.as_mut_ptr().cast::<u8>();
                     #[cfg(target_arch = "wasm32")]
                     #[link(
-                        wasm_import_module = "wasi:cli/environment@0.3.0-rc-2026-01-06"
+                        wasm_import_module = "wasi:cli/environment@0.3.0-rc-2026-02-09"
                     )]
                     unsafe extern "C" {
                         #[link_name = "get-arguments"]
@@ -166,7 +166,7 @@ pub mod wasi {
                     let ptr0 = ret_area.0.as_mut_ptr().cast::<u8>();
                     #[cfg(target_arch = "wasm32")]
                     #[link(
-                        wasm_import_module = "wasi:cli/environment@0.3.0-rc-2026-01-06"
+                        wasm_import_module = "wasi:cli/environment@0.3.0-rc-2026-02-09"
                     )]
                     unsafe extern "C" {
                         #[link_name = "get-initial-cwd"]
@@ -219,7 +219,7 @@ pub mod wasi {
                         Err(_) => 1i32,
                     };
                     #[cfg(target_arch = "wasm32")]
-                    #[link(wasm_import_module = "wasi:cli/exit@0.3.0-rc-2026-01-06")]
+                    #[link(wasm_import_module = "wasi:cli/exit@0.3.0-rc-2026-02-09")]
                     unsafe extern "C" {
                         #[link_name = "exit"]
                         fn wit_import1(_: i32);
@@ -247,45 +247,20 @@ pub mod wasi {
                 /// Broken pipe
                 Pipe,
             }
-            impl ErrorCode {
-                pub fn name(&self) -> &'static str {
-                    match self {
-                        ErrorCode::Io => "io",
-                        ErrorCode::IllegalByteSequence => "illegal-byte-sequence",
-                        ErrorCode::Pipe => "pipe",
-                    }
-                }
-                pub fn message(&self) -> &'static str {
-                    match self {
-                        ErrorCode::Io => "Input/output error",
-                        ErrorCode::IllegalByteSequence => {
-                            "Invalid or incomplete multibyte or wide character"
-                        }
-                        ErrorCode::Pipe => "Broken pipe",
-                    }
-                }
-            }
             impl ::core::fmt::Debug for ErrorCode {
                 fn fmt(
                     &self,
                     f: &mut ::core::fmt::Formatter<'_>,
                 ) -> ::core::fmt::Result {
-                    f.debug_struct("ErrorCode")
-                        .field("code", &(*self as i32))
-                        .field("name", &self.name())
-                        .field("message", &self.message())
-                        .finish()
+                    match self {
+                        ErrorCode::Io => f.debug_tuple("ErrorCode::Io").finish(),
+                        ErrorCode::IllegalByteSequence => {
+                            f.debug_tuple("ErrorCode::IllegalByteSequence").finish()
+                        }
+                        ErrorCode::Pipe => f.debug_tuple("ErrorCode::Pipe").finish(),
+                    }
                 }
             }
-            impl ::core::fmt::Display for ErrorCode {
-                fn fmt(
-                    &self,
-                    f: &mut ::core::fmt::Formatter<'_>,
-                ) -> ::core::fmt::Result {
-                    write!(f, "{} (error {})", self.name(), * self as i32)
-                }
-            }
-            impl ::core::error::Error for ErrorCode {}
             impl ErrorCode {
                 #[doc(hidden)]
                 pub unsafe fn _lift(val: u8) -> ErrorCode {
@@ -333,7 +308,7 @@ pub mod wasi {
                     let mut ret_area = RetArea([::core::mem::MaybeUninit::uninit(); 8]);
                     let ptr0 = ret_area.0.as_mut_ptr().cast::<u8>();
                     #[cfg(target_arch = "wasm32")]
-                    #[link(wasm_import_module = "wasi:cli/stdin@0.3.0-rc-2026-01-06")]
+                    #[link(wasm_import_module = "wasi:cli/stdin@0.3.0-rc-2026-02-09")]
                     unsafe extern "C" {
                         #[link_name = "read-via-stream"]
                         fn wit_import1(_: *mut u8);
@@ -367,7 +342,6 @@ pub mod wasi {
             #[used]
             #[doc(hidden)]
             static __FORCE_SECTION_REF: fn() = super::super::super::__link_custom_section_describing_imports;
-            use super::super::super::_rt;
             pub type ErrorCode = super::super::super::wasi::cli::types::ErrorCode;
             #[allow(unused_unsafe, clippy::all)]
             /// Write the given stream to stdout.
@@ -379,105 +353,28 @@ pub mod wasi {
             /// Otherwise if there is an error the readable end of the stream will be
             /// dropped and this function will return an error-code.
             #[allow(async_fn_in_trait)]
-            pub async fn write_via_stream(
+            pub fn write_via_stream(
                 data: wit_bindgen::rt::async_support::StreamReader<u8>,
-            ) -> Result<(), ErrorCode> {
+            ) -> wit_bindgen::rt::async_support::FutureReader<Result<(), ErrorCode>> {
                 unsafe {
-                    #[derive(Copy, Clone)]
-                    struct ParamsLower(i32);
-                    unsafe impl Send for ParamsLower {}
-                    use wit_bindgen::rt::async_support::Subtask as _Subtask;
-                    struct _MySubtask<'a> {
-                        _unused: core::marker::PhantomData<&'a ()>,
+                    #[cfg(target_arch = "wasm32")]
+                    #[link(wasm_import_module = "wasi:cli/stdout@0.3.0-rc-2026-02-09")]
+                    unsafe extern "C" {
+                        #[link_name = "write-via-stream"]
+                        fn wit_import0(_: i32) -> i32;
                     }
-                    #[allow(unused_parens)]
-                    unsafe impl<'a> _Subtask for _MySubtask<'a> {
-                        type Params = (
-                            wit_bindgen::rt::async_support::StreamReader<u8>,
-                        );
-                        type Results = Result<(), ErrorCode>;
-                        type ParamsLower = ParamsLower;
-                        fn abi_layout(&mut self) -> ::core::alloc::Layout {
-                            unsafe {
-                                ::core::alloc::Layout::from_size_align_unchecked(2, 1)
-                            }
-                        }
-                        fn results_offset(&mut self) -> usize {
-                            0
-                        }
-                        unsafe fn call_import(
-                            &mut self,
-                            _params: Self::ParamsLower,
-                            _results: *mut u8,
-                        ) -> u32 {
-                            #[cfg(target_arch = "wasm32")]
-                            #[link(
-                                wasm_import_module = "wasi:cli/stdout@0.3.0-rc-2026-01-06"
-                            )]
-                            unsafe extern "C" {
-                                #[link_name = "[async-lower]write-via-stream"]
-                                fn call(_: i32, _: *mut u8) -> i32;
-                            }
-                            #[cfg(not(target_arch = "wasm32"))]
-                            unsafe extern "C" fn call(_: i32, _: *mut u8) -> i32 {
-                                unreachable!()
-                            }
-                            unsafe { call(_params.0, _results) as u32 }
-                        }
-                        unsafe fn params_dealloc_lists(
-                            &mut self,
-                            _params: Self::ParamsLower,
-                        ) {
-                            unsafe {}
-                        }
-                        unsafe fn params_dealloc_lists_and_own(
-                            &mut self,
-                            _params: Self::ParamsLower,
-                        ) {
-                            unsafe {
-                                let _ = wit_bindgen::rt::async_support::StreamReader::new(
-                                    _params.0 as u32,
-                                    &<u8 as super::super::super::wit_stream::StreamPayload>::VTABLE,
-                                );
-                            }
-                        }
-                        unsafe fn params_lower(
-                            &mut self,
-                            (_lower0,): Self::Params,
-                            _ptr: *mut u8,
-                        ) -> Self::ParamsLower {
-                            unsafe { ParamsLower((_lower0).take_handle() as i32) }
-                        }
-                        unsafe fn results_lift(
-                            &mut self,
-                            _ptr: *mut u8,
-                        ) -> Self::Results {
-                            unsafe {
-                                let l0 = i32::from(*_ptr.add(0).cast::<u8>());
-                                match l0 {
-                                    0 => {
-                                        let e = ();
-                                        Ok(e)
-                                    }
-                                    1 => {
-                                        let e = {
-                                            let l1 = i32::from(*_ptr.add(1).cast::<u8>());
-                                            super::super::super::wasi::cli::types::ErrorCode::_lift(
-                                                l1 as u8,
-                                            )
-                                        };
-                                        Err(e)
-                                    }
-                                    _ => _rt::invalid_enum_discriminant(),
-                                }
-                            }
-                        }
+                    #[cfg(not(target_arch = "wasm32"))]
+                    unsafe extern "C" fn wit_import0(_: i32) -> i32 {
+                        unreachable!()
                     }
-                    _MySubtask {
-                        _unused: core::marker::PhantomData,
-                    }
-                        .call((data,))
-                        .await
+                    let ret = wit_import0((&data).take_handle() as i32);
+                    wit_bindgen::rt::async_support::FutureReader::new(
+                        ret as u32,
+                        &<Result<
+                            (),
+                            ErrorCode,
+                        > as super::super::super::wit_future::FuturePayload>::VTABLE,
+                    )
                 }
             }
         }
@@ -486,7 +383,6 @@ pub mod wasi {
             #[used]
             #[doc(hidden)]
             static __FORCE_SECTION_REF: fn() = super::super::super::__link_custom_section_describing_imports;
-            use super::super::super::_rt;
             pub type ErrorCode = super::super::super::wasi::cli::types::ErrorCode;
             #[allow(unused_unsafe, clippy::all)]
             /// Write the given stream to stderr.
@@ -498,105 +394,28 @@ pub mod wasi {
             /// Otherwise if there is an error the readable end of the stream will be
             /// dropped and this function will return an error-code.
             #[allow(async_fn_in_trait)]
-            pub async fn write_via_stream(
+            pub fn write_via_stream(
                 data: wit_bindgen::rt::async_support::StreamReader<u8>,
-            ) -> Result<(), ErrorCode> {
+            ) -> wit_bindgen::rt::async_support::FutureReader<Result<(), ErrorCode>> {
                 unsafe {
-                    #[derive(Copy, Clone)]
-                    struct ParamsLower(i32);
-                    unsafe impl Send for ParamsLower {}
-                    use wit_bindgen::rt::async_support::Subtask as _Subtask;
-                    struct _MySubtask<'a> {
-                        _unused: core::marker::PhantomData<&'a ()>,
+                    #[cfg(target_arch = "wasm32")]
+                    #[link(wasm_import_module = "wasi:cli/stderr@0.3.0-rc-2026-02-09")]
+                    unsafe extern "C" {
+                        #[link_name = "write-via-stream"]
+                        fn wit_import0(_: i32) -> i32;
                     }
-                    #[allow(unused_parens)]
-                    unsafe impl<'a> _Subtask for _MySubtask<'a> {
-                        type Params = (
-                            wit_bindgen::rt::async_support::StreamReader<u8>,
-                        );
-                        type Results = Result<(), ErrorCode>;
-                        type ParamsLower = ParamsLower;
-                        fn abi_layout(&mut self) -> ::core::alloc::Layout {
-                            unsafe {
-                                ::core::alloc::Layout::from_size_align_unchecked(2, 1)
-                            }
-                        }
-                        fn results_offset(&mut self) -> usize {
-                            0
-                        }
-                        unsafe fn call_import(
-                            &mut self,
-                            _params: Self::ParamsLower,
-                            _results: *mut u8,
-                        ) -> u32 {
-                            #[cfg(target_arch = "wasm32")]
-                            #[link(
-                                wasm_import_module = "wasi:cli/stderr@0.3.0-rc-2026-01-06"
-                            )]
-                            unsafe extern "C" {
-                                #[link_name = "[async-lower]write-via-stream"]
-                                fn call(_: i32, _: *mut u8) -> i32;
-                            }
-                            #[cfg(not(target_arch = "wasm32"))]
-                            unsafe extern "C" fn call(_: i32, _: *mut u8) -> i32 {
-                                unreachable!()
-                            }
-                            unsafe { call(_params.0, _results) as u32 }
-                        }
-                        unsafe fn params_dealloc_lists(
-                            &mut self,
-                            _params: Self::ParamsLower,
-                        ) {
-                            unsafe {}
-                        }
-                        unsafe fn params_dealloc_lists_and_own(
-                            &mut self,
-                            _params: Self::ParamsLower,
-                        ) {
-                            unsafe {
-                                let _ = wit_bindgen::rt::async_support::StreamReader::new(
-                                    _params.0 as u32,
-                                    &<u8 as super::super::super::wit_stream::StreamPayload>::VTABLE,
-                                );
-                            }
-                        }
-                        unsafe fn params_lower(
-                            &mut self,
-                            (_lower0,): Self::Params,
-                            _ptr: *mut u8,
-                        ) -> Self::ParamsLower {
-                            unsafe { ParamsLower((_lower0).take_handle() as i32) }
-                        }
-                        unsafe fn results_lift(
-                            &mut self,
-                            _ptr: *mut u8,
-                        ) -> Self::Results {
-                            unsafe {
-                                let l0 = i32::from(*_ptr.add(0).cast::<u8>());
-                                match l0 {
-                                    0 => {
-                                        let e = ();
-                                        Ok(e)
-                                    }
-                                    1 => {
-                                        let e = {
-                                            let l1 = i32::from(*_ptr.add(1).cast::<u8>());
-                                            super::super::super::wasi::cli::types::ErrorCode::_lift(
-                                                l1 as u8,
-                                            )
-                                        };
-                                        Err(e)
-                                    }
-                                    _ => _rt::invalid_enum_discriminant(),
-                                }
-                            }
-                        }
+                    #[cfg(not(target_arch = "wasm32"))]
+                    unsafe extern "C" fn wit_import0(_: i32) -> i32 {
+                        unreachable!()
                     }
-                    _MySubtask {
-                        _unused: core::marker::PhantomData,
-                    }
-                        .call((data,))
-                        .await
+                    let ret = wit_import0((&data).take_handle() as i32);
+                    wit_bindgen::rt::async_support::FutureReader::new(
+                        ret as u32,
+                        &<Result<
+                            (),
+                            ErrorCode,
+                        > as super::super::super::wit_future::FuturePayload>::VTABLE,
+                    )
                 }
             }
         }
@@ -638,7 +457,7 @@ pub mod wasi {
                 unsafe fn drop(_handle: u32) {
                     #[cfg(target_arch = "wasm32")]
                     #[link(
-                        wasm_import_module = "wasi:cli/terminal-input@0.3.0-rc-2026-01-06"
+                        wasm_import_module = "wasi:cli/terminal-input@0.3.0-rc-2026-02-09"
                     )]
                     unsafe extern "C" {
                         #[link_name = "[resource-drop]terminal-input"]
@@ -692,7 +511,7 @@ pub mod wasi {
                 unsafe fn drop(_handle: u32) {
                     #[cfg(target_arch = "wasm32")]
                     #[link(
-                        wasm_import_module = "wasi:cli/terminal-output@0.3.0-rc-2026-01-06"
+                        wasm_import_module = "wasi:cli/terminal-output@0.3.0-rc-2026-02-09"
                     )]
                     unsafe extern "C" {
                         #[link_name = "[resource-drop]terminal-output"]
@@ -729,7 +548,7 @@ pub mod wasi {
                     let ptr0 = ret_area.0.as_mut_ptr().cast::<u8>();
                     #[cfg(target_arch = "wasm32")]
                     #[link(
-                        wasm_import_module = "wasi:cli/terminal-stdin@0.3.0-rc-2026-01-06"
+                        wasm_import_module = "wasi:cli/terminal-stdin@0.3.0-rc-2026-02-09"
                     )]
                     unsafe extern "C" {
                         #[link_name = "get-terminal-stdin"]
@@ -779,7 +598,7 @@ pub mod wasi {
                     let ptr0 = ret_area.0.as_mut_ptr().cast::<u8>();
                     #[cfg(target_arch = "wasm32")]
                     #[link(
-                        wasm_import_module = "wasi:cli/terminal-stdout@0.3.0-rc-2026-01-06"
+                        wasm_import_module = "wasi:cli/terminal-stdout@0.3.0-rc-2026-02-09"
                     )]
                     unsafe extern "C" {
                         #[link_name = "get-terminal-stdout"]
@@ -829,7 +648,7 @@ pub mod wasi {
                     let ptr0 = ret_area.0.as_mut_ptr().cast::<u8>();
                     #[cfg(target_arch = "wasm32")]
                     #[link(
-                        wasm_import_module = "wasi:cli/terminal-stderr@0.3.0-rc-2026-01-06"
+                        wasm_import_module = "wasi:cli/terminal-stderr@0.3.0-rc-2026-02-09"
                     )]
                     unsafe extern "C" {
                         #[link_name = "get-terminal-stderr"]
@@ -903,7 +722,7 @@ pub mod wasi {
                 unsafe {
                     #[cfg(target_arch = "wasm32")]
                     #[link(
-                        wasm_import_module = "wasi:clocks/monotonic-clock@0.3.0-rc-2026-01-06"
+                        wasm_import_module = "wasi:clocks/monotonic-clock@0.3.0-rc-2026-02-09"
                     )]
                     unsafe extern "C" {
                         #[link_name = "now"]
@@ -925,7 +744,7 @@ pub mod wasi {
                 unsafe {
                     #[cfg(target_arch = "wasm32")]
                     #[link(
-                        wasm_import_module = "wasi:clocks/monotonic-clock@0.3.0-rc-2026-01-06"
+                        wasm_import_module = "wasi:clocks/monotonic-clock@0.3.0-rc-2026-02-09"
                     )]
                     unsafe extern "C" {
                         #[link_name = "get-resolution"]
@@ -971,7 +790,7 @@ pub mod wasi {
                         ) -> u32 {
                             #[cfg(target_arch = "wasm32")]
                             #[link(
-                                wasm_import_module = "wasi:clocks/monotonic-clock@0.3.0-rc-2026-01-06"
+                                wasm_import_module = "wasi:clocks/monotonic-clock@0.3.0-rc-2026-02-09"
                             )]
                             unsafe extern "C" {
                                 #[link_name = "[async-lower]wait-until"]
@@ -1046,7 +865,7 @@ pub mod wasi {
                         ) -> u32 {
                             #[cfg(target_arch = "wasm32")]
                             #[link(
-                                wasm_import_module = "wasi:clocks/monotonic-clock@0.3.0-rc-2026-01-06"
+                                wasm_import_module = "wasi:clocks/monotonic-clock@0.3.0-rc-2026-02-09"
                             )]
                             unsafe extern "C" {
                                 #[link_name = "[async-lower]wait-for"]
@@ -1155,7 +974,7 @@ pub mod wasi {
                     let ptr0 = ret_area.0.as_mut_ptr().cast::<u8>();
                     #[cfg(target_arch = "wasm32")]
                     #[link(
-                        wasm_import_module = "wasi:clocks/system-clock@0.3.0-rc-2026-01-06"
+                        wasm_import_module = "wasi:clocks/system-clock@0.3.0-rc-2026-02-09"
                     )]
                     unsafe extern "C" {
                         #[link_name = "now"]
@@ -1183,7 +1002,7 @@ pub mod wasi {
                 unsafe {
                     #[cfg(target_arch = "wasm32")]
                     #[link(
-                        wasm_import_module = "wasi:clocks/system-clock@0.3.0-rc-2026-01-06"
+                        wasm_import_module = "wasi:clocks/system-clock@0.3.0-rc-2026-02-09"
                     )]
                     unsafe extern "C" {
                         #[link_name = "get-resolution"]
@@ -1204,9 +1023,6 @@ pub mod wasi {
         /// programs that access their files on their existing filesystems, without
         /// significant overhead.
         ///
-        /// It is intended to be roughly portable between Unix-family platforms and
-        /// Windows, though it does not hide many of the major differences.
-        ///
         /// Paths are passed as interface-type `string`s, meaning they must consist of
         /// a sequence of Unicode Scalar Values (USVs). Some filesystems may contain
         /// paths which are not accessible by this API.
@@ -1222,6 +1038,20 @@ pub mod wasi {
         ///
         /// For more information about WASI path resolution and sandboxing, see
         /// [WASI filesystem path resolution].
+        ///
+        /// Though this package presents a portable interface modelled on POSIX, it
+        /// prioritizes compatibility over portability: allowing users to access their
+        /// files on their machine is more important than exposing a single semantics
+        /// across all platforms.  Notably, depending on the underlying operating system
+        /// and file system:
+        ///   * Paths may be case-folded or not.
+        ///   * Deleting (unlinking) a file may fail if there are other file descriptors
+        ///     open.
+        ///   * Durability and atomicity of changes to underlying files when there are
+        ///     concurrent writers.
+        ///
+        /// Users that need well-defined, portable semantics should use a key-value
+        /// store or a database instead.
         ///
         /// [WASI filesystem path resolution]: https://github.com/WebAssembly/wasi-filesystem/blob/main/path-resolution.md
         #[allow(dead_code, async_fn_in_trait, unused_imports, clippy::all)]
@@ -1871,7 +1701,7 @@ pub mod wasi {
                 unsafe fn drop(_handle: u32) {
                     #[cfg(target_arch = "wasm32")]
                     #[link(
-                        wasm_import_module = "wasi:filesystem/types@0.3.0-rc-2026-01-06"
+                        wasm_import_module = "wasi:filesystem/types@0.3.0-rc-2026-02-09"
                     )]
                     unsafe extern "C" {
                         #[link_name = "[resource-drop]descriptor"]
@@ -1921,7 +1751,7 @@ pub mod wasi {
                         let ptr0 = ret_area.0.as_mut_ptr().cast::<u8>();
                         #[cfg(target_arch = "wasm32")]
                         #[link(
-                            wasm_import_module = "wasi:filesystem/types@0.3.0-rc-2026-01-06"
+                            wasm_import_module = "wasi:filesystem/types@0.3.0-rc-2026-02-09"
                         )]
                         unsafe extern "C" {
                             #[link_name = "[method]descriptor.read-via-stream"]
@@ -1966,120 +1796,38 @@ pub mod wasi {
                 ///
                 /// Note: This is similar to `pwrite` in POSIX.
                 #[allow(async_fn_in_trait)]
-                pub async fn write_via_stream(
+                pub fn write_via_stream(
                     &self,
                     data: wit_bindgen::rt::async_support::StreamReader<u8>,
                     offset: Filesize,
-                ) -> Result<(), ErrorCode> {
+                ) -> wit_bindgen::rt::async_support::FutureReader<
+                    Result<(), ErrorCode>,
+                > {
                     unsafe {
-                        #[derive(Copy, Clone)]
-                        struct ParamsLower(i32, i32, i64);
-                        unsafe impl Send for ParamsLower {}
-                        use wit_bindgen::rt::async_support::Subtask as _Subtask;
-                        struct _MySubtask<'a> {
-                            _unused: core::marker::PhantomData<&'a ()>,
+                        #[cfg(target_arch = "wasm32")]
+                        #[link(
+                            wasm_import_module = "wasi:filesystem/types@0.3.0-rc-2026-02-09"
+                        )]
+                        unsafe extern "C" {
+                            #[link_name = "[method]descriptor.write-via-stream"]
+                            fn wit_import0(_: i32, _: i32, _: i64) -> i32;
                         }
-                        #[allow(unused_parens)]
-                        unsafe impl<'a> _Subtask for _MySubtask<'a> {
-                            type Params = (
-                                &'a Descriptor,
-                                wit_bindgen::rt::async_support::StreamReader<u8>,
-                                Filesize,
-                            );
-                            type Results = Result<(), ErrorCode>;
-                            type ParamsLower = ParamsLower;
-                            fn abi_layout(&mut self) -> ::core::alloc::Layout {
-                                unsafe {
-                                    ::core::alloc::Layout::from_size_align_unchecked(2, 1)
-                                }
-                            }
-                            fn results_offset(&mut self) -> usize {
-                                0
-                            }
-                            unsafe fn call_import(
-                                &mut self,
-                                _params: Self::ParamsLower,
-                                _results: *mut u8,
-                            ) -> u32 {
-                                #[cfg(target_arch = "wasm32")]
-                                #[link(
-                                    wasm_import_module = "wasi:filesystem/types@0.3.0-rc-2026-01-06"
-                                )]
-                                unsafe extern "C" {
-                                    #[link_name = "[async-lower][method]descriptor.write-via-stream"]
-                                    fn call(_: i32, _: i32, _: i64, _: *mut u8) -> i32;
-                                }
-                                #[cfg(not(target_arch = "wasm32"))]
-                                unsafe extern "C" fn call(
-                                    _: i32,
-                                    _: i32,
-                                    _: i64,
-                                    _: *mut u8,
-                                ) -> i32 {
-                                    unreachable!()
-                                }
-                                unsafe {
-                                    call(_params.0, _params.1, _params.2, _results) as u32
-                                }
-                            }
-                            unsafe fn params_dealloc_lists(
-                                &mut self,
-                                _params: Self::ParamsLower,
-                            ) {
-                                unsafe {}
-                            }
-                            unsafe fn params_dealloc_lists_and_own(
-                                &mut self,
-                                _params: Self::ParamsLower,
-                            ) {
-                                unsafe {
-                                    let _ = wit_bindgen::rt::async_support::StreamReader::new(
-                                        _params.1 as u32,
-                                        &<u8 as super::super::super::wit_stream::StreamPayload>::VTABLE,
-                                    );
-                                }
-                            }
-                            unsafe fn params_lower(
-                                &mut self,
-                                (_lower0, _lower1, _lower2): Self::Params,
-                                _ptr: *mut u8,
-                            ) -> Self::ParamsLower {
-                                unsafe {
-                                    ParamsLower(
-                                        (_lower0).handle() as i32,
-                                        (_lower1).take_handle() as i32,
-                                        _rt::as_i64(_lower2),
-                                    )
-                                }
-                            }
-                            unsafe fn results_lift(
-                                &mut self,
-                                _ptr: *mut u8,
-                            ) -> Self::Results {
-                                unsafe {
-                                    let l0 = i32::from(*_ptr.add(0).cast::<u8>());
-                                    match l0 {
-                                        0 => {
-                                            let e = ();
-                                            Ok(e)
-                                        }
-                                        1 => {
-                                            let e = {
-                                                let l1 = i32::from(*_ptr.add(1).cast::<u8>());
-                                                ErrorCode::_lift(l1 as u8)
-                                            };
-                                            Err(e)
-                                        }
-                                        _ => _rt::invalid_enum_discriminant(),
-                                    }
-                                }
-                            }
+                        #[cfg(not(target_arch = "wasm32"))]
+                        unsafe extern "C" fn wit_import0(_: i32, _: i32, _: i64) -> i32 {
+                            unreachable!()
                         }
-                        _MySubtask {
-                            _unused: core::marker::PhantomData,
-                        }
-                            .call((self, data, offset))
-                            .await
+                        let ret = wit_import0(
+                            (self).handle() as i32,
+                            (&data).take_handle() as i32,
+                            _rt::as_i64(offset),
+                        );
+                        wit_bindgen::rt::async_support::FutureReader::new(
+                            ret as u32,
+                            &<Result<
+                                (),
+                                ErrorCode,
+                            > as super::super::super::wit_future::FuturePayload>::VTABLE,
+                        )
                     }
                 }
             }
@@ -2094,114 +1842,36 @@ pub mod wasi {
                 ///
                 /// Note: This is similar to `write` with `O_APPEND` in POSIX.
                 #[allow(async_fn_in_trait)]
-                pub async fn append_via_stream(
+                pub fn append_via_stream(
                     &self,
                     data: wit_bindgen::rt::async_support::StreamReader<u8>,
-                ) -> Result<(), ErrorCode> {
+                ) -> wit_bindgen::rt::async_support::FutureReader<
+                    Result<(), ErrorCode>,
+                > {
                     unsafe {
-                        #[derive(Copy, Clone)]
-                        struct ParamsLower(i32, i32);
-                        unsafe impl Send for ParamsLower {}
-                        use wit_bindgen::rt::async_support::Subtask as _Subtask;
-                        struct _MySubtask<'a> {
-                            _unused: core::marker::PhantomData<&'a ()>,
+                        #[cfg(target_arch = "wasm32")]
+                        #[link(
+                            wasm_import_module = "wasi:filesystem/types@0.3.0-rc-2026-02-09"
+                        )]
+                        unsafe extern "C" {
+                            #[link_name = "[method]descriptor.append-via-stream"]
+                            fn wit_import0(_: i32, _: i32) -> i32;
                         }
-                        #[allow(unused_parens)]
-                        unsafe impl<'a> _Subtask for _MySubtask<'a> {
-                            type Params = (
-                                &'a Descriptor,
-                                wit_bindgen::rt::async_support::StreamReader<u8>,
-                            );
-                            type Results = Result<(), ErrorCode>;
-                            type ParamsLower = ParamsLower;
-                            fn abi_layout(&mut self) -> ::core::alloc::Layout {
-                                unsafe {
-                                    ::core::alloc::Layout::from_size_align_unchecked(2, 1)
-                                }
-                            }
-                            fn results_offset(&mut self) -> usize {
-                                0
-                            }
-                            unsafe fn call_import(
-                                &mut self,
-                                _params: Self::ParamsLower,
-                                _results: *mut u8,
-                            ) -> u32 {
-                                #[cfg(target_arch = "wasm32")]
-                                #[link(
-                                    wasm_import_module = "wasi:filesystem/types@0.3.0-rc-2026-01-06"
-                                )]
-                                unsafe extern "C" {
-                                    #[link_name = "[async-lower][method]descriptor.append-via-stream"]
-                                    fn call(_: i32, _: i32, _: *mut u8) -> i32;
-                                }
-                                #[cfg(not(target_arch = "wasm32"))]
-                                unsafe extern "C" fn call(
-                                    _: i32,
-                                    _: i32,
-                                    _: *mut u8,
-                                ) -> i32 {
-                                    unreachable!()
-                                }
-                                unsafe { call(_params.0, _params.1, _results) as u32 }
-                            }
-                            unsafe fn params_dealloc_lists(
-                                &mut self,
-                                _params: Self::ParamsLower,
-                            ) {
-                                unsafe {}
-                            }
-                            unsafe fn params_dealloc_lists_and_own(
-                                &mut self,
-                                _params: Self::ParamsLower,
-                            ) {
-                                unsafe {
-                                    let _ = wit_bindgen::rt::async_support::StreamReader::new(
-                                        _params.1 as u32,
-                                        &<u8 as super::super::super::wit_stream::StreamPayload>::VTABLE,
-                                    );
-                                }
-                            }
-                            unsafe fn params_lower(
-                                &mut self,
-                                (_lower0, _lower1): Self::Params,
-                                _ptr: *mut u8,
-                            ) -> Self::ParamsLower {
-                                unsafe {
-                                    ParamsLower(
-                                        (_lower0).handle() as i32,
-                                        (_lower1).take_handle() as i32,
-                                    )
-                                }
-                            }
-                            unsafe fn results_lift(
-                                &mut self,
-                                _ptr: *mut u8,
-                            ) -> Self::Results {
-                                unsafe {
-                                    let l0 = i32::from(*_ptr.add(0).cast::<u8>());
-                                    match l0 {
-                                        0 => {
-                                            let e = ();
-                                            Ok(e)
-                                        }
-                                        1 => {
-                                            let e = {
-                                                let l1 = i32::from(*_ptr.add(1).cast::<u8>());
-                                                ErrorCode::_lift(l1 as u8)
-                                            };
-                                            Err(e)
-                                        }
-                                        _ => _rt::invalid_enum_discriminant(),
-                                    }
-                                }
-                            }
+                        #[cfg(not(target_arch = "wasm32"))]
+                        unsafe extern "C" fn wit_import0(_: i32, _: i32) -> i32 {
+                            unreachable!()
                         }
-                        _MySubtask {
-                            _unused: core::marker::PhantomData,
-                        }
-                            .call((self, data))
-                            .await
+                        let ret = wit_import0(
+                            (self).handle() as i32,
+                            (&data).take_handle() as i32,
+                        );
+                        wit_bindgen::rt::async_support::FutureReader::new(
+                            ret as u32,
+                            &<Result<
+                                (),
+                                ErrorCode,
+                            > as super::super::super::wit_future::FuturePayload>::VTABLE,
+                        )
                     }
                 }
             }
@@ -2245,7 +1915,7 @@ pub mod wasi {
                             ) -> u32 {
                                 #[cfg(target_arch = "wasm32")]
                                 #[link(
-                                    wasm_import_module = "wasi:filesystem/types@0.3.0-rc-2026-01-06"
+                                    wasm_import_module = "wasi:filesystem/types@0.3.0-rc-2026-02-09"
                                 )]
                                 unsafe extern "C" {
                                     #[link_name = "[async-lower][method]descriptor.advise"]
@@ -2361,7 +2031,7 @@ pub mod wasi {
                             ) -> u32 {
                                 #[cfg(target_arch = "wasm32")]
                                 #[link(
-                                    wasm_import_module = "wasi:filesystem/types@0.3.0-rc-2026-01-06"
+                                    wasm_import_module = "wasi:filesystem/types@0.3.0-rc-2026-02-09"
                                 )]
                                 unsafe extern "C" {
                                     #[link_name = "[async-lower][method]descriptor.sync-data"]
@@ -2461,7 +2131,7 @@ pub mod wasi {
                             ) -> u32 {
                                 #[cfg(target_arch = "wasm32")]
                                 #[link(
-                                    wasm_import_module = "wasi:filesystem/types@0.3.0-rc-2026-01-06"
+                                    wasm_import_module = "wasi:filesystem/types@0.3.0-rc-2026-02-09"
                                 )]
                                 unsafe extern "C" {
                                     #[link_name = "[async-lower][method]descriptor.get-flags"]
@@ -2569,7 +2239,7 @@ pub mod wasi {
                             ) -> u32 {
                                 #[cfg(target_arch = "wasm32")]
                                 #[link(
-                                    wasm_import_module = "wasi:filesystem/types@0.3.0-rc-2026-01-06"
+                                    wasm_import_module = "wasi:filesystem/types@0.3.0-rc-2026-02-09"
                                 )]
                                 unsafe extern "C" {
                                     #[link_name = "[async-lower][method]descriptor.get-type"]
@@ -2670,7 +2340,7 @@ pub mod wasi {
                             ) -> u32 {
                                 #[cfg(target_arch = "wasm32")]
                                 #[link(
-                                    wasm_import_module = "wasi:filesystem/types@0.3.0-rc-2026-01-06"
+                                    wasm_import_module = "wasi:filesystem/types@0.3.0-rc-2026-02-09"
                                 )]
                                 unsafe extern "C" {
                                     #[link_name = "[async-lower][method]descriptor.set-size"]
@@ -2779,7 +2449,7 @@ pub mod wasi {
                             ) -> u32 {
                                 #[cfg(target_arch = "wasm32")]
                                 #[link(
-                                    wasm_import_module = "wasi:filesystem/types@0.3.0-rc-2026-01-06"
+                                    wasm_import_module = "wasi:filesystem/types@0.3.0-rc-2026-02-09"
                                 )]
                                 unsafe extern "C" {
                                     #[link_name = "[async-lower][method]descriptor.set-times"]
@@ -2909,106 +2579,48 @@ pub mod wasi {
                 /// This function returns a future, which will resolve to an error code if
                 /// reading full contents of the directory fails.
                 #[allow(async_fn_in_trait)]
-                pub async fn read_directory(
+                pub fn read_directory(
                     &self,
                 ) -> (
                     wit_bindgen::rt::async_support::StreamReader<DirectoryEntry>,
                     wit_bindgen::rt::async_support::FutureReader<Result<(), ErrorCode>>,
                 ) {
                     unsafe {
-                        #[derive(Copy, Clone)]
-                        struct ParamsLower(i32);
-                        unsafe impl Send for ParamsLower {}
-                        use wit_bindgen::rt::async_support::Subtask as _Subtask;
-                        struct _MySubtask<'a> {
-                            _unused: core::marker::PhantomData<&'a ()>,
+                        #[repr(align(4))]
+                        struct RetArea([::core::mem::MaybeUninit<u8>; 8]);
+                        let mut ret_area = RetArea(
+                            [::core::mem::MaybeUninit::uninit(); 8],
+                        );
+                        let ptr0 = ret_area.0.as_mut_ptr().cast::<u8>();
+                        #[cfg(target_arch = "wasm32")]
+                        #[link(
+                            wasm_import_module = "wasi:filesystem/types@0.3.0-rc-2026-02-09"
+                        )]
+                        unsafe extern "C" {
+                            #[link_name = "[method]descriptor.read-directory"]
+                            fn wit_import1(_: i32, _: *mut u8);
                         }
-                        #[allow(unused_parens)]
-                        unsafe impl<'a> _Subtask for _MySubtask<'a> {
-                            type Params = (&'a Descriptor,);
-                            type Results = (
-                                wit_bindgen::rt::async_support::StreamReader<
-                                    DirectoryEntry,
-                                >,
-                                wit_bindgen::rt::async_support::FutureReader<
-                                    Result<(), ErrorCode>,
-                                >,
-                            );
-                            type ParamsLower = ParamsLower;
-                            fn abi_layout(&mut self) -> ::core::alloc::Layout {
-                                unsafe {
-                                    ::core::alloc::Layout::from_size_align_unchecked(8, 4)
-                                }
-                            }
-                            fn results_offset(&mut self) -> usize {
-                                0
-                            }
-                            unsafe fn call_import(
-                                &mut self,
-                                _params: Self::ParamsLower,
-                                _results: *mut u8,
-                            ) -> u32 {
-                                #[cfg(target_arch = "wasm32")]
-                                #[link(
-                                    wasm_import_module = "wasi:filesystem/types@0.3.0-rc-2026-01-06"
-                                )]
-                                unsafe extern "C" {
-                                    #[link_name = "[async-lower][method]descriptor.read-directory"]
-                                    fn call(_: i32, _: *mut u8) -> i32;
-                                }
-                                #[cfg(not(target_arch = "wasm32"))]
-                                unsafe extern "C" fn call(_: i32, _: *mut u8) -> i32 {
-                                    unreachable!()
-                                }
-                                unsafe { call(_params.0, _results) as u32 }
-                            }
-                            unsafe fn params_dealloc_lists(
-                                &mut self,
-                                _params: Self::ParamsLower,
-                            ) {
-                                unsafe {}
-                            }
-                            unsafe fn params_dealloc_lists_and_own(
-                                &mut self,
-                                _params: Self::ParamsLower,
-                            ) {
-                                unsafe {}
-                            }
-                            unsafe fn params_lower(
-                                &mut self,
-                                (_lower0,): Self::Params,
-                                _ptr: *mut u8,
-                            ) -> Self::ParamsLower {
-                                unsafe { ParamsLower((_lower0).handle() as i32) }
-                            }
-                            unsafe fn results_lift(
-                                &mut self,
-                                _ptr: *mut u8,
-                            ) -> Self::Results {
-                                unsafe {
-                                    let l0 = *_ptr.add(0).cast::<i32>();
-                                    let l1 = *_ptr.add(4).cast::<i32>();
-                                    (
-                                        wit_bindgen::rt::async_support::StreamReader::new(
-                                            l0 as u32,
-                                            &<DirectoryEntry as super::super::super::wit_stream::StreamPayload>::VTABLE,
-                                        ),
-                                        wit_bindgen::rt::async_support::FutureReader::new(
-                                            l1 as u32,
-                                            &<Result<
-                                                (),
-                                                ErrorCode,
-                                            > as super::super::super::wit_future::FuturePayload>::VTABLE,
-                                        ),
-                                    )
-                                }
-                            }
+                        #[cfg(not(target_arch = "wasm32"))]
+                        unsafe extern "C" fn wit_import1(_: i32, _: *mut u8) {
+                            unreachable!()
                         }
-                        _MySubtask {
-                            _unused: core::marker::PhantomData,
-                        }
-                            .call((self,))
-                            .await
+                        wit_import1((self).handle() as i32, ptr0);
+                        let l2 = *ptr0.add(0).cast::<i32>();
+                        let l3 = *ptr0.add(4).cast::<i32>();
+                        let result4 = (
+                            wit_bindgen::rt::async_support::StreamReader::new(
+                                l2 as u32,
+                                &<DirectoryEntry as super::super::super::wit_stream::StreamPayload>::VTABLE,
+                            ),
+                            wit_bindgen::rt::async_support::FutureReader::new(
+                                l3 as u32,
+                                &<Result<
+                                    (),
+                                    ErrorCode,
+                                > as super::super::super::wit_future::FuturePayload>::VTABLE,
+                            ),
+                        );
+                        result4
                     }
                 }
             }
@@ -3050,7 +2662,7 @@ pub mod wasi {
                             ) -> u32 {
                                 #[cfg(target_arch = "wasm32")]
                                 #[link(
-                                    wasm_import_module = "wasi:filesystem/types@0.3.0-rc-2026-01-06"
+                                    wasm_import_module = "wasi:filesystem/types@0.3.0-rc-2026-02-09"
                                 )]
                                 unsafe extern "C" {
                                     #[link_name = "[async-lower][method]descriptor.sync"]
@@ -3150,7 +2762,7 @@ pub mod wasi {
                             ) -> u32 {
                                 #[cfg(target_arch = "wasm32")]
                                 #[link(
-                                    wasm_import_module = "wasi:filesystem/types@0.3.0-rc-2026-01-06"
+                                    wasm_import_module = "wasi:filesystem/types@0.3.0-rc-2026-02-09"
                                 )]
                                 unsafe extern "C" {
                                     #[link_name = "[async-lower][method]descriptor.create-directory-at"]
@@ -3274,7 +2886,7 @@ pub mod wasi {
                             ) -> u32 {
                                 #[cfg(target_arch = "wasm32")]
                                 #[link(
-                                    wasm_import_module = "wasi:filesystem/types@0.3.0-rc-2026-01-06"
+                                    wasm_import_module = "wasi:filesystem/types@0.3.0-rc-2026-02-09"
                                 )]
                                 unsafe extern "C" {
                                     #[link_name = "[async-lower][method]descriptor.stat"]
@@ -3436,7 +3048,7 @@ pub mod wasi {
                             ) -> u32 {
                                 #[cfg(target_arch = "wasm32")]
                                 #[link(
-                                    wasm_import_module = "wasi:filesystem/types@0.3.0-rc-2026-01-06"
+                                    wasm_import_module = "wasi:filesystem/types@0.3.0-rc-2026-02-09"
                                 )]
                                 unsafe extern "C" {
                                     #[link_name = "[async-lower][method]descriptor.stat-at"]
@@ -3639,7 +3251,7 @@ pub mod wasi {
                             ) -> u32 {
                                 #[cfg(target_arch = "wasm32")]
                                 #[link(
-                                    wasm_import_module = "wasi:filesystem/types@0.3.0-rc-2026-01-06"
+                                    wasm_import_module = "wasi:filesystem/types@0.3.0-rc-2026-02-09"
                                 )]
                                 unsafe extern "C" {
                                     #[link_name = "[async-lower][method]descriptor.set-times-at"]
@@ -3845,7 +3457,7 @@ pub mod wasi {
                             ) -> u32 {
                                 #[cfg(target_arch = "wasm32")]
                                 #[link(
-                                    wasm_import_module = "wasi:filesystem/types@0.3.0-rc-2026-01-06"
+                                    wasm_import_module = "wasi:filesystem/types@0.3.0-rc-2026-02-09"
                                 )]
                                 unsafe extern "C" {
                                     #[link_name = "[async-lower][method]descriptor.link-at"]
@@ -4046,7 +3658,7 @@ pub mod wasi {
                             ) -> u32 {
                                 #[cfg(target_arch = "wasm32")]
                                 #[link(
-                                    wasm_import_module = "wasi:filesystem/types@0.3.0-rc-2026-01-06"
+                                    wasm_import_module = "wasi:filesystem/types@0.3.0-rc-2026-02-09"
                                 )]
                                 unsafe extern "C" {
                                     #[link_name = "[async-lower][method]descriptor.open-at"]
@@ -4207,7 +3819,7 @@ pub mod wasi {
                             ) -> u32 {
                                 #[cfg(target_arch = "wasm32")]
                                 #[link(
-                                    wasm_import_module = "wasi:filesystem/types@0.3.0-rc-2026-01-06"
+                                    wasm_import_module = "wasi:filesystem/types@0.3.0-rc-2026-02-09"
                                 )]
                                 unsafe extern "C" {
                                     #[link_name = "[async-lower][method]descriptor.readlink-at"]
@@ -4346,7 +3958,7 @@ pub mod wasi {
                             ) -> u32 {
                                 #[cfg(target_arch = "wasm32")]
                                 #[link(
-                                    wasm_import_module = "wasi:filesystem/types@0.3.0-rc-2026-01-06"
+                                    wasm_import_module = "wasi:filesystem/types@0.3.0-rc-2026-02-09"
                                 )]
                                 unsafe extern "C" {
                                     #[link_name = "[async-lower][method]descriptor.remove-directory-at"]
@@ -4477,7 +4089,7 @@ pub mod wasi {
                             ) -> u32 {
                                 #[cfg(target_arch = "wasm32")]
                                 #[link(
-                                    wasm_import_module = "wasi:filesystem/types@0.3.0-rc-2026-01-06"
+                                    wasm_import_module = "wasi:filesystem/types@0.3.0-rc-2026-02-09"
                                 )]
                                 unsafe extern "C" {
                                     #[link_name = "[async-lower][method]descriptor.rename-at"]
@@ -4660,7 +4272,7 @@ pub mod wasi {
                             ) -> u32 {
                                 #[cfg(target_arch = "wasm32")]
                                 #[link(
-                                    wasm_import_module = "wasi:filesystem/types@0.3.0-rc-2026-01-06"
+                                    wasm_import_module = "wasi:filesystem/types@0.3.0-rc-2026-02-09"
                                 )]
                                 unsafe extern "C" {
                                     #[link_name = "[async-lower][method]descriptor.symlink-at"]
@@ -4830,7 +4442,7 @@ pub mod wasi {
                             ) -> u32 {
                                 #[cfg(target_arch = "wasm32")]
                                 #[link(
-                                    wasm_import_module = "wasi:filesystem/types@0.3.0-rc-2026-01-06"
+                                    wasm_import_module = "wasi:filesystem/types@0.3.0-rc-2026-02-09"
                                 )]
                                 unsafe extern "C" {
                                     #[link_name = "[async-lower][method]descriptor.unlink-file-at"]
@@ -4951,7 +4563,7 @@ pub mod wasi {
                             ) -> u32 {
                                 #[cfg(target_arch = "wasm32")]
                                 #[link(
-                                    wasm_import_module = "wasi:filesystem/types@0.3.0-rc-2026-01-06"
+                                    wasm_import_module = "wasi:filesystem/types@0.3.0-rc-2026-02-09"
                                 )]
                                 unsafe extern "C" {
                                     #[link_name = "[async-lower][method]descriptor.is-same-object"]
@@ -5062,7 +4674,7 @@ pub mod wasi {
                             ) -> u32 {
                                 #[cfg(target_arch = "wasm32")]
                                 #[link(
-                                    wasm_import_module = "wasi:filesystem/types@0.3.0-rc-2026-01-06"
+                                    wasm_import_module = "wasi:filesystem/types@0.3.0-rc-2026-02-09"
                                 )]
                                 unsafe extern "C" {
                                     #[link_name = "[async-lower][method]descriptor.metadata-hash"]
@@ -5171,7 +4783,7 @@ pub mod wasi {
                             ) -> u32 {
                                 #[cfg(target_arch = "wasm32")]
                                 #[link(
-                                    wasm_import_module = "wasi:filesystem/types@0.3.0-rc-2026-01-06"
+                                    wasm_import_module = "wasi:filesystem/types@0.3.0-rc-2026-02-09"
                                 )]
                                 unsafe extern "C" {
                                     #[link_name = "[async-lower][method]descriptor.metadata-hash-at"]
@@ -5298,7 +4910,7 @@ pub mod wasi {
                     let ptr0 = ret_area.0.as_mut_ptr().cast::<u8>();
                     #[cfg(target_arch = "wasm32")]
                     #[link(
-                        wasm_import_module = "wasi:filesystem/preopens@0.3.0-rc-2026-01-06"
+                        wasm_import_module = "wasi:filesystem/preopens@0.3.0-rc-2026-02-09"
                     )]
                     unsafe extern "C" {
                         #[link_name = "get-directories"]
@@ -5390,7 +5002,7 @@ pub mod wasi {
                     let ptr0 = ret_area.0.as_mut_ptr().cast::<u8>();
                     #[cfg(target_arch = "wasm32")]
                     #[link(
-                        wasm_import_module = "wasi:random/random@0.3.0-rc-2026-01-06"
+                        wasm_import_module = "wasi:random/random@0.3.0-rc-2026-02-09"
                     )]
                     unsafe extern "C" {
                         #[link_name = "get-random-bytes"]
@@ -5422,7 +5034,7 @@ pub mod wasi {
                 unsafe {
                     #[cfg(target_arch = "wasm32")]
                     #[link(
-                        wasm_import_module = "wasi:random/random@0.3.0-rc-2026-01-06"
+                        wasm_import_module = "wasi:random/random@0.3.0-rc-2026-02-09"
                     )]
                     unsafe extern "C" {
                         #[link_name = "get-random-u64"]
@@ -5473,7 +5085,7 @@ pub mod wasi {
                     let ptr0 = ret_area.0.as_mut_ptr().cast::<u8>();
                     #[cfg(target_arch = "wasm32")]
                     #[link(
-                        wasm_import_module = "wasi:random/insecure@0.3.0-rc-2026-01-06"
+                        wasm_import_module = "wasi:random/insecure@0.3.0-rc-2026-02-09"
                     )]
                     unsafe extern "C" {
                         #[link_name = "get-insecure-random-bytes"]
@@ -5505,7 +5117,7 @@ pub mod wasi {
                 unsafe {
                     #[cfg(target_arch = "wasm32")]
                     #[link(
-                        wasm_import_module = "wasi:random/insecure@0.3.0-rc-2026-01-06"
+                        wasm_import_module = "wasi:random/insecure@0.3.0-rc-2026-02-09"
                     )]
                     unsafe extern "C" {
                         #[link_name = "get-insecure-random-u64"]
@@ -5556,7 +5168,7 @@ pub mod wasi {
                     let ptr0 = ret_area.0.as_mut_ptr().cast::<u8>();
                     #[cfg(target_arch = "wasm32")]
                     #[link(
-                        wasm_import_module = "wasi:random/insecure-seed@0.3.0-rc-2026-01-06"
+                        wasm_import_module = "wasi:random/insecure-seed@0.3.0-rc-2026-02-09"
                     )]
                     unsafe extern "C" {
                         #[link_name = "get-insecure-seed"]
@@ -5917,7 +5529,7 @@ pub mod wasi {
                 unsafe fn drop(_handle: u32) {
                     #[cfg(target_arch = "wasm32")]
                     #[link(
-                        wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-01-06"
+                        wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-02-09"
                     )]
                     unsafe extern "C" {
                         #[link_name = "[resource-drop]tcp-socket"]
@@ -5959,7 +5571,7 @@ pub mod wasi {
                 unsafe fn drop(_handle: u32) {
                     #[cfg(target_arch = "wasm32")]
                     #[link(
-                        wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-01-06"
+                        wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-02-09"
                     )]
                     unsafe extern "C" {
                         #[link_name = "[resource-drop]udp-socket"]
@@ -6003,7 +5615,7 @@ pub mod wasi {
                         let ptr0 = ret_area.0.as_mut_ptr().cast::<u8>();
                         #[cfg(target_arch = "wasm32")]
                         #[link(
-                            wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-01-06"
+                            wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-02-09"
                         )]
                         unsafe extern "C" {
                             #[link_name = "[static]tcp-socket.create"]
@@ -6139,7 +5751,7 @@ pub mod wasi {
                         let ptr5 = ret_area.0.as_mut_ptr().cast::<u8>();
                         #[cfg(target_arch = "wasm32")]
                         #[link(
-                            wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-01-06"
+                            wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-02-09"
                         )]
                         unsafe extern "C" {
                             #[link_name = "[method]tcp-socket.bind"]
@@ -6278,7 +5890,7 @@ pub mod wasi {
                             ) -> u32 {
                                 #[cfg(target_arch = "wasm32")]
                                 #[link(
-                                    wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-01-06"
+                                    wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-02-09"
                                 )]
                                 unsafe extern "C" {
                                     #[link_name = "[async-lower][method]tcp-socket.connect"]
@@ -6448,6 +6060,12 @@ pub mod wasi {
                 /// In either case, the stream returned by this `listen` method remains
                 /// operational.
                 ///
+                /// WASI requires `listen` to perform an implicit bind if the socket
+                /// has not already been bound. Not all platforms (notably Windows)
+                /// exhibit this behavior out of the box. On platforms that require it,
+                /// the WASI implementation can emulate this behavior by performing
+                /// the bind itself if the guest hasn't already done so.
+                ///
                 /// # References
                 /// - <https://pubs.opengroup.org/onlinepubs/9699919799/functions/listen.html>
                 /// - <https://pubs.opengroup.org/onlinepubs/9699919799/functions/accept.html>
@@ -6473,7 +6091,7 @@ pub mod wasi {
                         let ptr0 = ret_area.0.as_mut_ptr().cast::<u8>();
                         #[cfg(target_arch = "wasm32")]
                         #[link(
-                            wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-01-06"
+                            wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-02-09"
                         )]
                         unsafe extern "C" {
                             #[link_name = "[method]tcp-socket.listen"]
@@ -6532,114 +6150,36 @@ pub mod wasi {
                 /// - <https://learn.microsoft.com/en-us/windows/win32/api/winsock2/nf-winsock2-send>
                 /// - <https://man.freebsd.org/cgi/man.cgi?query=send&sektion=2>
                 #[allow(async_fn_in_trait)]
-                pub async fn send(
+                pub fn send(
                     &self,
                     data: wit_bindgen::rt::async_support::StreamReader<u8>,
-                ) -> Result<(), ErrorCode> {
+                ) -> wit_bindgen::rt::async_support::FutureReader<
+                    Result<(), ErrorCode>,
+                > {
                     unsafe {
-                        #[derive(Copy, Clone)]
-                        struct ParamsLower(i32, i32);
-                        unsafe impl Send for ParamsLower {}
-                        use wit_bindgen::rt::async_support::Subtask as _Subtask;
-                        struct _MySubtask<'a> {
-                            _unused: core::marker::PhantomData<&'a ()>,
+                        #[cfg(target_arch = "wasm32")]
+                        #[link(
+                            wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-02-09"
+                        )]
+                        unsafe extern "C" {
+                            #[link_name = "[method]tcp-socket.send"]
+                            fn wit_import0(_: i32, _: i32) -> i32;
                         }
-                        #[allow(unused_parens)]
-                        unsafe impl<'a> _Subtask for _MySubtask<'a> {
-                            type Params = (
-                                &'a TcpSocket,
-                                wit_bindgen::rt::async_support::StreamReader<u8>,
-                            );
-                            type Results = Result<(), ErrorCode>;
-                            type ParamsLower = ParamsLower;
-                            fn abi_layout(&mut self) -> ::core::alloc::Layout {
-                                unsafe {
-                                    ::core::alloc::Layout::from_size_align_unchecked(2, 1)
-                                }
-                            }
-                            fn results_offset(&mut self) -> usize {
-                                0
-                            }
-                            unsafe fn call_import(
-                                &mut self,
-                                _params: Self::ParamsLower,
-                                _results: *mut u8,
-                            ) -> u32 {
-                                #[cfg(target_arch = "wasm32")]
-                                #[link(
-                                    wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-01-06"
-                                )]
-                                unsafe extern "C" {
-                                    #[link_name = "[async-lower][method]tcp-socket.send"]
-                                    fn call(_: i32, _: i32, _: *mut u8) -> i32;
-                                }
-                                #[cfg(not(target_arch = "wasm32"))]
-                                unsafe extern "C" fn call(
-                                    _: i32,
-                                    _: i32,
-                                    _: *mut u8,
-                                ) -> i32 {
-                                    unreachable!()
-                                }
-                                unsafe { call(_params.0, _params.1, _results) as u32 }
-                            }
-                            unsafe fn params_dealloc_lists(
-                                &mut self,
-                                _params: Self::ParamsLower,
-                            ) {
-                                unsafe {}
-                            }
-                            unsafe fn params_dealloc_lists_and_own(
-                                &mut self,
-                                _params: Self::ParamsLower,
-                            ) {
-                                unsafe {
-                                    let _ = wit_bindgen::rt::async_support::StreamReader::new(
-                                        _params.1 as u32,
-                                        &<u8 as super::super::super::wit_stream::StreamPayload>::VTABLE,
-                                    );
-                                }
-                            }
-                            unsafe fn params_lower(
-                                &mut self,
-                                (_lower0, _lower1): Self::Params,
-                                _ptr: *mut u8,
-                            ) -> Self::ParamsLower {
-                                unsafe {
-                                    ParamsLower(
-                                        (_lower0).handle() as i32,
-                                        (_lower1).take_handle() as i32,
-                                    )
-                                }
-                            }
-                            unsafe fn results_lift(
-                                &mut self,
-                                _ptr: *mut u8,
-                            ) -> Self::Results {
-                                unsafe {
-                                    let l0 = i32::from(*_ptr.add(0).cast::<u8>());
-                                    match l0 {
-                                        0 => {
-                                            let e = ();
-                                            Ok(e)
-                                        }
-                                        1 => {
-                                            let e = {
-                                                let l1 = i32::from(*_ptr.add(1).cast::<u8>());
-                                                ErrorCode::_lift(l1 as u8)
-                                            };
-                                            Err(e)
-                                        }
-                                        _ => _rt::invalid_enum_discriminant(),
-                                    }
-                                }
-                            }
+                        #[cfg(not(target_arch = "wasm32"))]
+                        unsafe extern "C" fn wit_import0(_: i32, _: i32) -> i32 {
+                            unreachable!()
                         }
-                        _MySubtask {
-                            _unused: core::marker::PhantomData,
-                        }
-                            .call((self, data))
-                            .await
+                        let ret = wit_import0(
+                            (self).handle() as i32,
+                            (&data).take_handle() as i32,
+                        );
+                        wit_bindgen::rt::async_support::FutureReader::new(
+                            ret as u32,
+                            &<Result<
+                                (),
+                                ErrorCode,
+                            > as super::super::super::wit_future::FuturePayload>::VTABLE,
+                        )
                     }
                 }
             }
@@ -6692,7 +6232,7 @@ pub mod wasi {
                         let ptr0 = ret_area.0.as_mut_ptr().cast::<u8>();
                         #[cfg(target_arch = "wasm32")]
                         #[link(
-                            wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-01-06"
+                            wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-02-09"
                         )]
                         unsafe extern "C" {
                             #[link_name = "[method]tcp-socket.receive"]
@@ -6751,7 +6291,7 @@ pub mod wasi {
                         let ptr0 = ret_area.0.as_mut_ptr().cast::<u8>();
                         #[cfg(target_arch = "wasm32")]
                         #[link(
-                            wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-01-06"
+                            wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-02-09"
                         )]
                         unsafe extern "C" {
                             #[link_name = "[method]tcp-socket.get-local-address"]
@@ -6855,7 +6395,7 @@ pub mod wasi {
                         let ptr0 = ret_area.0.as_mut_ptr().cast::<u8>();
                         #[cfg(target_arch = "wasm32")]
                         #[link(
-                            wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-01-06"
+                            wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-02-09"
                         )]
                         unsafe extern "C" {
                             #[link_name = "[method]tcp-socket.get-remote-address"]
@@ -6946,7 +6486,7 @@ pub mod wasi {
                     unsafe {
                         #[cfg(target_arch = "wasm32")]
                         #[link(
-                            wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-01-06"
+                            wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-02-09"
                         )]
                         unsafe extern "C" {
                             #[link_name = "[method]tcp-socket.get-is-listening"]
@@ -6973,7 +6513,7 @@ pub mod wasi {
                     unsafe {
                         #[cfg(target_arch = "wasm32")]
                         #[link(
-                            wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-01-06"
+                            wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-02-09"
                         )]
                         unsafe extern "C" {
                             #[link_name = "[method]tcp-socket.get-address-family"]
@@ -7013,7 +6553,7 @@ pub mod wasi {
                         let ptr0 = ret_area.0.as_mut_ptr().cast::<u8>();
                         #[cfg(target_arch = "wasm32")]
                         #[link(
-                            wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-01-06"
+                            wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-02-09"
                         )]
                         unsafe extern "C" {
                             #[link_name = "[method]tcp-socket.set-listen-backlog-size"]
@@ -7065,7 +6605,7 @@ pub mod wasi {
                         let ptr0 = ret_area.0.as_mut_ptr().cast::<u8>();
                         #[cfg(target_arch = "wasm32")]
                         #[link(
-                            wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-01-06"
+                            wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-02-09"
                         )]
                         unsafe extern "C" {
                             #[link_name = "[method]tcp-socket.get-keep-alive-enabled"]
@@ -7114,7 +6654,7 @@ pub mod wasi {
                         let ptr0 = ret_area.0.as_mut_ptr().cast::<u8>();
                         #[cfg(target_arch = "wasm32")]
                         #[link(
-                            wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-01-06"
+                            wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-02-09"
                         )]
                         unsafe extern "C" {
                             #[link_name = "[method]tcp-socket.set-keep-alive-enabled"]
@@ -7174,7 +6714,7 @@ pub mod wasi {
                         let ptr0 = ret_area.0.as_mut_ptr().cast::<u8>();
                         #[cfg(target_arch = "wasm32")]
                         #[link(
-                            wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-01-06"
+                            wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-02-09"
                         )]
                         unsafe extern "C" {
                             #[link_name = "[method]tcp-socket.get-keep-alive-idle-time"]
@@ -7223,7 +6763,7 @@ pub mod wasi {
                         let ptr0 = ret_area.0.as_mut_ptr().cast::<u8>();
                         #[cfg(target_arch = "wasm32")]
                         #[link(
-                            wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-01-06"
+                            wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-02-09"
                         )]
                         unsafe extern "C" {
                             #[link_name = "[method]tcp-socket.set-keep-alive-idle-time"]
@@ -7276,7 +6816,7 @@ pub mod wasi {
                         let ptr0 = ret_area.0.as_mut_ptr().cast::<u8>();
                         #[cfg(target_arch = "wasm32")]
                         #[link(
-                            wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-01-06"
+                            wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-02-09"
                         )]
                         unsafe extern "C" {
                             #[link_name = "[method]tcp-socket.get-keep-alive-interval"]
@@ -7325,7 +6865,7 @@ pub mod wasi {
                         let ptr0 = ret_area.0.as_mut_ptr().cast::<u8>();
                         #[cfg(target_arch = "wasm32")]
                         #[link(
-                            wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-01-06"
+                            wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-02-09"
                         )]
                         unsafe extern "C" {
                             #[link_name = "[method]tcp-socket.set-keep-alive-interval"]
@@ -7378,7 +6918,7 @@ pub mod wasi {
                         let ptr0 = ret_area.0.as_mut_ptr().cast::<u8>();
                         #[cfg(target_arch = "wasm32")]
                         #[link(
-                            wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-01-06"
+                            wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-02-09"
                         )]
                         unsafe extern "C" {
                             #[link_name = "[method]tcp-socket.get-keep-alive-count"]
@@ -7424,7 +6964,7 @@ pub mod wasi {
                         let ptr0 = ret_area.0.as_mut_ptr().cast::<u8>();
                         #[cfg(target_arch = "wasm32")]
                         #[link(
-                            wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-01-06"
+                            wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-02-09"
                         )]
                         unsafe extern "C" {
                             #[link_name = "[method]tcp-socket.set-keep-alive-count"]
@@ -7473,7 +7013,7 @@ pub mod wasi {
                         let ptr0 = ret_area.0.as_mut_ptr().cast::<u8>();
                         #[cfg(target_arch = "wasm32")]
                         #[link(
-                            wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-01-06"
+                            wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-02-09"
                         )]
                         unsafe extern "C" {
                             #[link_name = "[method]tcp-socket.get-hop-limit"]
@@ -7519,7 +7059,7 @@ pub mod wasi {
                         let ptr0 = ret_area.0.as_mut_ptr().cast::<u8>();
                         #[cfg(target_arch = "wasm32")]
                         #[link(
-                            wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-01-06"
+                            wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-02-09"
                         )]
                         unsafe extern "C" {
                             #[link_name = "[method]tcp-socket.set-hop-limit"]
@@ -7572,7 +7112,7 @@ pub mod wasi {
                         let ptr0 = ret_area.0.as_mut_ptr().cast::<u8>();
                         #[cfg(target_arch = "wasm32")]
                         #[link(
-                            wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-01-06"
+                            wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-02-09"
                         )]
                         unsafe extern "C" {
                             #[link_name = "[method]tcp-socket.get-receive-buffer-size"]
@@ -7621,7 +7161,7 @@ pub mod wasi {
                         let ptr0 = ret_area.0.as_mut_ptr().cast::<u8>();
                         #[cfg(target_arch = "wasm32")]
                         #[link(
-                            wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-01-06"
+                            wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-02-09"
                         )]
                         unsafe extern "C" {
                             #[link_name = "[method]tcp-socket.set-receive-buffer-size"]
@@ -7664,7 +7204,7 @@ pub mod wasi {
                         let ptr0 = ret_area.0.as_mut_ptr().cast::<u8>();
                         #[cfg(target_arch = "wasm32")]
                         #[link(
-                            wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-01-06"
+                            wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-02-09"
                         )]
                         unsafe extern "C" {
                             #[link_name = "[method]tcp-socket.get-send-buffer-size"]
@@ -7710,7 +7250,7 @@ pub mod wasi {
                         let ptr0 = ret_area.0.as_mut_ptr().cast::<u8>();
                         #[cfg(target_arch = "wasm32")]
                         #[link(
-                            wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-01-06"
+                            wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-02-09"
                         )]
                         unsafe extern "C" {
                             #[link_name = "[method]tcp-socket.set-send-buffer-size"]
@@ -7769,7 +7309,7 @@ pub mod wasi {
                         let ptr0 = ret_area.0.as_mut_ptr().cast::<u8>();
                         #[cfg(target_arch = "wasm32")]
                         #[link(
-                            wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-01-06"
+                            wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-02-09"
                         )]
                         unsafe extern "C" {
                             #[link_name = "[static]udp-socket.create"]
@@ -7892,7 +7432,7 @@ pub mod wasi {
                         let ptr5 = ret_area.0.as_mut_ptr().cast::<u8>();
                         #[cfg(target_arch = "wasm32")]
                         #[link(
-                            wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-01-06"
+                            wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-02-09"
                         )]
                         unsafe extern "C" {
                             #[link_name = "[method]udp-socket.bind"]
@@ -8075,7 +7615,7 @@ pub mod wasi {
                         let ptr5 = ret_area.0.as_mut_ptr().cast::<u8>();
                         #[cfg(target_arch = "wasm32")]
                         #[link(
-                            wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-01-06"
+                            wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-02-09"
                         )]
                         unsafe extern "C" {
                             #[link_name = "[method]udp-socket.connect"]
@@ -8178,7 +7718,7 @@ pub mod wasi {
                         let ptr0 = ret_area.0.as_mut_ptr().cast::<u8>();
                         #[cfg(target_arch = "wasm32")]
                         #[link(
-                            wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-01-06"
+                            wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-02-09"
                         )]
                         unsafe extern "C" {
                             #[link_name = "[method]udp-socket.disconnect"]
@@ -8282,7 +7822,7 @@ pub mod wasi {
                             ) -> u32 {
                                 #[cfg(target_arch = "wasm32")]
                                 #[link(
-                                    wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-01-06"
+                                    wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-02-09"
                                 )]
                                 unsafe extern "C" {
                                     #[link_name = "[async-lower][method]udp-socket.send"]
@@ -8510,7 +8050,7 @@ pub mod wasi {
                             ) -> u32 {
                                 #[cfg(target_arch = "wasm32")]
                                 #[link(
-                                    wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-01-06"
+                                    wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-02-09"
                                 )]
                                 unsafe extern "C" {
                                     #[link_name = "[async-lower][method]udp-socket.receive"]
@@ -8730,7 +8270,7 @@ pub mod wasi {
                         let ptr0 = ret_area.0.as_mut_ptr().cast::<u8>();
                         #[cfg(target_arch = "wasm32")]
                         #[link(
-                            wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-01-06"
+                            wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-02-09"
                         )]
                         unsafe extern "C" {
                             #[link_name = "[method]udp-socket.get-local-address"]
@@ -8834,7 +8374,7 @@ pub mod wasi {
                         let ptr0 = ret_area.0.as_mut_ptr().cast::<u8>();
                         #[cfg(target_arch = "wasm32")]
                         #[link(
-                            wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-01-06"
+                            wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-02-09"
                         )]
                         unsafe extern "C" {
                             #[link_name = "[method]udp-socket.get-remote-address"]
@@ -8927,7 +8467,7 @@ pub mod wasi {
                     unsafe {
                         #[cfg(target_arch = "wasm32")]
                         #[link(
-                            wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-01-06"
+                            wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-02-09"
                         )]
                         unsafe extern "C" {
                             #[link_name = "[method]udp-socket.get-address-family"]
@@ -8961,7 +8501,7 @@ pub mod wasi {
                         let ptr0 = ret_area.0.as_mut_ptr().cast::<u8>();
                         #[cfg(target_arch = "wasm32")]
                         #[link(
-                            wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-01-06"
+                            wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-02-09"
                         )]
                         unsafe extern "C" {
                             #[link_name = "[method]udp-socket.get-unicast-hop-limit"]
@@ -9007,7 +8547,7 @@ pub mod wasi {
                         let ptr0 = ret_area.0.as_mut_ptr().cast::<u8>();
                         #[cfg(target_arch = "wasm32")]
                         #[link(
-                            wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-01-06"
+                            wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-02-09"
                         )]
                         unsafe extern "C" {
                             #[link_name = "[method]udp-socket.set-unicast-hop-limit"]
@@ -9060,7 +8600,7 @@ pub mod wasi {
                         let ptr0 = ret_area.0.as_mut_ptr().cast::<u8>();
                         #[cfg(target_arch = "wasm32")]
                         #[link(
-                            wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-01-06"
+                            wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-02-09"
                         )]
                         unsafe extern "C" {
                             #[link_name = "[method]udp-socket.get-receive-buffer-size"]
@@ -9109,7 +8649,7 @@ pub mod wasi {
                         let ptr0 = ret_area.0.as_mut_ptr().cast::<u8>();
                         #[cfg(target_arch = "wasm32")]
                         #[link(
-                            wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-01-06"
+                            wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-02-09"
                         )]
                         unsafe extern "C" {
                             #[link_name = "[method]udp-socket.set-receive-buffer-size"]
@@ -9152,7 +8692,7 @@ pub mod wasi {
                         let ptr0 = ret_area.0.as_mut_ptr().cast::<u8>();
                         #[cfg(target_arch = "wasm32")]
                         #[link(
-                            wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-01-06"
+                            wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-02-09"
                         )]
                         unsafe extern "C" {
                             #[link_name = "[method]udp-socket.get-send-buffer-size"]
@@ -9198,7 +8738,7 @@ pub mod wasi {
                         let ptr0 = ret_area.0.as_mut_ptr().cast::<u8>();
                         #[cfg(target_arch = "wasm32")]
                         #[link(
-                            wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-01-06"
+                            wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-02-09"
                         )]
                         unsafe extern "C" {
                             #[link_name = "[method]udp-socket.set-send-buffer-size"]
@@ -9405,7 +8945,7 @@ pub mod wasi {
                         ) -> u32 {
                             #[cfg(target_arch = "wasm32")]
                             #[link(
-                                wasm_import_module = "wasi:sockets/ip-name-lookup@0.3.0-rc-2026-01-06"
+                                wasm_import_module = "wasi:sockets/ip-name-lookup@0.3.0-rc-2026-02-09"
                             )]
                             unsafe extern "C" {
                                 #[link_name = "[async-lower]resolve-addresses"]
@@ -9778,7 +9318,7 @@ pub mod wit_future {
             unreachable!()
         }
         #[cfg(target_arch = "wasm32")]
-        #[link(wasm_import_module = "wasi:cli/stdin@0.3.0-rc-2026-01-06")]
+        #[link(wasm_import_module = "wasi:cli/stdin@0.3.0-rc-2026-02-09")]
         unsafe extern "C" {
             #[link_name = "[future-new-1]read-via-stream"]
             fn new() -> u64;
@@ -9889,7 +9429,7 @@ pub mod wit_future {
             unreachable!()
         }
         #[cfg(target_arch = "wasm32")]
-        #[link(wasm_import_module = "wasi:filesystem/types@0.3.0-rc-2026-01-06")]
+        #[link(wasm_import_module = "wasi:filesystem/types@0.3.0-rc-2026-02-09")]
         unsafe extern "C" {
             #[link_name = "[future-new-1][method]descriptor.read-via-stream"]
             fn new() -> u64;
@@ -10002,21 +9542,21 @@ pub mod wit_future {
             unreachable!()
         }
         #[cfg(target_arch = "wasm32")]
-        #[link(wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-01-06")]
+        #[link(wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-02-09")]
         unsafe extern "C" {
-            #[link_name = "[future-new-1][method]tcp-socket.receive"]
+            #[link_name = "[future-new-1][method]tcp-socket.send"]
             fn new() -> u64;
-            #[link_name = "[future-cancel-write-1][method]tcp-socket.receive"]
+            #[link_name = "[future-cancel-write-1][method]tcp-socket.send"]
             fn cancel_write(_: u32) -> u32;
-            #[link_name = "[future-cancel-read-1][method]tcp-socket.receive"]
+            #[link_name = "[future-cancel-read-1][method]tcp-socket.send"]
             fn cancel_read(_: u32) -> u32;
-            #[link_name = "[future-drop-writable-1][method]tcp-socket.receive"]
+            #[link_name = "[future-drop-writable-1][method]tcp-socket.send"]
             fn drop_writable(_: u32);
-            #[link_name = "[future-drop-readable-1][method]tcp-socket.receive"]
+            #[link_name = "[future-drop-readable-1][method]tcp-socket.send"]
             fn drop_readable(_: u32);
-            #[link_name = "[async-lower][future-read-1][method]tcp-socket.receive"]
+            #[link_name = "[async-lower][future-read-1][method]tcp-socket.send"]
             fn start_read(_: u32, _: *mut u8) -> u32;
-            #[link_name = "[async-lower][future-write-1][method]tcp-socket.receive"]
+            #[link_name = "[async-lower][future-write-1][method]tcp-socket.send"]
             fn start_write(_: u32, _: *const u8) -> u32;
         }
         unsafe fn lift(
@@ -10133,7 +9673,7 @@ pub mod wit_stream {
             unreachable!()
         }
         #[cfg(target_arch = "wasm32")]
-        #[link(wasm_import_module = "wasi:cli/stdin@0.3.0-rc-2026-01-06")]
+        #[link(wasm_import_module = "wasi:cli/stdin@0.3.0-rc-2026-02-09")]
         unsafe extern "C" {
             #[link_name = "[stream-new-0]read-via-stream"]
             fn new() -> u64;
@@ -10201,7 +9741,7 @@ pub mod wit_stream {
             unreachable!()
         }
         #[cfg(target_arch = "wasm32")]
-        #[link(wasm_import_module = "wasi:filesystem/types@0.3.0-rc-2026-01-06")]
+        #[link(wasm_import_module = "wasi:filesystem/types@0.3.0-rc-2026-02-09")]
         unsafe extern "C" {
             #[link_name = "[stream-new-0][method]descriptor.read-directory"]
             fn new() -> u64;
@@ -10323,7 +9863,7 @@ pub mod wit_stream {
             unreachable!()
         }
         #[cfg(target_arch = "wasm32")]
-        #[link(wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-01-06")]
+        #[link(wasm_import_module = "wasi:sockets/types@0.3.0-rc-2026-02-09")]
         unsafe extern "C" {
             #[link_name = "[stream-new-0][method]tcp-socket.listen"]
             fn new() -> u64;
@@ -10389,165 +9929,165 @@ pub mod wit_stream {
 #[rustfmt::skip]
 #[cfg(target_arch = "wasm32")]
 #[unsafe(
-    link_section = "component-type:wit-bindgen:0.53.0:wasi:cli@0.3.0-rc-2026-01-06:imports:encoded worldrust-wasip3-0.4.0+wasi-0.3.0-rc-2026-01-06-from-crates-io"
+    link_section = "component-type:wit-bindgen:0.53.0:wasi:cli@0.3.0-rc-2026-02-09:imports:encoded worldrust-wasip3-0.4.0+wasi-0.3.0-rc-2026-01-06-from-crates-io"
 )]
 #[doc(hidden)]
 #[allow(clippy::octal_escapes)]
-pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 7983] = *b"\
-\0asm\x0d\0\x01\0\0\x19\x16wit-component-encoding\x04\0\x07\xb1=\x01A\x02\x01A1\x01\
+pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 7991] = *b"\
+\0asm\x0d\0\x01\0\0\x19\x16wit-component-encoding\x04\0\x07\xb9=\x01A\x02\x01A1\x01\
 B\x0a\x01o\x02ss\x01p\0\x01@\0\0\x01\x04\0\x0fget-environment\x01\x02\x01ps\x01@\
 \0\0\x03\x04\0\x0dget-arguments\x01\x04\x01ks\x01@\0\0\x05\x04\0\x0fget-initial-\
-cwd\x01\x06\x03\0(wasi:cli/environment@0.3.0-rc-2026-01-06\x05\0\x01B\x03\x01j\0\
+cwd\x01\x06\x03\0(wasi:cli/environment@0.3.0-rc-2026-02-09\x05\0\x01B\x03\x01j\0\
 \0\x01@\x01\x06status\0\x01\0\x04\0\x04exit\x01\x01\x03\0!wasi:cli/exit@0.3.0-rc\
--2026-01-06\x05\x01\x01B\x02\x01m\x03\x02io\x15illegal-byte-sequence\x04pipe\x04\
-\0\x0aerror-code\x03\0\0\x03\0\"wasi:cli/types@0.3.0-rc-2026-01-06\x05\x02\x02\x03\
+-2026-02-09\x05\x01\x01B\x02\x01m\x03\x02io\x15illegal-byte-sequence\x04pipe\x04\
+\0\x0aerror-code\x03\0\0\x03\0\"wasi:cli/types@0.3.0-rc-2026-02-09\x05\x02\x02\x03\
 \0\x02\x0aerror-code\x01B\x08\x02\x03\x02\x01\x03\x04\0\x0aerror-code\x03\0\0\x01\
 f\x01}\x01j\0\x01\x01\x01e\x01\x03\x01o\x02\x02\x04\x01@\0\0\x05\x04\0\x0fread-v\
-ia-stream\x01\x06\x03\0\"wasi:cli/stdin@0.3.0-rc-2026-01-06\x05\x04\x01B\x06\x02\
-\x03\x02\x01\x03\x04\0\x0aerror-code\x03\0\0\x01f\x01}\x01j\0\x01\x01\x01C\x01\x04\
-data\x02\0\x03\x04\0\x10write-via-stream\x01\x04\x03\0#wasi:cli/stdout@0.3.0-rc-\
-2026-01-06\x05\x05\x01B\x06\x02\x03\x02\x01\x03\x04\0\x0aerror-code\x03\0\0\x01f\
-\x01}\x01j\0\x01\x01\x01C\x01\x04data\x02\0\x03\x04\0\x10write-via-stream\x01\x04\
-\x03\0#wasi:cli/stderr@0.3.0-rc-2026-01-06\x05\x06\x01B\x01\x04\0\x0eterminal-in\
-put\x03\x01\x03\0+wasi:cli/terminal-input@0.3.0-rc-2026-01-06\x05\x07\x01B\x01\x04\
-\0\x0fterminal-output\x03\x01\x03\0,wasi:cli/terminal-output@0.3.0-rc-2026-01-06\
-\x05\x08\x02\x03\0\x06\x0eterminal-input\x01B\x06\x02\x03\x02\x01\x09\x04\0\x0et\
-erminal-input\x03\0\0\x01i\x01\x01k\x02\x01@\0\0\x03\x04\0\x12get-terminal-stdin\
-\x01\x04\x03\0+wasi:cli/terminal-stdin@0.3.0-rc-2026-01-06\x05\x0a\x02\x03\0\x07\
-\x0fterminal-output\x01B\x06\x02\x03\x02\x01\x0b\x04\0\x0fterminal-output\x03\0\0\
-\x01i\x01\x01k\x02\x01@\0\0\x03\x04\0\x13get-terminal-stdout\x01\x04\x03\0,wasi:\
-cli/terminal-stdout@0.3.0-rc-2026-01-06\x05\x0c\x01B\x06\x02\x03\x02\x01\x0b\x04\
-\0\x0fterminal-output\x03\0\0\x01i\x01\x01k\x02\x01@\0\0\x03\x04\0\x13get-termin\
-al-stderr\x01\x04\x03\0,wasi:cli/terminal-stderr@0.3.0-rc-2026-01-06\x05\x0d\x01\
-B\x02\x01w\x04\0\x08duration\x03\0\0\x03\0%wasi:clocks/types@0.3.0-rc-2026-01-06\
-\x05\x0e\x02\x03\0\x0b\x08duration\x01B\x0c\x02\x03\x02\x01\x0f\x04\0\x08duratio\
-n\x03\0\0\x01w\x04\0\x04mark\x03\0\x02\x01@\0\0\x03\x04\0\x03now\x01\x04\x01@\0\0\
-\x01\x04\0\x0eget-resolution\x01\x05\x01C\x01\x04when\x03\x01\0\x04\0\x0await-un\
-til\x01\x06\x01C\x01\x08how-long\x01\x01\0\x04\0\x08wait-for\x01\x07\x03\0/wasi:\
-clocks/monotonic-clock@0.3.0-rc-2026-01-06\x05\x10\x01B\x08\x02\x03\x02\x01\x0f\x04\
-\0\x08duration\x03\0\0\x01r\x02\x07secondsx\x0bnanosecondsy\x04\0\x07instant\x03\
-\0\x02\x01@\0\0\x03\x04\0\x03now\x01\x04\x01@\0\0\x01\x04\0\x0eget-resolution\x01\
-\x05\x03\0,wasi:clocks/system-clock@0.3.0-rc-2026-01-06\x05\x11\x02\x03\0\x0d\x07\
-instant\x01BY\x02\x03\x02\x01\x12\x04\0\x07instant\x03\0\0\x01w\x04\0\x08filesiz\
-e\x03\0\x02\x01m\x08\x07unknown\x0cblock-device\x10character-device\x09directory\
-\x04fifo\x0dsymbolic-link\x0cregular-file\x06socket\x04\0\x0fdescriptor-type\x03\
-\0\x04\x01n\x06\x04read\x05write\x13file-integrity-sync\x13data-integrity-sync\x14\
-requested-write-sync\x10mutate-directory\x04\0\x10descriptor-flags\x03\0\x06\x01\
-n\x01\x0esymlink-follow\x04\0\x0apath-flags\x03\0\x08\x01n\x04\x06create\x09dire\
-ctory\x09exclusive\x08truncate\x04\0\x0aopen-flags\x03\0\x0a\x01w\x04\0\x0alink-\
-count\x03\0\x0c\x01k\x01\x01r\x06\x04type\x05\x0alink-count\x0d\x04size\x03\x15d\
-ata-access-timestamp\x0e\x1bdata-modification-timestamp\x0e\x17status-change-tim\
-estamp\x0e\x04\0\x0fdescriptor-stat\x03\0\x0f\x01q\x03\x09no-change\0\0\x03now\0\
-\0\x09timestamp\x01\x01\0\x04\0\x0dnew-timestamp\x03\0\x11\x01r\x02\x04type\x05\x04\
-names\x04\0\x0fdirectory-entry\x03\0\x13\x01m$\x06access\x07already\x0ebad-descr\
-iptor\x04busy\x08deadlock\x05quota\x05exist\x0efile-too-large\x15illegal-byte-se\
-quence\x0bin-progress\x0binterrupted\x07invalid\x02io\x0cis-directory\x04loop\x0e\
-too-many-links\x0cmessage-size\x0dname-too-long\x09no-device\x08no-entry\x07no-l\
-ock\x13insufficient-memory\x12insufficient-space\x0dnot-directory\x09not-empty\x0f\
-not-recoverable\x0bunsupported\x06no-tty\x0eno-such-device\x08overflow\x0dnot-pe\
-rmitted\x04pipe\x09read-only\x0cinvalid-seek\x0etext-file-busy\x0ccross-device\x04\
-\0\x0aerror-code\x03\0\x15\x01m\x06\x06normal\x0asequential\x06random\x09will-ne\
-ed\x09dont-need\x08no-reuse\x04\0\x06advice\x03\0\x17\x01r\x02\x05lowerw\x05uppe\
-rw\x04\0\x13metadata-hash-value\x03\0\x19\x04\0\x0adescriptor\x03\x01\x01h\x1b\x01\
-f\x01}\x01j\0\x01\x16\x01e\x01\x1e\x01o\x02\x1d\x1f\x01@\x02\x04self\x1c\x06offs\
-et\x03\0\x20\x04\0\"[method]descriptor.read-via-stream\x01!\x01C\x03\x04self\x1c\
-\x04data\x1d\x06offset\x03\0\x1e\x04\0#[method]descriptor.write-via-stream\x01\"\
-\x01C\x02\x04self\x1c\x04data\x1d\0\x1e\x04\0$[method]descriptor.append-via-stre\
-am\x01#\x01C\x04\x04self\x1c\x06offset\x03\x06length\x03\x06advice\x18\0\x1e\x04\
-\0\x19[method]descriptor.advise\x01$\x01C\x01\x04self\x1c\0\x1e\x04\0\x1c[method\
-]descriptor.sync-data\x01%\x01j\x01\x07\x01\x16\x01C\x01\x04self\x1c\0&\x04\0\x1c\
-[method]descriptor.get-flags\x01'\x01j\x01\x05\x01\x16\x01C\x01\x04self\x1c\0(\x04\
-\0\x1b[method]descriptor.get-type\x01)\x01C\x02\x04self\x1c\x04size\x03\0\x1e\x04\
-\0\x1b[method]descriptor.set-size\x01*\x01C\x03\x04self\x1c\x15data-access-times\
-tamp\x12\x1bdata-modification-timestamp\x12\0\x1e\x04\0\x1c[method]descriptor.se\
-t-times\x01+\x01f\x01\x14\x01o\x02,\x1f\x01C\x01\x04self\x1c\0-\x04\0![method]de\
-scriptor.read-directory\x01.\x04\0\x17[method]descriptor.sync\x01%\x01C\x02\x04s\
-elf\x1c\x04paths\0\x1e\x04\0&[method]descriptor.create-directory-at\x01/\x01j\x01\
-\x10\x01\x16\x01C\x01\x04self\x1c\00\x04\0\x17[method]descriptor.stat\x011\x01C\x03\
-\x04self\x1c\x0apath-flags\x09\x04paths\00\x04\0\x1a[method]descriptor.stat-at\x01\
-2\x01C\x05\x04self\x1c\x0apath-flags\x09\x04paths\x15data-access-timestamp\x12\x1b\
-data-modification-timestamp\x12\0\x1e\x04\0\x1f[method]descriptor.set-times-at\x01\
-3\x01C\x05\x04self\x1c\x0eold-path-flags\x09\x08old-paths\x0enew-descriptor\x1c\x08\
-new-paths\0\x1e\x04\0\x1a[method]descriptor.link-at\x014\x01i\x1b\x01j\x015\x01\x16\
-\x01C\x05\x04self\x1c\x0apath-flags\x09\x04paths\x0aopen-flags\x0b\x05flags\x07\0\
-6\x04\0\x1a[method]descriptor.open-at\x017\x01j\x01s\x01\x16\x01C\x02\x04self\x1c\
-\x04paths\08\x04\0\x1e[method]descriptor.readlink-at\x019\x04\0&[method]descript\
-or.remove-directory-at\x01/\x01C\x04\x04self\x1c\x08old-paths\x0enew-descriptor\x1c\
-\x08new-paths\0\x1e\x04\0\x1c[method]descriptor.rename-at\x01:\x01C\x03\x04self\x1c\
-\x08old-paths\x08new-paths\0\x1e\x04\0\x1d[method]descriptor.symlink-at\x01;\x04\
-\0![method]descriptor.unlink-file-at\x01/\x01C\x02\x04self\x1c\x05other\x1c\0\x7f\
-\x04\0![method]descriptor.is-same-object\x01<\x01j\x01\x1a\x01\x16\x01C\x01\x04s\
-elf\x1c\0=\x04\0\x20[method]descriptor.metadata-hash\x01>\x01C\x03\x04self\x1c\x0a\
-path-flags\x09\x04paths\0=\x04\0#[method]descriptor.metadata-hash-at\x01?\x03\0)\
-wasi:filesystem/types@0.3.0-rc-2026-01-06\x05\x13\x02\x03\0\x0e\x0adescriptor\x01\
-B\x07\x02\x03\x02\x01\x14\x04\0\x0adescriptor\x03\0\0\x01i\x01\x01o\x02\x02s\x01\
-p\x03\x01@\0\0\x04\x04\0\x0fget-directories\x01\x05\x03\0,wasi:filesystem/preope\
-ns@0.3.0-rc-2026-01-06\x05\x15\x01Bq\x02\x03\x02\x01\x0f\x04\0\x08duration\x03\0\
-\0\x01m\x0e\x07unknown\x0daccess-denied\x0dnot-supported\x10invalid-argument\x0d\
-out-of-memory\x07timeout\x0dinvalid-state\x14address-not-bindable\x0eaddress-in-\
-use\x12remote-unreachable\x12connection-refused\x10connection-reset\x12connectio\
-n-aborted\x12datagram-too-large\x04\0\x0aerror-code\x03\0\x02\x01m\x02\x04ipv4\x04\
-ipv6\x04\0\x11ip-address-family\x03\0\x04\x01o\x04}}}}\x04\0\x0cipv4-address\x03\
-\0\x06\x01o\x08{{{{{{{{\x04\0\x0cipv6-address\x03\0\x08\x01q\x02\x04ipv4\x01\x07\
-\0\x04ipv6\x01\x09\0\x04\0\x0aip-address\x03\0\x0a\x01r\x02\x04port{\x07address\x07\
-\x04\0\x13ipv4-socket-address\x03\0\x0c\x01r\x04\x04port{\x09flow-infoy\x07addre\
-ss\x09\x08scope-idy\x04\0\x13ipv6-socket-address\x03\0\x0e\x01q\x02\x04ipv4\x01\x0d\
-\0\x04ipv6\x01\x0f\0\x04\0\x11ip-socket-address\x03\0\x10\x04\0\x0atcp-socket\x03\
-\x01\x04\0\x0audp-socket\x03\x01\x01i\x12\x01j\x01\x14\x01\x03\x01@\x01\x0eaddre\
-ss-family\x05\0\x15\x04\0\x19[static]tcp-socket.create\x01\x16\x01h\x12\x01j\0\x01\
-\x03\x01@\x02\x04self\x17\x0dlocal-address\x11\0\x18\x04\0\x17[method]tcp-socket\
-.bind\x01\x19\x01C\x02\x04self\x17\x0eremote-address\x11\0\x18\x04\0\x1a[method]\
-tcp-socket.connect\x01\x1a\x01f\x01\x14\x01j\x01\x1b\x01\x03\x01@\x01\x04self\x17\
-\0\x1c\x04\0\x19[method]tcp-socket.listen\x01\x1d\x01f\x01}\x01C\x02\x04self\x17\
-\x04data\x1e\0\x18\x04\0\x17[method]tcp-socket.send\x01\x1f\x01e\x01\x18\x01o\x02\
-\x1e\x20\x01@\x01\x04self\x17\0!\x04\0\x1a[method]tcp-socket.receive\x01\"\x01j\x01\
-\x11\x01\x03\x01@\x01\x04self\x17\0#\x04\0$[method]tcp-socket.get-local-address\x01\
-$\x04\0%[method]tcp-socket.get-remote-address\x01$\x01@\x01\x04self\x17\0\x7f\x04\
-\0#[method]tcp-socket.get-is-listening\x01%\x01@\x01\x04self\x17\0\x05\x04\0%[me\
-thod]tcp-socket.get-address-family\x01&\x01@\x02\x04self\x17\x05valuew\0\x18\x04\
-\0*[method]tcp-socket.set-listen-backlog-size\x01'\x01j\x01\x7f\x01\x03\x01@\x01\
-\x04self\x17\0(\x04\0)[method]tcp-socket.get-keep-alive-enabled\x01)\x01@\x02\x04\
-self\x17\x05value\x7f\0\x18\x04\0)[method]tcp-socket.set-keep-alive-enabled\x01*\
-\x01j\x01\x01\x01\x03\x01@\x01\x04self\x17\0+\x04\0+[method]tcp-socket.get-keep-\
-alive-idle-time\x01,\x01@\x02\x04self\x17\x05value\x01\0\x18\x04\0+[method]tcp-s\
-ocket.set-keep-alive-idle-time\x01-\x04\0*[method]tcp-socket.get-keep-alive-inte\
-rval\x01,\x04\0*[method]tcp-socket.set-keep-alive-interval\x01-\x01j\x01y\x01\x03\
-\x01@\x01\x04self\x17\0.\x04\0'[method]tcp-socket.get-keep-alive-count\x01/\x01@\
-\x02\x04self\x17\x05valuey\0\x18\x04\0'[method]tcp-socket.set-keep-alive-count\x01\
-0\x01j\x01}\x01\x03\x01@\x01\x04self\x17\01\x04\0\x20[method]tcp-socket.get-hop-\
-limit\x012\x01@\x02\x04self\x17\x05value}\0\x18\x04\0\x20[method]tcp-socket.set-\
-hop-limit\x013\x01j\x01w\x01\x03\x01@\x01\x04self\x17\04\x04\0*[method]tcp-socke\
-t.get-receive-buffer-size\x015\x04\0*[method]tcp-socket.set-receive-buffer-size\x01\
-'\x04\0'[method]tcp-socket.get-send-buffer-size\x015\x04\0'[method]tcp-socket.se\
-t-send-buffer-size\x01'\x01i\x13\x01j\x016\x01\x03\x01@\x01\x0eaddress-family\x05\
-\07\x04\0\x19[static]udp-socket.create\x018\x01h\x13\x01@\x02\x04self9\x0dlocal-\
-address\x11\0\x18\x04\0\x17[method]udp-socket.bind\x01:\x01@\x02\x04self9\x0erem\
-ote-address\x11\0\x18\x04\0\x1a[method]udp-socket.connect\x01;\x01@\x01\x04self9\
-\0\x18\x04\0\x1d[method]udp-socket.disconnect\x01<\x01p}\x01k\x11\x01C\x03\x04se\
-lf9\x04data=\x0eremote-address>\0\x18\x04\0\x17[method]udp-socket.send\x01?\x01o\
-\x02=\x11\x01j\x01\xc0\0\x01\x03\x01C\x01\x04self9\0\xc1\0\x04\0\x1a[method]udp-\
-socket.receive\x01B\x01@\x01\x04self9\0#\x04\0$[method]udp-socket.get-local-addr\
-ess\x01C\x04\0%[method]udp-socket.get-remote-address\x01C\x01@\x01\x04self9\0\x05\
-\x04\0%[method]udp-socket.get-address-family\x01D\x01@\x01\x04self9\01\x04\0([me\
-thod]udp-socket.get-unicast-hop-limit\x01E\x01@\x02\x04self9\x05value}\0\x18\x04\
-\0([method]udp-socket.set-unicast-hop-limit\x01F\x01@\x01\x04self9\04\x04\0*[met\
-hod]udp-socket.get-receive-buffer-size\x01G\x01@\x02\x04self9\x05valuew\0\x18\x04\
-\0*[method]udp-socket.set-receive-buffer-size\x01H\x04\0'[method]udp-socket.get-\
-send-buffer-size\x01G\x04\0'[method]udp-socket.set-send-buffer-size\x01H\x03\0&w\
-asi:sockets/types@0.3.0-rc-2026-01-06\x05\x16\x02\x03\0\x10\x0aip-address\x01B\x08\
-\x02\x03\x02\x01\x17\x04\0\x0aip-address\x03\0\0\x01m\x06\x07unknown\x0daccess-d\
-enied\x10invalid-argument\x11name-unresolvable\x1atemporary-resolver-failure\x1a\
-permanent-resolver-failure\x04\0\x0aerror-code\x03\0\x02\x01p\x01\x01j\x01\x04\x01\
-\x03\x01C\x01\x04names\0\x05\x04\0\x11resolve-addresses\x01\x06\x03\0/wasi:socke\
-ts/ip-name-lookup@0.3.0-rc-2026-01-06\x05\x18\x01B\x05\x01p}\x01@\x01\x03lenw\0\0\
-\x04\0\x10get-random-bytes\x01\x01\x01@\0\0w\x04\0\x0eget-random-u64\x01\x02\x03\
-\0&wasi:random/random@0.3.0-rc-2026-01-06\x05\x19\x01B\x05\x01p}\x01@\x01\x03len\
-w\0\0\x04\0\x19get-insecure-random-bytes\x01\x01\x01@\0\0w\x04\0\x17get-insecure\
--random-u64\x01\x02\x03\0(wasi:random/insecure@0.3.0-rc-2026-01-06\x05\x1a\x01B\x03\
-\x01o\x02ww\x01@\0\0\0\x04\0\x11get-insecure-seed\x01\x01\x03\0-wasi:random/inse\
-cure-seed@0.3.0-rc-2026-01-06\x05\x1b\x04\0$wasi:cli/imports@0.3.0-rc-2026-01-06\
-\x04\0\x0b\x0d\x01\0\x07imports\x03\0\0\0G\x09producers\x01\x0cprocessed-by\x02\x0d\
-wit-component\x070.245.0\x10wit-bindgen-rust\x060.53.0";
+ia-stream\x01\x06\x03\0\"wasi:cli/stdin@0.3.0-rc-2026-02-09\x05\x04\x01B\x07\x02\
+\x03\x02\x01\x03\x04\0\x0aerror-code\x03\0\0\x01f\x01}\x01j\0\x01\x01\x01e\x01\x03\
+\x01@\x01\x04data\x02\0\x04\x04\0\x10write-via-stream\x01\x05\x03\0#wasi:cli/std\
+out@0.3.0-rc-2026-02-09\x05\x05\x01B\x07\x02\x03\x02\x01\x03\x04\0\x0aerror-code\
+\x03\0\0\x01f\x01}\x01j\0\x01\x01\x01e\x01\x03\x01@\x01\x04data\x02\0\x04\x04\0\x10\
+write-via-stream\x01\x05\x03\0#wasi:cli/stderr@0.3.0-rc-2026-02-09\x05\x06\x01B\x01\
+\x04\0\x0eterminal-input\x03\x01\x03\0+wasi:cli/terminal-input@0.3.0-rc-2026-02-\
+09\x05\x07\x01B\x01\x04\0\x0fterminal-output\x03\x01\x03\0,wasi:cli/terminal-out\
+put@0.3.0-rc-2026-02-09\x05\x08\x02\x03\0\x06\x0eterminal-input\x01B\x06\x02\x03\
+\x02\x01\x09\x04\0\x0eterminal-input\x03\0\0\x01i\x01\x01k\x02\x01@\0\0\x03\x04\0\
+\x12get-terminal-stdin\x01\x04\x03\0+wasi:cli/terminal-stdin@0.3.0-rc-2026-02-09\
+\x05\x0a\x02\x03\0\x07\x0fterminal-output\x01B\x06\x02\x03\x02\x01\x0b\x04\0\x0f\
+terminal-output\x03\0\0\x01i\x01\x01k\x02\x01@\0\0\x03\x04\0\x13get-terminal-std\
+out\x01\x04\x03\0,wasi:cli/terminal-stdout@0.3.0-rc-2026-02-09\x05\x0c\x01B\x06\x02\
+\x03\x02\x01\x0b\x04\0\x0fterminal-output\x03\0\0\x01i\x01\x01k\x02\x01@\0\0\x03\
+\x04\0\x13get-terminal-stderr\x01\x04\x03\0,wasi:cli/terminal-stderr@0.3.0-rc-20\
+26-02-09\x05\x0d\x01B\x02\x01w\x04\0\x08duration\x03\0\0\x03\0%wasi:clocks/types\
+@0.3.0-rc-2026-02-09\x05\x0e\x02\x03\0\x0b\x08duration\x01B\x0c\x02\x03\x02\x01\x0f\
+\x04\0\x08duration\x03\0\0\x01w\x04\0\x04mark\x03\0\x02\x01@\0\0\x03\x04\0\x03no\
+w\x01\x04\x01@\0\0\x01\x04\0\x0eget-resolution\x01\x05\x01C\x01\x04when\x03\x01\0\
+\x04\0\x0await-until\x01\x06\x01C\x01\x08how-long\x01\x01\0\x04\0\x08wait-for\x01\
+\x07\x03\0/wasi:clocks/monotonic-clock@0.3.0-rc-2026-02-09\x05\x10\x01B\x08\x02\x03\
+\x02\x01\x0f\x04\0\x08duration\x03\0\0\x01r\x02\x07secondsx\x0bnanosecondsy\x04\0\
+\x07instant\x03\0\x02\x01@\0\0\x03\x04\0\x03now\x01\x04\x01@\0\0\x01\x04\0\x0ege\
+t-resolution\x01\x05\x03\0,wasi:clocks/system-clock@0.3.0-rc-2026-02-09\x05\x11\x02\
+\x03\0\x0d\x07instant\x01BY\x02\x03\x02\x01\x12\x04\0\x07instant\x03\0\0\x01w\x04\
+\0\x08filesize\x03\0\x02\x01m\x08\x07unknown\x0cblock-device\x10character-device\
+\x09directory\x04fifo\x0dsymbolic-link\x0cregular-file\x06socket\x04\0\x0fdescri\
+ptor-type\x03\0\x04\x01n\x06\x04read\x05write\x13file-integrity-sync\x13data-int\
+egrity-sync\x14requested-write-sync\x10mutate-directory\x04\0\x10descriptor-flag\
+s\x03\0\x06\x01n\x01\x0esymlink-follow\x04\0\x0apath-flags\x03\0\x08\x01n\x04\x06\
+create\x09directory\x09exclusive\x08truncate\x04\0\x0aopen-flags\x03\0\x0a\x01w\x04\
+\0\x0alink-count\x03\0\x0c\x01k\x01\x01r\x06\x04type\x05\x0alink-count\x0d\x04si\
+ze\x03\x15data-access-timestamp\x0e\x1bdata-modification-timestamp\x0e\x17status\
+-change-timestamp\x0e\x04\0\x0fdescriptor-stat\x03\0\x0f\x01q\x03\x09no-change\0\
+\0\x03now\0\0\x09timestamp\x01\x01\0\x04\0\x0dnew-timestamp\x03\0\x11\x01r\x02\x04\
+type\x05\x04names\x04\0\x0fdirectory-entry\x03\0\x13\x01m$\x06access\x07already\x0e\
+bad-descriptor\x04busy\x08deadlock\x05quota\x05exist\x0efile-too-large\x15illega\
+l-byte-sequence\x0bin-progress\x0binterrupted\x07invalid\x02io\x0cis-directory\x04\
+loop\x0etoo-many-links\x0cmessage-size\x0dname-too-long\x09no-device\x08no-entry\
+\x07no-lock\x13insufficient-memory\x12insufficient-space\x0dnot-directory\x09not\
+-empty\x0fnot-recoverable\x0bunsupported\x06no-tty\x0eno-such-device\x08overflow\
+\x0dnot-permitted\x04pipe\x09read-only\x0cinvalid-seek\x0etext-file-busy\x0ccros\
+s-device\x04\0\x0aerror-code\x03\0\x15\x01m\x06\x06normal\x0asequential\x06rando\
+m\x09will-need\x09dont-need\x08no-reuse\x04\0\x06advice\x03\0\x17\x01r\x02\x05lo\
+werw\x05upperw\x04\0\x13metadata-hash-value\x03\0\x19\x04\0\x0adescriptor\x03\x01\
+\x01h\x1b\x01f\x01}\x01j\0\x01\x16\x01e\x01\x1e\x01o\x02\x1d\x1f\x01@\x02\x04sel\
+f\x1c\x06offset\x03\0\x20\x04\0\"[method]descriptor.read-via-stream\x01!\x01@\x03\
+\x04self\x1c\x04data\x1d\x06offset\x03\0\x1f\x04\0#[method]descriptor.write-via-\
+stream\x01\"\x01@\x02\x04self\x1c\x04data\x1d\0\x1f\x04\0$[method]descriptor.app\
+end-via-stream\x01#\x01C\x04\x04self\x1c\x06offset\x03\x06length\x03\x06advice\x18\
+\0\x1e\x04\0\x19[method]descriptor.advise\x01$\x01C\x01\x04self\x1c\0\x1e\x04\0\x1c\
+[method]descriptor.sync-data\x01%\x01j\x01\x07\x01\x16\x01C\x01\x04self\x1c\0&\x04\
+\0\x1c[method]descriptor.get-flags\x01'\x01j\x01\x05\x01\x16\x01C\x01\x04self\x1c\
+\0(\x04\0\x1b[method]descriptor.get-type\x01)\x01C\x02\x04self\x1c\x04size\x03\0\
+\x1e\x04\0\x1b[method]descriptor.set-size\x01*\x01C\x03\x04self\x1c\x15data-acce\
+ss-timestamp\x12\x1bdata-modification-timestamp\x12\0\x1e\x04\0\x1c[method]descr\
+iptor.set-times\x01+\x01f\x01\x14\x01o\x02,\x1f\x01@\x01\x04self\x1c\0-\x04\0![m\
+ethod]descriptor.read-directory\x01.\x04\0\x17[method]descriptor.sync\x01%\x01C\x02\
+\x04self\x1c\x04paths\0\x1e\x04\0&[method]descriptor.create-directory-at\x01/\x01\
+j\x01\x10\x01\x16\x01C\x01\x04self\x1c\00\x04\0\x17[method]descriptor.stat\x011\x01\
+C\x03\x04self\x1c\x0apath-flags\x09\x04paths\00\x04\0\x1a[method]descriptor.stat\
+-at\x012\x01C\x05\x04self\x1c\x0apath-flags\x09\x04paths\x15data-access-timestam\
+p\x12\x1bdata-modification-timestamp\x12\0\x1e\x04\0\x1f[method]descriptor.set-t\
+imes-at\x013\x01C\x05\x04self\x1c\x0eold-path-flags\x09\x08old-paths\x0enew-desc\
+riptor\x1c\x08new-paths\0\x1e\x04\0\x1a[method]descriptor.link-at\x014\x01i\x1b\x01\
+j\x015\x01\x16\x01C\x05\x04self\x1c\x0apath-flags\x09\x04paths\x0aopen-flags\x0b\
+\x05flags\x07\06\x04\0\x1a[method]descriptor.open-at\x017\x01j\x01s\x01\x16\x01C\
+\x02\x04self\x1c\x04paths\08\x04\0\x1e[method]descriptor.readlink-at\x019\x04\0&\
+[method]descriptor.remove-directory-at\x01/\x01C\x04\x04self\x1c\x08old-paths\x0e\
+new-descriptor\x1c\x08new-paths\0\x1e\x04\0\x1c[method]descriptor.rename-at\x01:\
+\x01C\x03\x04self\x1c\x08old-paths\x08new-paths\0\x1e\x04\0\x1d[method]descripto\
+r.symlink-at\x01;\x04\0![method]descriptor.unlink-file-at\x01/\x01C\x02\x04self\x1c\
+\x05other\x1c\0\x7f\x04\0![method]descriptor.is-same-object\x01<\x01j\x01\x1a\x01\
+\x16\x01C\x01\x04self\x1c\0=\x04\0\x20[method]descriptor.metadata-hash\x01>\x01C\
+\x03\x04self\x1c\x0apath-flags\x09\x04paths\0=\x04\0#[method]descriptor.metadata\
+-hash-at\x01?\x03\0)wasi:filesystem/types@0.3.0-rc-2026-02-09\x05\x13\x02\x03\0\x0e\
+\x0adescriptor\x01B\x07\x02\x03\x02\x01\x14\x04\0\x0adescriptor\x03\0\0\x01i\x01\
+\x01o\x02\x02s\x01p\x03\x01@\0\0\x04\x04\0\x0fget-directories\x01\x05\x03\0,wasi\
+:filesystem/preopens@0.3.0-rc-2026-02-09\x05\x15\x01Bq\x02\x03\x02\x01\x0f\x04\0\
+\x08duration\x03\0\0\x01m\x0e\x07unknown\x0daccess-denied\x0dnot-supported\x10in\
+valid-argument\x0dout-of-memory\x07timeout\x0dinvalid-state\x14address-not-binda\
+ble\x0eaddress-in-use\x12remote-unreachable\x12connection-refused\x10connection-\
+reset\x12connection-aborted\x12datagram-too-large\x04\0\x0aerror-code\x03\0\x02\x01\
+m\x02\x04ipv4\x04ipv6\x04\0\x11ip-address-family\x03\0\x04\x01o\x04}}}}\x04\0\x0c\
+ipv4-address\x03\0\x06\x01o\x08{{{{{{{{\x04\0\x0cipv6-address\x03\0\x08\x01q\x02\
+\x04ipv4\x01\x07\0\x04ipv6\x01\x09\0\x04\0\x0aip-address\x03\0\x0a\x01r\x02\x04p\
+ort{\x07address\x07\x04\0\x13ipv4-socket-address\x03\0\x0c\x01r\x04\x04port{\x09\
+flow-infoy\x07address\x09\x08scope-idy\x04\0\x13ipv6-socket-address\x03\0\x0e\x01\
+q\x02\x04ipv4\x01\x0d\0\x04ipv6\x01\x0f\0\x04\0\x11ip-socket-address\x03\0\x10\x04\
+\0\x0atcp-socket\x03\x01\x04\0\x0audp-socket\x03\x01\x01i\x12\x01j\x01\x14\x01\x03\
+\x01@\x01\x0eaddress-family\x05\0\x15\x04\0\x19[static]tcp-socket.create\x01\x16\
+\x01h\x12\x01j\0\x01\x03\x01@\x02\x04self\x17\x0dlocal-address\x11\0\x18\x04\0\x17\
+[method]tcp-socket.bind\x01\x19\x01C\x02\x04self\x17\x0eremote-address\x11\0\x18\
+\x04\0\x1a[method]tcp-socket.connect\x01\x1a\x01f\x01\x14\x01j\x01\x1b\x01\x03\x01\
+@\x01\x04self\x17\0\x1c\x04\0\x19[method]tcp-socket.listen\x01\x1d\x01f\x01}\x01\
+e\x01\x18\x01@\x02\x04self\x17\x04data\x1e\0\x1f\x04\0\x17[method]tcp-socket.sen\
+d\x01\x20\x01o\x02\x1e\x1f\x01@\x01\x04self\x17\0!\x04\0\x1a[method]tcp-socket.r\
+eceive\x01\"\x01j\x01\x11\x01\x03\x01@\x01\x04self\x17\0#\x04\0$[method]tcp-sock\
+et.get-local-address\x01$\x04\0%[method]tcp-socket.get-remote-address\x01$\x01@\x01\
+\x04self\x17\0\x7f\x04\0#[method]tcp-socket.get-is-listening\x01%\x01@\x01\x04se\
+lf\x17\0\x05\x04\0%[method]tcp-socket.get-address-family\x01&\x01@\x02\x04self\x17\
+\x05valuew\0\x18\x04\0*[method]tcp-socket.set-listen-backlog-size\x01'\x01j\x01\x7f\
+\x01\x03\x01@\x01\x04self\x17\0(\x04\0)[method]tcp-socket.get-keep-alive-enabled\
+\x01)\x01@\x02\x04self\x17\x05value\x7f\0\x18\x04\0)[method]tcp-socket.set-keep-\
+alive-enabled\x01*\x01j\x01\x01\x01\x03\x01@\x01\x04self\x17\0+\x04\0+[method]tc\
+p-socket.get-keep-alive-idle-time\x01,\x01@\x02\x04self\x17\x05value\x01\0\x18\x04\
+\0+[method]tcp-socket.set-keep-alive-idle-time\x01-\x04\0*[method]tcp-socket.get\
+-keep-alive-interval\x01,\x04\0*[method]tcp-socket.set-keep-alive-interval\x01-\x01\
+j\x01y\x01\x03\x01@\x01\x04self\x17\0.\x04\0'[method]tcp-socket.get-keep-alive-c\
+ount\x01/\x01@\x02\x04self\x17\x05valuey\0\x18\x04\0'[method]tcp-socket.set-keep\
+-alive-count\x010\x01j\x01}\x01\x03\x01@\x01\x04self\x17\01\x04\0\x20[method]tcp\
+-socket.get-hop-limit\x012\x01@\x02\x04self\x17\x05value}\0\x18\x04\0\x20[method\
+]tcp-socket.set-hop-limit\x013\x01j\x01w\x01\x03\x01@\x01\x04self\x17\04\x04\0*[\
+method]tcp-socket.get-receive-buffer-size\x015\x04\0*[method]tcp-socket.set-rece\
+ive-buffer-size\x01'\x04\0'[method]tcp-socket.get-send-buffer-size\x015\x04\0'[m\
+ethod]tcp-socket.set-send-buffer-size\x01'\x01i\x13\x01j\x016\x01\x03\x01@\x01\x0e\
+address-family\x05\07\x04\0\x19[static]udp-socket.create\x018\x01h\x13\x01@\x02\x04\
+self9\x0dlocal-address\x11\0\x18\x04\0\x17[method]udp-socket.bind\x01:\x01@\x02\x04\
+self9\x0eremote-address\x11\0\x18\x04\0\x1a[method]udp-socket.connect\x01;\x01@\x01\
+\x04self9\0\x18\x04\0\x1d[method]udp-socket.disconnect\x01<\x01p}\x01k\x11\x01C\x03\
+\x04self9\x04data=\x0eremote-address>\0\x18\x04\0\x17[method]udp-socket.send\x01\
+?\x01o\x02=\x11\x01j\x01\xc0\0\x01\x03\x01C\x01\x04self9\0\xc1\0\x04\0\x1a[metho\
+d]udp-socket.receive\x01B\x01@\x01\x04self9\0#\x04\0$[method]udp-socket.get-loca\
+l-address\x01C\x04\0%[method]udp-socket.get-remote-address\x01C\x01@\x01\x04self\
+9\0\x05\x04\0%[method]udp-socket.get-address-family\x01D\x01@\x01\x04self9\01\x04\
+\0([method]udp-socket.get-unicast-hop-limit\x01E\x01@\x02\x04self9\x05value}\0\x18\
+\x04\0([method]udp-socket.set-unicast-hop-limit\x01F\x01@\x01\x04self9\04\x04\0*\
+[method]udp-socket.get-receive-buffer-size\x01G\x01@\x02\x04self9\x05valuew\0\x18\
+\x04\0*[method]udp-socket.set-receive-buffer-size\x01H\x04\0'[method]udp-socket.\
+get-send-buffer-size\x01G\x04\0'[method]udp-socket.set-send-buffer-size\x01H\x03\
+\0&wasi:sockets/types@0.3.0-rc-2026-02-09\x05\x16\x02\x03\0\x10\x0aip-address\x01\
+B\x08\x02\x03\x02\x01\x17\x04\0\x0aip-address\x03\0\0\x01m\x06\x07unknown\x0dacc\
+ess-denied\x10invalid-argument\x11name-unresolvable\x1atemporary-resolver-failur\
+e\x1apermanent-resolver-failure\x04\0\x0aerror-code\x03\0\x02\x01p\x01\x01j\x01\x04\
+\x01\x03\x01C\x01\x04names\0\x05\x04\0\x11resolve-addresses\x01\x06\x03\0/wasi:s\
+ockets/ip-name-lookup@0.3.0-rc-2026-02-09\x05\x18\x01B\x05\x01p}\x01@\x01\x03len\
+w\0\0\x04\0\x10get-random-bytes\x01\x01\x01@\0\0w\x04\0\x0eget-random-u64\x01\x02\
+\x03\0&wasi:random/random@0.3.0-rc-2026-02-09\x05\x19\x01B\x05\x01p}\x01@\x01\x03\
+lenw\0\0\x04\0\x19get-insecure-random-bytes\x01\x01\x01@\0\0w\x04\0\x17get-insec\
+ure-random-u64\x01\x02\x03\0(wasi:random/insecure@0.3.0-rc-2026-02-09\x05\x1a\x01\
+B\x03\x01o\x02ww\x01@\0\0\0\x04\0\x11get-insecure-seed\x01\x01\x03\0-wasi:random\
+/insecure-seed@0.3.0-rc-2026-02-09\x05\x1b\x04\0$wasi:cli/imports@0.3.0-rc-2026-\
+02-09\x04\0\x0b\x0d\x01\0\x07imports\x03\0\0\0G\x09producers\x01\x0cprocessed-by\
+\x02\x0dwit-component\x070.245.0\x10wit-bindgen-rust\x060.53.0";
 #[inline(never)]
 #[doc(hidden)]
 pub fn __link_custom_section_describing_imports() {
