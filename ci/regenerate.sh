@@ -154,3 +154,24 @@ generate_p3 crates/wasip3/src/service.rs \
   --default-bindings-module '$crate' \
   --pub-export-macro \
   --export-macro-name _export_service
+
+with="wasi:cli/stdin@$p3=crate::cli::stdin"
+with="$with,wasi:cli/stdout@$p3=crate::cli::stdout"
+with="$with,wasi:cli/stderr@$p3=crate::cli::stderr"
+with="$with,wasi:cli/types@$p3=crate::cli::types"
+with="$with,wasi:clocks/monotonic-clock@$p3=crate::clocks::monotonic_clock"
+with="$with,wasi:clocks/system-clock@$p3=crate::clocks::system_clock"
+with="$with,wasi:clocks/types@$p3=crate::clocks::types"
+with="$with,wasi:random/random@$p3=crate::random::random"
+with="$with,wasi:random/insecure@$p3=crate::random::insecure"
+with="$with,wasi:random/insecure-seed@$p3=crate::random::insecure_seed"
+with="$with,wasi:http/types@$p3=crate::service::types"
+with="$with,wasi:http/handler@$p3=crate::service::handler"
+with="$with,wasi:http/client@$p3=crate::service::client"
+generate_p3 crates/wasip3/src/middleware.rs \
+  --world wasi:http/middleware \
+  --with "$with" \
+  --type-section-suffix $(suffix "wasip3" "-middleware-world") \
+  --default-bindings-module '$crate' \
+  --pub-export-macro \
+  --export-macro-name _export_middleware
