@@ -15,12 +15,13 @@ rust-version.workspace = true
 all-features = true
 
 [features]
+async-spawn = ["wit-bindgen/async-spawn"]
 http-compat = [
     "dep:bytes",
     "dep:http-body",
     "dep:http",
     "dep:thiserror",
-    "wit-bindgen/async-spawn",
+    "async-spawn",
 ]
 
 [dependencies]
