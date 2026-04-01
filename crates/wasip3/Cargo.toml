@@ -23,6 +23,7 @@ http-compat = [
     "dep:thiserror",
     "async-spawn",
 ]
+wit-bindgen-macros = ["wit-bindgen/macros"]
 
 [dependencies]
 # NB: async bindings require `std` right now so this doesn't optionally disable
