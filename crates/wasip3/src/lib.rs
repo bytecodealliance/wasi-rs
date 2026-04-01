@@ -176,6 +176,9 @@ where
 // Reexport wit-bindgen to downstream users don't have to depend on it.
 pub use wit_bindgen;
 
+#[cfg(feature = "async-spawn")]
+pub use wit_bindgen::spawn;
+
 // Expand the `cli` and `http` modules with `export!` macros for the
 // command/proxy worlds, but also retain all the contents defined in the
 // `bindings` module as well.
