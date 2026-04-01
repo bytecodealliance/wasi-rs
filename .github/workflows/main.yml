@@ -23,11 +23,11 @@ jobs:
     - name: Install Wasmtime
       uses: bytecodealliance/actions/wasmtime/setup@v1
       with:
-        version: "v40.0.2"
+        version: "v43.0.0"
     - name: Install wasm-tools
       uses: bytecodealliance/actions/wasm-tools/setup@v1
       with:
-        version: "1.244.0"
+        version: "1.246.1"
 
     - run: cargo build -p wasip2 --examples --target wasm32-wasip2 --no-default-features
     - run: wasmtime run ./target/wasm32-wasip2/debug/examples/hello-world-no_std.wasm
@@ -123,7 +123,7 @@ jobs:
         toolchain: ${{ matrix.rust }}
     - run: rustup target add wasm32-wasip2 wasm32-unknown-unknown
     - run: |
-        version=v0.5.20
+        version=v0.5.21
 
         mkdir ld
         cd ld
@@ -134,11 +134,11 @@ jobs:
     - name: Install wasmtime
       uses: bytecodealliance/actions/wasmtime/setup@v1
       with:
-        version: "dev"
+        version: "v43.0.0"
     - name: Install wasm-tools
       uses: bytecodealliance/actions/wasm-tools/setup@v1
       with:
-        version: "1.244.0"
+        version: "1.246.1"
 
     - run: cargo build -p wasip3 --examples --target wasm32-wasip2
     - run: wasmtime run -Sp3 -Wcomponent-model-async ./target/wasm32-wasip2/debug/examples/cli_command.wasm
