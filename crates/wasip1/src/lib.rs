@@ -45,3 +45,13 @@ pub const FD_STDOUT: Fd = 1;
 
 /// The "standard error" descriptor number.
 pub const FD_STDERR: Fd = 2;
+
+/// Implement `Debug` for `Prestat` by matching on the `tag` field and formatting the appropriate variant.
+impl core::fmt::Debug for Prestat {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        match self.tag {
+            0 => f.debug_tuple("PrestatDir").field(unsafe { &self.u.dir }).finish(),
+            _ => f.debug_tuple("PrestatUnknown").field(&self.tag).finish(),
+        }
+    }
+}
