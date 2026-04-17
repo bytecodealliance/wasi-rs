@@ -15,6 +15,9 @@ rust-version.workspace = true
 all-features = true
 
 [features]
+default = ["std", "bitflags"]
+std = []
+bitflags = ["wit-bindgen/bitflags"]
 async-spawn = ["wit-bindgen/async-spawn"]
 http-compat = [
     "dep:bytes",
@@ -25,6 +28,9 @@ http-compat = [
 ]
 wit-bindgen-macros = ["wit-bindgen/macros"]
 
+# Unstable feature to support being a libstd dependency
+rustc-dep-of-std = ["core", "alloc", "wit-bindgen/rustc-dep-of-std"]
+
 [dependencies]
 # NB: async bindings require `std` right now so this doesn't optionally disable
 # `std`, it's intentionally always enabled.
@@ -34,6 +40,10 @@ bytes = { version = "1.10.1", optional = true }
 http-body = { version = "1.0.1", optional = true }
 http = { version = "1.3.1", optional = true }
 thiserror = { version = "2.0.17", optional = true }
+
+# When built as part of libstd
+core = { optional = true, workspace = true }
+alloc = { optional = true, workspace = true }
 
 [dev-dependencies]
 futures = "0.3.31"

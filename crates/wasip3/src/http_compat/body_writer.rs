@@ -6,6 +6,7 @@ use crate::{
 use http::HeaderMap;
 use http_body::{Body as _, Frame};
 use std::future::poll_fn;
+use std::prelude::v1::*;
 use std::{fmt::Debug, pin};
 
 type BoxError = Box<dyn std::error::Error + Send + Sync + 'static>;

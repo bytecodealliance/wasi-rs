@@ -13,6 +13,7 @@ use crate::{
 };
 use bytes::Bytes;
 use http_body::SizeHint;
+use std::prelude::v1::*;
 use std::{
     pin::Pin,
     task::{self, Poll},
