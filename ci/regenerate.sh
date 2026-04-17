@@ -100,7 +100,12 @@ generate_p2 crates/wasip2/src/proxy.rs \
 # WASIp3 bindings
 
 generate_p3() {
-  generate "$@" ./crates/wasip3/wit --out-dir crates/wasip3/src
+  generate "$@" --std-feature ./crates/wasip3/wit --out-dir crates/wasip3/src
+
+  sed -z -i 's/#\[unsafe(\n    link_section = "\(.*\)"\n)\]/\
+#[cfg_attr(feature = "rustc-dep-of-std", unsafe(link_section = "\1-in-libstd"))]\
+#[cfg_attr(not(feature = "rustc-dep-of-std"), unsafe(link_section = "\1"))]\
+/' $file
 }
 
 generate_p3 crates/wasip3/src/imports.rs \

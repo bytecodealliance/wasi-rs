@@ -75,6 +75,9 @@ jobs:
     - run: cargo build --no-default-features -p ${{ matrix.crate }} --target wasm32-wasip1
     - run: cargo build --no-default-features -p ${{ matrix.crate }} --target wasm32-wasip2
 
+    - run: cargo build --no-default-features -p ${{ matrix.crate }} --features std
+    - run: cargo build --no-default-features -p ${{ matrix.crate }} --all-features
+
     - run: cargo test -p ${{ matrix.crate }} --doc
 
   generate:
@@ -94,7 +97,7 @@ jobs:
         ./ci/vendor-wit.sh
         git diff --exit-code
     - run: |
-        version=0.54.0
+        version=0.57.0
 
         mkdir wit-bindgen
         cd wit-bindgen
