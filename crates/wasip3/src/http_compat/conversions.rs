@@ -1,26 +1,13 @@
 use super::{
-    to_internal_error_code, 
-    RequestOptionsExtension, 
-    IncomingRequestBody, 
-    IncomingResponseBody,
-    Request as HttpRequest, 
-    Response as HttpResponse,
-    body_writer::BodyWriter,
+    body_writer::BodyWriter, to_internal_error_code, IncomingRequestBody, IncomingResponseBody,
+    Request as HttpRequest, RequestOptionsExtension, Response as HttpResponse,
 };
 use crate::http::types::{
-    ErrorCode, 
-    Fields, 
-    HeaderError, 
-    Headers, 
-    Method, 
-    Scheme, 
-    Request as WasiHttpRequest,
-    Response as WasiHttpResponse,
+    ErrorCode, Fields, HeaderError, Headers, Method, Request as WasiHttpRequest,
+    Response as WasiHttpResponse, Scheme,
 };
-use std::{
-    any::Any,
-    convert::TryFrom,
-};
+use std::prelude::v1::*;
+use std::{any::Any, convert::TryFrom};
 
 /// Converts a host-side HTTP response (`HttpResponse<T>`) into a WASI HTTP response (`WasiHttpResponse`).
 ///
@@ -28,7 +15,7 @@ use std::{
 /// serializing status codes, headers, and body data into their WebAssembly-compatible
 /// representations. It supports generic response body types and streams the response
 /// asynchronously into the WASI environment.
-/// 
+///
 /// # See Also
 ///
 /// - [`http_from_wasi_response`] — converts a WASI response back into a host-side HTTP response.
@@ -38,7 +25,7 @@ pub fn http_into_wasi_response<T>(mut resp: HttpResponse<T>) -> Result<WasiHttpR
 where
     T: http_body::Body + Any,
     T::Data: Into<Vec<u8>>,
-    T::Error: Into<Box<dyn std::error::Error + Send + Sync + 'static>>
+    T::Error: Into<Box<dyn std::error::Error + Send + Sync + 'static>>,
 {
     if let Some(incoming_body) = (&mut resp as &mut dyn Any).downcast_mut::<IncomingResponseBody>()
     {
@@ -55,8 +42,7 @@ where
 
     let (body_writer, body_rx, body_result_rx) = BodyWriter::new();
 
-    let (response, _future_result) =
-        WasiHttpResponse::new(headers, Some(body_rx), body_result_rx);
+    let (response, _future_result) = WasiHttpResponse::new(headers, Some(body_rx), body_result_rx);
 
     _ = response.set_status_code(resp.status().as_u16());
 
@@ -74,7 +60,7 @@ where
 /// This function performs the reverse operation of [`http_into_wasi_response`], translating
 /// the fields and body of a response from the WASI HTTP model into the conventional Rust
 /// `http` crate representation.
-/// 
+///
 /// # See Also
 ///
 /// - [`http_into_wasi_response`] — the inverse conversion.
@@ -107,10 +93,9 @@ pub fn http_into_wasi_request<T>(mut req: HttpRequest<T>) -> Result<WasiHttpRequ
 where
     T: http_body::Body + Any,
     T::Data: Into<Vec<u8>>,
-    T::Error: Into<Box<dyn std::error::Error + Send + Sync + 'static>>
+    T::Error: Into<Box<dyn std::error::Error + Send + Sync + 'static>>,
 {
-    if let Some(incoming_body) = (&mut req as &mut dyn Any).downcast_mut::<IncomingRequestBody>()
-    {
+    if let Some(incoming_body) = (&mut req as &mut dyn Any).downcast_mut::<IncomingRequestBody>() {
         if let Some(request) = incoming_body.take_unstarted() {
             return Ok(request);
         }
@@ -124,10 +109,7 @@ where
         .cloned()
         .map(|o| o.0);
 
-    let headers = parts
-        .headers
-        .try_into()
-        .map_err(to_internal_error_code)?;
+    let headers = parts.headers.try_into().map_err(to_internal_error_code)?;
 
     let (body_writer, contents_rx, trailers_rx) = BodyWriter::new();
 
@@ -161,7 +143,7 @@ where
 /// from the WASI HTTP model into a conventional Rust `http` request type. It reconstructs
 /// the URI, method, headers, extensions, and body so that the request can be used directly
 /// by host HTTP clients, servers, or middleware.
-/// 
+///
 /// # See Also
 ///
 /// - [`http_into_wasi_request`] — converts from host HTTP requests into WASI requests.
@@ -185,9 +167,7 @@ pub fn http_from_wasi_request(req: WasiHttpRequest) -> Result<HttpRequest, Error
             .map_err(|_| ErrorCode::HttpRequestUriInvalid)?
     };
 
-    let mut builder = http::Request::builder()
-        .method(req.get_method())
-        .uri(uri);
+    let mut builder = http::Request::builder().method(req.get_method()).uri(uri);
 
     if let Some(options) = req.get_options().map(RequestOptionsExtension) {
         builder = builder.extension(options);
