@@ -11,7 +11,7 @@
 //   * with "wasi:random/random@0.3.0-rc-2026-03-15" = "crate::random::random"
 //   * with "wasi:random/insecure@0.3.0-rc-2026-03-15" = "crate::random::insecure"
 //   * with "wasi:random/insecure-seed@0.3.0-rc-2026-03-15" = "crate::random::insecure_seed"
-//   * type_section_suffix: "rust-wasip3-0.5.0+wasi-0.3.0-rc-2026-03-15-from-crates-io-service-world"
+//   * type_section_suffix: "rust-wasip3-0.6.0+wasi-0.3.0-rc-2026-03-15-from-crates-io-service-world"
 //   * default-bindings-module: "$crate"
 //   * export-macro-name: _export_service
 //   * pub-export-macro
@@ -7407,7 +7407,7 @@ macro_rules! __export_service_impl {
         exports::wasi::http::handler::__export_wasi_http_handler_0_3_0_rc_2026_03_15_cabi!($ty
         with_types_in $($path_to_types_root)*:: exports::wasi::http::handler); const _ :
         () = { #[rustfmt::skip] #[cfg(target_arch = "wasm32")] #[unsafe (link_section =
-        "component-type:wit-bindgen:0.57.1:wasi:http@0.3.0-rc-2026-03-15:service:imports and exportsrust-wasip3-0.5.0+wasi-0.3.0-rc-2026-03-15-from-crates-io-service-world")]
+        "component-type:wit-bindgen:0.57.1:wasi:http@0.3.0-rc-2026-03-15:service:imports and exportsrust-wasip3-0.6.0+wasi-0.3.0-rc-2026-03-15-from-crates-io-service-world")]
         #[doc(hidden)] #[allow(clippy::octal_escapes)] pub static
         __WIT_BINDGEN_COMPONENT_TYPE : [u8; 5191] = *
         b"\
@@ -7522,8 +7522,8 @@ pub use __export_service_impl as _export_service;
 #[rustfmt::skip]
 #[cfg(target_arch = "wasm32")]
 
-#[cfg_attr(feature = "rustc-dep-of-std", unsafe(link_section = "component-type:wit-bindgen:0.57.1:wasi:http@0.3.0-rc-2026-03-15:service-with-all-of-its-exports-removed:encoded worldrust-wasip3-0.5.0+wasi-0.3.0-rc-2026-03-15-from-crates-io-service-world-in-libstd"))]
-#[cfg_attr(not(feature = "rustc-dep-of-std"), unsafe(link_section = "component-type:wit-bindgen:0.57.1:wasi:http@0.3.0-rc-2026-03-15:service-with-all-of-its-exports-removed:encoded worldrust-wasip3-0.5.0+wasi-0.3.0-rc-2026-03-15-from-crates-io-service-world"))]
+#[cfg_attr(feature = "rustc-dep-of-std", unsafe(link_section = "component-type:wit-bindgen:0.57.1:wasi:http@0.3.0-rc-2026-03-15:service-with-all-of-its-exports-removed:encoded worldrust-wasip3-0.6.0+wasi-0.3.0-rc-2026-03-15-from-crates-io-service-world-in-libstd"))]
+#[cfg_attr(not(feature = "rustc-dep-of-std"), unsafe(link_section = "component-type:wit-bindgen:0.57.1:wasi:http@0.3.0-rc-2026-03-15:service-with-all-of-its-exports-removed:encoded worldrust-wasip3-0.6.0+wasi-0.3.0-rc-2026-03-15-from-crates-io-service-world"))]
 
 #[doc(hidden)]
 #[allow(clippy::octal_escapes)]
