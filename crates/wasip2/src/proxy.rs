@@ -10,7 +10,7 @@
 //   * with "wasi:io/poll@0.2.9" = "crate::io::poll"
 //   * with "wasi:io/streams@0.2.9" = "crate::io::streams"
 //   * with "wasi:random/random@0.2.9" = "crate::random::random"
-//   * type_section_suffix: "rust-wasip2-1.0.2+wasi-0.2.9-from-crates-io-proxy-world"
+//   * type_section_suffix: "rust-wasip2-1.0.3+wasi-0.2.9-from-crates-io-proxy-world"
 //   * default-bindings-module: "$crate"
 //   * export-macro-name: _export_proxy
 //   * pub-export-macro
@@ -7147,7 +7147,7 @@ macro_rules! __export_proxy_impl {
         with_types_in $($path_to_types_root)*:: exports::wasi::http::incoming_handler);
         const _ : () = { #[rustfmt::skip] #[cfg(target_arch = "wasm32")] #[unsafe
         (link_section =
-        "component-type:wit-bindgen:0.57.1:wasi:http@0.2.9:proxy:imports and exportsrust-wasip2-1.0.2+wasi-0.2.9-from-crates-io-proxy-world")]
+        "component-type:wit-bindgen:0.57.1:wasi:http@0.2.9:proxy:imports and exportsrust-wasip2-1.0.3+wasi-0.2.9-from-crates-io-proxy-world")]
         #[doc(hidden)] #[allow(clippy::octal_escapes)] pub static
         __WIT_BINDGEN_COMPONENT_TYPE : [u8; 7040] = *
         b"\
@@ -7300,8 +7300,8 @@ pub use __export_proxy_impl as _export_proxy;
 #[rustfmt::skip]
 #[cfg(target_arch = "wasm32")]
 
-#[cfg_attr(feature = "rustc-dep-of-std", unsafe(link_section = "component-type:wit-bindgen:0.57.1:wasi:http@0.2.9:proxy-with-all-of-its-exports-removed:encoded worldrust-wasip2-1.0.2+wasi-0.2.9-from-crates-io-proxy-world-in-libstd"))]
-#[cfg_attr(not(feature = "rustc-dep-of-std"), unsafe(link_section = "component-type:wit-bindgen:0.57.1:wasi:http@0.2.9:proxy-with-all-of-its-exports-removed:encoded worldrust-wasip2-1.0.2+wasi-0.2.9-from-crates-io-proxy-world"))]
+#[cfg_attr(feature = "rustc-dep-of-std", unsafe(link_section = "component-type:wit-bindgen:0.57.1:wasi:http@0.2.9:proxy-with-all-of-its-exports-removed:encoded worldrust-wasip2-1.0.3+wasi-0.2.9-from-crates-io-proxy-world-in-libstd"))]
+#[cfg_attr(not(feature = "rustc-dep-of-std"), unsafe(link_section = "component-type:wit-bindgen:0.57.1:wasi:http@0.2.9:proxy-with-all-of-its-exports-removed:encoded worldrust-wasip2-1.0.3+wasi-0.2.9-from-crates-io-proxy-world"))]
 
 #[doc(hidden)]
 #[allow(clippy::octal_escapes)]
