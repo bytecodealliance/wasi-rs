@@ -22,7 +22,7 @@
 //   * with "wasi:random/insecure-seed@0.3.0" = "crate::random::insecure_seed"
 //   * with "wasi:sockets/types@0.3.0" = "crate::sockets::types"
 //   * with "wasi:sockets/ip-name-lookup@0.3.0" = "crate::sockets::ip_name_lookup"
-//   * type_section_suffix: "rust-wasip3-0.6.0+wasi-0.3.0-rc-2026-03-15-from-crates-io-command-world"
+//   * type_section_suffix: "rust-wasip3-0.6.1+wasi-0.3.0-from-crates-io-command-world"
 //   * default-bindings-module: "$crate"
 //   * export-macro-name: _export_command
 //   * pub-export-macro
@@ -178,7 +178,7 @@ macro_rules! __export_command_impl {
         exports::wasi::cli::run::__export_wasi_cli_run_0_3_0_cabi!($ty with_types_in
         $($path_to_types_root)*:: exports::wasi::cli::run); const _ : () = {
         #[rustfmt::skip] #[cfg(target_arch = "wasm32")] #[unsafe (link_section =
-        "component-type:wit-bindgen:0.58.0:wasi:cli@0.3.0:command:imports and exportsrust-wasip3-0.6.0+wasi-0.3.0-rc-2026-03-15-from-crates-io-command-world")]
+        "component-type:wit-bindgen:0.58.0:wasi:cli@0.3.0:command:imports and exportsrust-wasip3-0.6.1+wasi-0.3.0-from-crates-io-command-world")]
         #[doc(hidden)] #[allow(clippy::octal_escapes)] pub static
         __WIT_BINDGEN_COMPONENT_TYPE : [u8; 7934] = *
         b"\
@@ -347,8 +347,8 @@ pub use __export_command_impl as _export_command;
 #[rustfmt::skip]
 #[cfg(target_arch = "wasm32")]
 
-#[cfg_attr(feature = "rustc-dep-of-std", unsafe(link_section = "component-type:wit-bindgen:0.58.0:wasi:cli@0.3.0:command-with-all-of-its-exports-removed:encoded worldrust-wasip3-0.6.0+wasi-0.3.0-rc-2026-03-15-from-crates-io-command-world-in-libstd"))]
-#[cfg_attr(not(feature = "rustc-dep-of-std"), unsafe(link_section = "component-type:wit-bindgen:0.58.0:wasi:cli@0.3.0:command-with-all-of-its-exports-removed:encoded worldrust-wasip3-0.6.0+wasi-0.3.0-rc-2026-03-15-from-crates-io-command-world"))]
+#[cfg_attr(feature = "rustc-dep-of-std", unsafe(link_section = "component-type:wit-bindgen:0.58.0:wasi:cli@0.3.0:command-with-all-of-its-exports-removed:encoded worldrust-wasip3-0.6.1+wasi-0.3.0-from-crates-io-command-world-in-libstd"))]
+#[cfg_attr(not(feature = "rustc-dep-of-std"), unsafe(link_section = "component-type:wit-bindgen:0.58.0:wasi:cli@0.3.0:command-with-all-of-its-exports-removed:encoded worldrust-wasip3-0.6.1+wasi-0.3.0-from-crates-io-command-world"))]
 
 #[doc(hidden)]
 #[allow(clippy::octal_escapes)]
