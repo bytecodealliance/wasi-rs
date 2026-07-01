@@ -6,7 +6,7 @@
 //! such as:
 //!
 //! * [`wasi:cli/command`]
-//! * [`wasi:http/proxy`]
+//! * [`wasi:http/service`]
 //!
 //! This crate is procedurally generated with the [`wit-bindgen`] bindings
 //! generator. Note that generated code is published to crates.io to slim this
@@ -133,8 +133,8 @@
 //! - [`wasi::http::proxy::export!`](crate::http::proxy::export)
 //!
 //! [worlds]: https://component-model.bytecodealliance.org/design/worlds.html
-//! [`wasi:cli/command`]: https://github.com/WebAssembly/wasi-cli/
-//! [`wasi:http/proxy`]: https://github.com/WebAssembly/wasi-http
+//! [`wasi:cli/command`]: https://github.com/WebAssembly/WASI/tree/main/proposals/cli
+//! [`wasi:http/service`]: https://github.com/WebAssembly/WASI/tree/main/proposals/http
 //! [`wasi:cli/stdio`]: https://github.com/WebAssembly/wasi-cli/blob/main/wit-0.3.0-draft/stdio.wit
 //! [`wit-bindgen`]: https://github.com/bytecodealliance/wit-bindgen/
 //! [Component Model]: https://component-model.bytecodealliance.org/
