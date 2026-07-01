@@ -18,12 +18,12 @@ This crate contains bindings for [WASIp3](https://github.com/WebAssembly/WASI)
 APIs for the worlds:
 
 * [`wasi:cli/command`]
-* [`wasi:http/proxy`]
+* [`wasi:http/service`]
 
 This crate is procedurally generated from [WIT] files using [`wit-bindgen`].
 
-[`wasi:cli/command`]: https://github.com/WebAssembly/wasi-cli
-[`wasi:http/proxy`]: https://github.com/WebAssembly/wasi-http
+[`wasi:cli/command`]: https://github.com/WebAssembly/WASI/tree/main/proposals/cli
+[`wasi:http/service`]: https://github.com/WebAssembly/WASI/tree/main/proposals/http
 [WIT]: https://component-model.bytecodealliance.org/design/wit.html
 [`wit-bindgen`]: https://github.com/bytecodealliance/wit-bindgen
 [components]: https://component-model.bytecodealliance.org/
