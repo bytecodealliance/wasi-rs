@@ -9,7 +9,7 @@ impl wasip3::exports::http::handler::Guest for Example {
     async fn handle(request: types::Request) -> Result<types::Response, ErrorCode> {
         let request = http_from_wasi_request(request)?;
         let response = serve(request).await?;
-        http_into_wasi_response(response)
+        Ok(http_into_wasi_response(response)?)
     }
 }
 

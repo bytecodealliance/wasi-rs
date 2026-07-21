@@ -1,11 +1,12 @@
 use super::{
-    body_writer::BodyWriter, to_internal_error_code, IncomingRequestBody, IncomingResponseBody,
-    Request as HttpRequest, RequestOptionsExtension, Response as HttpResponse,
+    body_writer::BodyWriter, IncomingRequestBody, IncomingResponseBody, Request as HttpRequest,
+    RequestOptionsExtension, Response as HttpResponse,
 };
 use crate::http::types::{
     ErrorCode, Fields, HeaderError, Headers, Method, Request as WasiHttpRequest,
     Response as WasiHttpResponse, Scheme,
 };
+use crate::http_compat::BoxError;
 use std::prelude::v1::*;
 use std::{any::Any, convert::TryFrom};
 
@@ -21,7 +22,9 @@ use std::{any::Any, convert::TryFrom};
 /// - [`http_from_wasi_response`] — converts a WASI response back into a host-side HTTP response.
 /// - [`BodyWriter`] — for streaming body data into WASI.
 /// - [`IncomingResponseBody`] — for handling pending or unstarted response states.
-pub fn http_into_wasi_response<T>(mut resp: HttpResponse<T>) -> Result<WasiHttpResponse, ErrorCode>
+pub fn http_into_wasi_response<T>(
+    mut resp: HttpResponse<T>,
+) -> Result<WasiHttpResponse, ConversionError>
 where
     T: http_body::Body + Any,
     T::Data: Into<Vec<u8>>,
@@ -34,11 +37,7 @@ where
         }
     }
 
-    let headers = resp
-        .headers()
-        .clone()
-        .try_into()
-        .map_err(to_internal_error_code)?;
+    let headers = resp.headers().clone().try_into()?;
 
     let (body_writer, body_rx, body_result_rx) = BodyWriter::new();
 
@@ -65,8 +64,7 @@ where
 ///
 /// - [`http_into_wasi_response`] — the inverse conversion.
 /// - [`IncomingResponseBody`] — for handling WASI-to-host body streams.
-/// - [`ErrorCode`] — for standardized error reporting.
-pub fn http_from_wasi_response(resp: WasiHttpResponse) -> Result<HttpResponse, ErrorCode> {
+pub fn http_from_wasi_response(resp: WasiHttpResponse) -> Result<HttpResponse, ConversionError> {
     let mut builder = http::Response::builder().status(resp.get_status_code());
 
     for (k, v) in resp.get_headers().copy_all() {
@@ -74,7 +72,7 @@ pub fn http_from_wasi_response(resp: WasiHttpResponse) -> Result<HttpResponse, E
     }
 
     let body = IncomingResponseBody::new(resp)?;
-    builder.body(body).map_err(to_internal_error_code) // TODO: downcast to more specific http error codes
+    Ok(builder.body(body)?)
 }
 
 /// Converts a host-side HTTP request (`HttpRequest<T>`) into a WASI HTTP request (`WasiHttpRequest`).
@@ -89,7 +87,9 @@ pub fn http_from_wasi_response(resp: WasiHttpResponse) -> Result<HttpResponse, E
 /// - [`http_into_wasi_response`] — for converting HTTP responses into WASI format.
 /// - [`BodyWriter`] — for streaming request bodies to WASI.
 /// - [`IncomingRequestBody`] — for managing unstarted or in-progress request states.
-pub fn http_into_wasi_request<T>(mut req: HttpRequest<T>) -> Result<WasiHttpRequest, ErrorCode>
+pub fn http_into_wasi_request<T>(
+    mut req: HttpRequest<T>,
+) -> Result<WasiHttpRequest, ConversionError>
 where
     T: http_body::Body + Any,
     T::Data: Into<Vec<u8>>,
@@ -109,7 +109,7 @@ where
         .cloned()
         .map(|o| o.0);
 
-    let headers = parts.headers.try_into().map_err(to_internal_error_code)?;
+    let headers = parts.headers.try_into()?;
 
     let (body_writer, contents_rx, trailers_rx) = BodyWriter::new();
 
@@ -150,7 +150,7 @@ where
 /// - [`http_from_wasi_request`] — converts from WASI responses into host responses.
 /// - [`IncomingRequestBody`] — for streaming WASI request bodies into host code.
 /// - [`RequestOptionsExtension`] — for carrying optional request metadata.
-pub fn http_from_wasi_request(req: WasiHttpRequest) -> Result<HttpRequest, ErrorCode> {
+pub fn http_from_wasi_request(req: WasiHttpRequest) -> Result<HttpRequest, ConversionError> {
     let uri = {
         let mut builder = http::Uri::builder();
         if let Some(scheme) = req.get_scheme() {
@@ -162,9 +162,7 @@ pub fn http_from_wasi_request(req: WasiHttpRequest) -> Result<HttpRequest, Error
         if let Some(path_and_query) = req.get_path_with_query() {
             builder = builder.path_and_query(path_and_query);
         }
-        builder
-            .build()
-            .map_err(|_| ErrorCode::HttpRequestUriInvalid)?
+        builder.build()?
     };
 
     let mut builder = http::Request::builder().method(req.get_method()).uri(uri);
@@ -179,7 +177,7 @@ pub fn http_from_wasi_request(req: WasiHttpRequest) -> Result<HttpRequest, Error
 
     let body = IncomingRequestBody::new(req)?;
 
-    builder.body(body).map_err(to_internal_error_code) // TODO: downcast to more specific http error codes
+    Ok(builder.body(body)?)
 }
 
 impl TryFrom<Scheme> for http::uri::Scheme {
@@ -247,15 +245,15 @@ impl From<http::Method> for Method {
 }
 
 impl TryFrom<Headers> for http::HeaderMap {
-    type Error = ErrorCode;
+    type Error = ConversionError;
 
     fn try_from(headers: Headers) -> Result<Self, Self::Error> {
         headers
             .copy_all()
             .into_iter()
             .try_fold(http::HeaderMap::new(), |mut map, (k, v)| {
-                let v = http::HeaderValue::from_bytes(&v).map_err(to_internal_error_code)?;
-                let k: http::HeaderName = k.parse().map_err(to_internal_error_code)?;
+                let v = http::HeaderValue::from_bytes(&v)?;
+                let k: http::HeaderName = k.parse()?;
                 map.append(k, v);
                 Ok(map)
             })
@@ -283,5 +281,56 @@ impl TryFrom<http::HeaderMap> for Fields {
         });
         let entries = Vec::from_iter(iter);
         Fields::from_list(&entries)
+    }
+}
+
+/// An error from converting between [`http`] and wasip3 types.
+#[derive(Debug, thiserror::Error)]
+pub enum ConversionError {
+    // /// Error processing body.
+    // #[error("body error: {0}")]
+    // BodyError(#[from] super::BodyError),
+    /// An [`http::Error`].
+    #[error(transparent)]
+    HttpError(#[from] http::Error),
+
+    /// Invalid value for content-length header.
+    #[error("invalid content-length: {0}")]
+    InvalidContentLength(BoxError),
+
+    /// A `wasi:http` [`ErrorCode`].
+    #[error(transparent)]
+    WasiErrorCode(#[from] ErrorCode),
+
+    /// Error building `wasi:http` [`Headers`].
+    #[error("invalid header(s): {0}")]
+    WasiHeaderError(#[from] HeaderError),
+}
+
+impl ConversionError {
+    pub(crate) fn invalid_content_length(err: impl Into<BoxError>) -> Self {
+        Self::InvalidContentLength(err.into())
+    }
+}
+
+impl From<http::header::InvalidHeaderName> for ConversionError {
+    fn from(err: http::header::InvalidHeaderName) -> Self {
+        Self::HttpError(err.into())
+    }
+}
+
+impl From<http::header::InvalidHeaderValue> for ConversionError {
+    fn from(err: http::header::InvalidHeaderValue) -> Self {
+        Self::HttpError(err.into())
+    }
+}
+
+impl From<ConversionError> for ErrorCode {
+    fn from(err: ConversionError) -> Self {
+        if let ConversionError::WasiErrorCode(error_code) = err {
+            error_code
+        } else {
+            ErrorCode::InternalError(Some(format!("{err}")))
+        }
     }
 }
