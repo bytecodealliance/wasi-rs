@@ -145,7 +145,7 @@ impl<T: IncomingMessage> IncomingBody<T> {
     ///
     /// Returns an [`ErrorCode`] if the content length is invalid or cannot
     /// be determined.
-    pub fn new(msg: T) -> Result<Self, ErrorCode> {
+    pub fn new(msg: T) -> Result<Self, ConversionError> {
         let content_length = get_content_length(msg.get_headers())?;
         Ok(Self {
             state: StartedState::Unstarted(msg),
@@ -172,7 +172,7 @@ impl<T: IncomingMessage> IncomingBody<T> {
         }
     }
 
-    fn ensure_started(&mut self) -> Result<&mut IncomingState, ErrorCode> {
+    fn ensure_started(&mut self) -> Result<&mut IncomingState, BodyError> {
         if let StartedState::Unstarted(_) = self.state {
             let msg = self.take_unstarted().unwrap();
             let (result, reader) = wit_future::new(|| Ok(()));
@@ -185,7 +185,7 @@ impl<T: IncomingMessage> IncomingBody<T> {
         match &mut self.state {
             StartedState::Started { state, .. } => Ok(state),
             StartedState::Unstarted(_) => unreachable!(),
-            StartedState::Empty => Err(to_internal_error_code(
+            StartedState::Empty => Err(BodyError::InvalidState(
                 "cannot use IncomingBody after call to take_unstarted",
             )),
         }
@@ -212,7 +212,7 @@ enum ReadResult {
 
 impl<T: IncomingMessage> http_body::Body for IncomingBody<T> {
     type Data = Bytes;
-    type Error = ErrorCode;
+    type Error = BodyError;
 
     fn poll_frame(
         mut self: Pin<&mut Self>,
@@ -257,14 +257,15 @@ impl<T: IncomingMessage> http_body::Body for IncomingBody<T> {
                             *state = IncomingState::Done;
                             match trailers {
                                 Ok(Some(fields)) => {
-                                    let trailers = fields.try_into()?;
+                                    let trailers =
+                                        fields.try_into().map_err(BodyError::invalid_trailers)?;
                                     break Poll::Ready(Some(Ok(http_body::Frame::trailers(
                                         trailers,
                                     ))));
                                 }
                                 Ok(None) => {}
                                 Err(e) => {
-                                    break Poll::Ready(Some(Err(e)));
+                                    break Poll::Ready(Some(Err(BodyError::SendFailed(e))));
                                 }
                             }
                         }
@@ -296,20 +297,21 @@ impl<T: IncomingMessage> http_body::Body for IncomingBody<T> {
     }
 }
 
-fn get_content_length(headers: types::Headers) -> Result<Option<u64>, ErrorCode> {
+fn get_content_length(headers: types::Headers) -> Result<Option<u64>, ConversionError> {
     let values = headers.get(http::header::CONTENT_LENGTH.as_str());
     if values.len() > 1 {
-        return Err(to_internal_error_code("multiple content-length values"));
+        return Err(ConversionError::invalid_content_length("multiple values"));
     }
     let Some(value_bytes) = values.into_iter().next() else {
         return Ok(None);
     };
-    let value_str = std::str::from_utf8(&value_bytes).map_err(to_internal_error_code)?;
-    let value_i64: i64 = value_str.parse().map_err(to_internal_error_code)?;
-    let value = value_i64.try_into().map_err(to_internal_error_code)?;
+    let value_str =
+        std::str::from_utf8(&value_bytes).map_err(ConversionError::invalid_content_length)?;
+    let value_i64: i64 = value_str
+        .parse()
+        .map_err(ConversionError::invalid_content_length)?;
+    let value = value_i64
+        .try_into()
+        .map_err(ConversionError::invalid_content_length)?;
     Ok(Some(value))
-}
-
-fn to_internal_error_code(e: impl ::std::fmt::Display) -> ErrorCode {
-    ErrorCode::InternalError(Some(e.to_string()))
 }

@@ -1,27 +1,31 @@
 use crate::{
-    http::types::{ErrorCode, HeaderError, Trailers},
+    http::types::{ErrorCode, Trailers},
     wit_bindgen::{FutureReader, FutureWriter, StreamReader, StreamWriter},
     wit_future, wit_stream,
 };
 use http::HeaderMap;
-use http_body::{Body as _, Frame};
+use http_body::{Body, Frame};
 use std::future::poll_fn;
 use std::prelude::v1::*;
 use std::{fmt::Debug, pin};
 
-type BoxError = Box<dyn std::error::Error + Send + Sync + 'static>;
-
 pub type BodyResult = Result<Option<Trailers>, ErrorCode>;
 
+pub(crate) type BoxError = Box<dyn std::error::Error + Send + Sync + 'static>;
+
 #[derive(Debug, thiserror::Error)]
-pub enum Error {
+pub enum BodyError {
     /// The [`http_body::Body`] returned an error.
     #[error("body error: {0}")]
     HttpBody(#[source] BoxError),
 
-    /// Received trailers were rejected by [`Trailers::from_list`].
+    /// Error caused by invalid body state.
+    #[error("{0}")]
+    InvalidState(&'static str),
+
+    /// Invalid trailers.
     #[error("invalid trailers: {0}")]
-    InvalidTrailers(#[source] HeaderError),
+    InvalidTrailers(#[source] BoxError),
 
     /// The result future reader end was closed (dropped).
     ///
@@ -29,12 +33,22 @@ pub enum Error {
     #[error("result future reader closed")]
     ResultReaderClosed(BodyResult),
 
+    /// Error while sending the body.
+    #[error("send failed: {0}")]
+    SendFailed(ErrorCode),
+
     /// The stream reader end was closed (dropped).
     ///
     /// The number of bytes written successfully is returned as `written` and
     /// the bytes that couldn't be written are returned as `unwritten`.
     #[error("stream reader closed")]
     StreamReaderClosed { written: usize, unwritten: Vec<u8> },
+}
+
+impl BodyError {
+    pub(crate) fn invalid_trailers(err: impl Into<BoxError>) -> Self {
+        Self::InvalidTrailers(err.into())
+    }
 }
 
 /// BodyWriter coordinates a [`StreamWriter`] and [`FutureWriter`] associated
@@ -65,6 +79,28 @@ impl BodyWriter {
         )
     }
 
+    /// Convenience method for short-circuiting empty body processing.
+    ///
+    /// If `is_empty` is `false`, behaves like `BodyWriter::new`.
+    ///
+    /// If `is_empty` is `true`, returns only a BodyResult future,
+    /// "pre-resolved" to `Ok(None)`.
+    pub(crate) fn maybe_empty(
+        is_empty: bool,
+    ) -> (
+        Option<Self>,
+        Option<StreamReader<u8>>,
+        FutureReader<BodyResult>,
+    ) {
+        if is_empty {
+            let (_, result_reader) = wit_future::new(|| Ok(None));
+            (None, None, result_reader)
+        } else {
+            let (writer, stream_reader, result_reader) = Self::new();
+            (Some(writer), Some(stream_reader), result_reader)
+        }
+    }
+
     /// Sends the given [`http_body::Body`] to this writer.
     ///
     /// This copies all data frames from the body to this writer's stream and
@@ -73,7 +109,7 @@ impl BodyWriter {
     /// trailers) is returned.
     ///
     /// If there is an error it is written to the result future.
-    pub async fn send_http_body<T>(mut self, mut body: &mut T) -> Result<u64, Error>
+    pub async fn send_http_body<T>(mut self, mut body: &mut T) -> Result<u64, BodyError>
     where
         T: http_body::Body + Unpin,
         T::Data: Into<Vec<u8>>,
@@ -90,12 +126,13 @@ impl BodyWriter {
                     total_written += written as u64;
                 }
                 Some(Err(err)) => {
+                    drop(self.stream_writer);
                     let err = err.into();
                     // TODO: consider if there are better ErrorCode mappings
                     let error_code = ErrorCode::InternalError(Some(err.to_string()));
                     // TODO: log result_writer.write errors?
                     _ = self.result_writer.write(Err(error_code)).await;
-                    return Err(Error::HttpBody(err));
+                    return Err(BodyError::HttpBody(err));
                 }
                 None => break,
             }
@@ -104,11 +141,15 @@ impl BodyWriter {
         let maybe_trailers = if self.trailers.is_empty() {
             None
         } else {
-            Some(self.trailers.try_into().map_err(Error::InvalidTrailers)?)
+            Some(
+                self.trailers
+                    .try_into()
+                    .map_err(BodyError::invalid_trailers)?,
+            )
         };
         match self.result_writer.write(Ok(maybe_trailers)).await {
             Ok(()) => Ok(total_written),
-            Err(err) => Err(Error::ResultReaderClosed(err.value)),
+            Err(err) => Err(BodyError::ResultReaderClosed(err.value)),
         }
     }
 
@@ -118,7 +159,7 @@ impl BodyWriter {
     ///   stream and the size of the written data is returned.
     /// - If the frame contains trailers they are added to [`Self::trailers`]
     ///   and `Ok(0)` is returned.
-    pub async fn send_frame<T>(&mut self, frame: Frame<T>) -> Result<usize, Error>
+    pub async fn send_frame<T>(&mut self, frame: Frame<T>) -> Result<usize, BodyError>
     where
         T: Into<Vec<u8>>,
     {
@@ -129,7 +170,7 @@ impl BodyWriter {
             // write_all returns any unwritten data if the read end is dropped
             let unwritten = self.stream_writer.write_all(data).await;
             if !unwritten.is_empty() {
-                return Err(Error::StreamReaderClosed {
+                return Err(BodyError::StreamReaderClosed {
                     written: data_len - unwritten.len(),
                     unwritten,
                 });
