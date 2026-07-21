@@ -39,16 +39,19 @@ where
 
     let headers = resp.headers().clone().try_into()?;
 
-    let (body_writer, body_rx, body_result_rx) = BodyWriter::new();
+    let is_empty = resp.body().size_hint().exact() == Some(0) || resp.body().is_end_stream();
+    let (body_writer, body_rx, body_result_rx) = BodyWriter::maybe_empty(is_empty);
 
-    let (response, _future_result) = WasiHttpResponse::new(headers, Some(body_rx), body_result_rx);
+    let (response, _future_result) = WasiHttpResponse::new(headers, body_rx, body_result_rx);
 
     _ = response.set_status_code(resp.status().as_u16());
 
-    wit_bindgen::spawn(async move {
-        let mut body = std::pin::pin!(resp.into_body());
-        _ = body_writer.send_http_body(&mut body).await;
-    });
+    if let Some(body_writer) = body_writer {
+        wit_bindgen::spawn(async move {
+            let mut body = std::pin::pin!(resp.into_body());
+            _ = body_writer.send_http_body(&mut body).await;
+        });
+    }
 
     Ok(response)
 }
@@ -109,11 +112,36 @@ where
         .cloned()
         .map(|o| o.0);
 
-    let headers = parts.headers.try_into()?;
+    let content_length = content_length_from_header_map(&parts.headers)?;
+    let has_transfer_encoding = parts.headers.contains_key(http::header::TRANSFER_ENCODING);
+    let body_size = content_length
+        .or_else(|| body.size_hint().exact())
+        .or_else(|| body.is_end_stream().then_some(0));
 
-    let (body_writer, contents_rx, trailers_rx) = BodyWriter::new();
+    let headers = Headers::try_from(parts.headers)?;
 
-    let (req, _result) = WasiHttpRequest::new(headers, Some(contents_rx), trailers_rx, options);
+    // RFC 9110 §8.6: A user agent SHOULD send Content-Length in a request when
+    // the method defines a meaning for enclosed content and it is not sending
+    // Transfer-Encoding.
+    if content_length.is_none()
+        && !has_transfer_encoding
+        && matches!(
+            parts.method,
+            http::Method::POST | http::Method::PUT | http::Method::PATCH
+        )
+    {
+        if let Some(body_size) = body_size {
+            let _ignore_immutable = headers.set(
+                http::header::CONTENT_LENGTH.as_str(),
+                &[body_size.to_string().into()],
+            );
+        }
+    }
+
+    let is_empty = body_size == Some(0);
+    let (body_writer, contents_rx, trailers_rx) = BodyWriter::maybe_empty(is_empty);
+
+    let (req, _result) = WasiHttpRequest::new(headers, contents_rx, trailers_rx, options);
 
     req.set_method(&parts.method.into())
         .map_err(|()| ErrorCode::HttpRequestMethodInvalid)?;
@@ -128,10 +156,12 @@ where
     req.set_path_with_query(parts.uri.path_and_query().map(|pq| pq.as_str()))
         .map_err(|()| ErrorCode::HttpRequestUriInvalid)?;
 
-    wit_bindgen::spawn(async move {
-        let mut body = std::pin::pin!(body);
-        _ = body_writer.send_http_body(&mut body).await;
-    });
+    if let Some(body_writer) = body_writer {
+        wit_bindgen::spawn(async move {
+            let mut body = std::pin::pin!(body);
+            _ = body_writer.send_http_body(&mut body).await;
+        });
+    }
 
     Ok(req)
 }
@@ -178,6 +208,25 @@ pub fn http_from_wasi_request(req: WasiHttpRequest) -> Result<HttpRequest, Conve
     let body = IncomingRequestBody::new(req)?;
 
     Ok(builder.body(body)?)
+}
+
+fn content_length_from_header_map(
+    headers: &http::HeaderMap,
+) -> Result<Option<u64>, ConversionError> {
+    let mut values = headers.get_all(http::header::CONTENT_LENGTH).into_iter();
+    let Some(value) = values.next() else {
+        return Ok(None);
+    };
+    if values.next().is_some() {
+        return Err(ConversionError::invalid_content_length("multiple values"));
+    }
+    Ok(Some(
+        value
+            .to_str()
+            .map_err(ConversionError::invalid_content_length)?
+            .parse()
+            .map_err(ConversionError::invalid_content_length)?,
+    ))
 }
 
 impl TryFrom<Scheme> for http::uri::Scheme {

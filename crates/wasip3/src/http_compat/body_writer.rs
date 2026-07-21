@@ -4,7 +4,7 @@ use crate::{
     wit_future, wit_stream,
 };
 use http::HeaderMap;
-use http_body::{Body as _, Frame};
+use http_body::{Body, Frame};
 use std::future::poll_fn;
 use std::prelude::v1::*;
 use std::{fmt::Debug, pin};
@@ -79,6 +79,28 @@ impl BodyWriter {
         )
     }
 
+    /// Convenience method for short-circuiting empty body processing.
+    ///
+    /// If `is_empty` is `false`, behaves like `BodyWriter::new`.
+    ///
+    /// If `is_empty` is `true`, returns only a BodyResult future,
+    /// "pre-resolved" to `Ok(None)`.
+    pub(crate) fn maybe_empty(
+        is_empty: bool,
+    ) -> (
+        Option<Self>,
+        Option<StreamReader<u8>>,
+        FutureReader<BodyResult>,
+    ) {
+        if is_empty {
+            let (_, result_reader) = wit_future::new(|| Ok(None));
+            (None, None, result_reader)
+        } else {
+            let (writer, stream_reader, result_reader) = Self::new();
+            (Some(writer), Some(stream_reader), result_reader)
+        }
+    }
+
     /// Sends the given [`http_body::Body`] to this writer.
     ///
     /// This copies all data frames from the body to this writer's stream and
@@ -104,6 +126,7 @@ impl BodyWriter {
                     total_written += written as u64;
                 }
                 Some(Err(err)) => {
+                    drop(self.stream_writer);
                     let err = err.into();
                     // TODO: consider if there are better ErrorCode mappings
                     let error_code = ErrorCode::InternalError(Some(err.to_string()));
