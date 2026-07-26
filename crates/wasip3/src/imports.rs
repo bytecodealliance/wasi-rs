@@ -12800,7 +12800,7 @@ mod _rt {
     impl AsI32 for i32 {
         #[inline]
         fn as_i32(self) -> i32 {
-            self as i32
+            self
         }
     }
     impl AsI32 for u32 {
@@ -12933,7 +12933,7 @@ mod _rt {
     impl AsI64 for i64 {
         #[inline]
         fn as_i64(self) -> i64 {
-            self as i64
+            self
         }
     }
     impl AsI64 for u64 {
