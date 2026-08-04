@@ -114,7 +114,7 @@ where
     // pseudo-header). Normalize any `Host` header into the request authority so
     // that requests built with a `Host` header (such as middleware forwarding
     // an incoming request) remain compatible. See RFC 9110 §7.2, RFC 9113
-    // §8.3.1, and https://github.com/bytecodealliance/wasi-rs/issues/162.
+    // §8.3.1.
     let host = parts
         .headers
         .remove(http::header::HOST)
@@ -125,8 +125,10 @@ where
     let authority = match (parts.uri.authority(), host) {
         // If both are present they must be identical, otherwise the request is
         // malformed.
-        (Some(authority), Some(host)) if authority.as_str() != host => {
-            return Err(ErrorCode::HttpRequestUriInvalid);
+        (Some(authority), Some(host)) if authority != host.as_str() => {
+            return Err(to_internal_error_code(
+                "Host header does not match URI authority",
+            ));
         }
         (Some(authority), _) => Some(authority.as_str().to_owned()),
         (None, host) => host,
