@@ -101,13 +101,36 @@ where
         }
     }
 
-    let (parts, body) = req.into_parts();
+    let (mut parts, body) = req.into_parts();
 
     let options = parts
         .extensions
         .get::<RequestOptionsExtension>()
         .cloned()
         .map(|o| o.0);
+
+    // `wasmtime-wasi-http` forbids the `Host` header on requests, instead
+    // carrying the authority via `set-authority` (the `:authority`
+    // pseudo-header). Normalize any `Host` header into the request authority so
+    // that requests built with a `Host` header (such as middleware forwarding
+    // an incoming request) remain compatible. See RFC 9110 §7.2, RFC 9113
+    // §8.3.1, and https://github.com/bytecodealliance/wasi-rs/issues/162.
+    let host = parts
+        .headers
+        .remove(http::header::HOST)
+        .map(|value| value.to_str().map(str::to_owned))
+        .transpose()
+        .map_err(to_internal_error_code)?;
+
+    let authority = match (parts.uri.authority(), host) {
+        // If both are present they must be identical, otherwise the request is
+        // malformed.
+        (Some(authority), Some(host)) if authority.as_str() != host => {
+            return Err(ErrorCode::HttpRequestUriInvalid);
+        }
+        (Some(authority), _) => Some(authority.as_str().to_owned()),
+        (None, host) => host,
+    };
 
     let headers = parts.headers.try_into().map_err(to_internal_error_code)?;
 
@@ -122,7 +145,7 @@ where
     req.set_scheme(scheme.as_ref())
         .map_err(|()| ErrorCode::HttpProtocolError)?;
 
-    req.set_authority(parts.uri.authority().map(|a| a.as_str()))
+    req.set_authority(authority.as_deref())
         .map_err(|()| ErrorCode::HttpRequestUriInvalid)?;
 
     req.set_path_with_query(parts.uri.path_and_query().map(|pq| pq.as_str()))
