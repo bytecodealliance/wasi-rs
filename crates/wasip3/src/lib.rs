@@ -182,7 +182,7 @@ where
 pub use wit_bindgen;
 
 #[cfg(feature = "async-spawn")]
-pub use wit_bindgen::spawn;
+pub use wit_bindgen::spawn_local;
 
 // Expand the `cli` and `http` modules with `export!` macros for the
 // command/proxy worlds, but also retain all the contents defined in the

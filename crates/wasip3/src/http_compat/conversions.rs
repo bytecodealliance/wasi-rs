@@ -46,7 +46,7 @@ where
 
     _ = response.set_status_code(resp.status().as_u16());
 
-    wit_bindgen::spawn(async move {
+    wit_bindgen::spawn_local(async move {
         let mut body = std::pin::pin!(resp.into_body());
         _ = body_writer.send_http_body(&mut body).await;
     });
@@ -153,7 +153,7 @@ where
     req.set_path_with_query(parts.uri.path_and_query().map(|pq| pq.as_str()))
         .map_err(|()| ErrorCode::HttpRequestUriInvalid)?;
 
-    wit_bindgen::spawn(async move {
+    wit_bindgen::spawn_local(async move {
         let mut body = std::pin::pin!(body);
         _ = body_writer.send_http_body(&mut body).await;
     });
