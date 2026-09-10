@@ -23,11 +23,11 @@ jobs:
     - name: Install Wasmtime
       uses: bytecodealliance/actions/wasmtime/setup@v1
       with:
-        version: "v43.0.0"
+        version: "v48.0.1"
     - name: Install wasm-tools
       uses: bytecodealliance/actions/wasm-tools/setup@v1
       with:
-        version: "1.246.1"
+        version: "1.259.0"
 
     - run: cargo build -p wasip2 --examples --target wasm32-wasip2 --no-default-features
     - run: wasmtime run ./target/wasm32-wasip2/debug/examples/hello-world-no_std.wasm
@@ -97,7 +97,7 @@ jobs:
         ./ci/vendor-wit.sh
         git diff --exit-code
     - run: |
-        version=0.61.0
+        version=0.62.0
 
         mkdir wit-bindgen
         cd wit-bindgen
@@ -137,11 +137,11 @@ jobs:
     - name: Install wasmtime
       uses: bytecodealliance/actions/wasmtime/setup@v1
       with:
-        version: "v43.0.0"
+        version: "v48.0.1"
     - name: Install wasm-tools
       uses: bytecodealliance/actions/wasm-tools/setup@v1
       with:
-        version: "1.246.1"
+        version: "1.259.0"
 
     - run: cargo build -p wasip3 --examples --target wasm32-wasip2
     # TODO: uncomment this once wasmtime supports WASI 0.3.0
