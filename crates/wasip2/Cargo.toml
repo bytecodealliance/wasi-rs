@@ -1,6 +1,6 @@
 [package]
 name = "wasip2"
-version = "2.0.0+wasi-0.2.12"
+version = "2.0.1+wasi-0.2.12"
 description = "WASIp2 API bindings for Rust"
 categories = ["no-std", "wasm"]
 keywords = ["webassembly", "wasm"]
