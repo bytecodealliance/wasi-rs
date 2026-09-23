@@ -126,11 +126,11 @@
 //! ## Export Macros
 //!
 //! In addition to providing bindings for imports this crate also provides
-//! macros to export the `wasi:cli/run` and `wasi:http/proxy` worlds, see their
+//! macros to export the `wasi:cli/run` and `wasi:http/service` worlds, see their
 //! respective documentation for more information:
 //!
 //! - [`wasi::cli::command::export!`](crate::cli::command::export)
-//! - [`wasi::http::proxy::export!`](crate::http::proxy::export)
+//! - [`wasi::http::service::export!`](crate::http::service::export)
 //!
 //! [worlds]: https://component-model.bytecodealliance.org/design/worlds.html
 //! [`wasi:cli/command`]: https://github.com/WebAssembly/WASI/tree/main/proposals/cli
