@@ -37,7 +37,7 @@ generate_p2 crates/wasip2/src/imports.rs \
   --world wasi:cli/imports
 
 p2=0.2.12
-p3=0.3.0
+p3=0.3.2
 
 # Generate bindings for the `wasi:cli/command` world specifically, namely the
 # macro `export_command`.
