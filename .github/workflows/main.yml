@@ -144,8 +144,7 @@ jobs:
         version: "1.259.0"
 
     - run: cargo build -p wasip3 --examples --target wasm32-wasip2
-    # TODO: uncomment this once wasmtime supports WASI 0.3.0
-    #- run: wasmtime run -Sp3 -Wcomponent-model-async ./target/wasm32-wasip2/debug/examples/cli_command.wasm
+    - run: wasmtime run ./target/wasm32-wasip2/debug/examples/cli_command.wasm
 
     - run: cargo build -p wasip3 --example http-proxy-compat --target wasm32-unknown-unknown --features http-compat
     - run: wasm-tools component new ./target/wasm32-unknown-unknown/debug/examples/http_proxy_compat.wasm -o component.wasm
